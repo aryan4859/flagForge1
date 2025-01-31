@@ -22,7 +22,8 @@ export async function GET() {
         }));
 
         // Return the leaderboard as JSON
-        return NextResponse.json(leaderboard);
+       // return NextResponse.json(leaderboard);
+        return NextResponse.json({users});
     } catch (error) {
         console.error("Error fetching leaderboard:", error);
         return NextResponse.json(
