@@ -6,7 +6,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { RegisterFormData } from "@/types/register";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { AxiosError } from "axios";
+import { AxiosError} from "axios";
 import { ErrorResponseI } from "@/types/context";
 
 export default function Register() {
@@ -14,6 +14,10 @@ export default function Register() {
   const navigate = useNavigate();
   const [isPending, setIsPending] = useState(false);
   const backendUrl = import.meta.env.VITE_API_URL;
+
+  if(!backendUrl){
+    console.log("API is not defined in ENV")
+  }
 
   const handleGoogleLogin = async () => {
     window.location.href = `${backendUrl}/auth/google`;
@@ -24,11 +28,13 @@ export default function Register() {
     lastName: string;
     email: string;
     password: string;
+    otp:string;
   }>({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
+    otp:"",
   });
 
   const handleChange = (
@@ -41,20 +47,31 @@ export default function Register() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsPending(true);
     e.preventDefault();
+    
     try {
       const payload: RegisterFormData = {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         password: formData.password,
       };
-      await register(payload);
+     
+      register(payload)
       toast({
         title: "Registered successfully",
         variant: "success",
       });
+
+      
       navigate("/problems");
     } catch (error: unknown) {
       const apiError = error as AxiosError<ErrorResponseI>;
+      if(apiError.response?.status === 500){
+        console.error("Server error",apiError.response.data)
+        toast({
+          title:"Server Error try again",
+          variant:"destructive"
+        })
+      }else{
       const validationErrors = apiError.response?.data?.errors;
 
       if (validationErrors && typeof validationErrors === "object") {
@@ -73,7 +90,7 @@ export default function Register() {
           title: apiError.response?.data?.message || "Something went wrong",
           variant: "destructive",
         });
-      }
+      }}
     } finally {
       setIsPending(false);
     }

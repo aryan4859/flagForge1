@@ -2,7 +2,8 @@ import { useGetLeaderboard } from "@/api/leaderboard";
 import { Crown } from "lucide-react";
 
 export default function Leaderboard() {
-  const { data } = useGetLeaderboard();
+  const {data: responseData} = useGetLeaderboard();
+  const leaderboard = responseData ?? []
 
   const getLevel = (score: number): string => {
     if (score < 200) return "[0x1][Newbie]";
@@ -19,19 +20,18 @@ export default function Leaderboard() {
         <h1 className="w-full text-4xl font-bold text-primary tracking-tight">
           Leaderboard
         </h1>
-
         <div className="w-full max-screen-w-2xl p-4">
-          {data?.data?.length === 0 ? (
+          {leaderboard?.length === 0 ? (
             <p className="text-center text-gray-500">No data available</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {data?.data?.map(
+              {leaderboard?.map(
                 (
                   user: {
-                    totalScore: number;
-                    rank: number;
-                    image: string;
+                    score: number;
+                    userID: string;
                     name: string;
+                    image: string;
                   },
                   index: number
                 ) => (
@@ -39,7 +39,7 @@ export default function Leaderboard() {
                     className={`${index === 0 ? "col-span-full" : ""}`}
                     key={index}
                   >
-                    {user.totalScore > 0 ? (
+                    {user.userID || index ? (
                       <div
                         className={`flex flex-col bg-gray-50 rounded-lg px-6 py-5 shadow-lg shadow-gray-100 relative overflow-clip border border-gray-200`}
                       >
@@ -47,18 +47,18 @@ export default function Leaderboard() {
                           #{index + 1}
                         </span>
                         <img
-                          src={user.image || ""}
+                          src={user.image || "https://api.dicebear.com/9.x/identicon/svg"}
                           alt={`${user.name}'s avatar`}
                           className="w-20 h-20 rounded-full object-cover mb-2"
                         />
                         <span className="font-medium text-sm text-primary">
-                          {getLevel(user.totalScore)}
+                          {getLevel(user.score)}
                         </span>
                         <h2 className="text-lg font-semibold text-gray-800">
                           {user.name}
                         </h2>
                         <p className="text-sm text-gray-600">
-                          Score: {user.totalScore}
+                          Score: {user.score}
                         </p>
                         {index === 0 && (
                           <div className="absolute right-0 bottom-0 w-20 h-16 bg-primary [clip-path:polygon(100%_0,0_100%,100%_100%)]">

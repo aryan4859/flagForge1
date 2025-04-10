@@ -8,6 +8,7 @@ import { LoginFormData } from "@/types/register";
 import { toast } from "@/hooks/use-toast";
 import { AxiosError } from "axios";
 import { ErrorResponseI } from "@/types/context";
+
 export default function Auth() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ export default function Auth() {
         title: "Login successfully",
         variant: "success",
       });
+    
       navigate("/problems");
     } catch (error: unknown) {
       const apiError = error as AxiosError<ErrorResponseI>;

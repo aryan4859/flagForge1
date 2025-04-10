@@ -6,7 +6,8 @@ export function useGetLeaderboard() {
         queryKey: ['leaderboard'],
         queryFn: async () => {
             const response = await api.get(endpoints.user.leaderboard);
-            return response;
+            return response.data?.data;
+            
         }
         , retry: 1
     });
