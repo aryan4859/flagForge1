@@ -129,30 +129,30 @@ export function AuthProvider({ children }: Props) {
     }
   }, []);
 
-  const login = useCallback(
-    async ({ email, password }: { email: string; password: string }) => {
-      const { data } = await api.post(
-        endpoints.user.login,
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+    const login = useCallback(
+      async ({ email, password }: { email: string; password: string }) => {
+        const { data } = await api.post(
+          endpoints.user.login,
+          {
+            email,
+            password,
+          },
+          {
+            withCredentials: true,
+          }
+        );
 
-      const token = Cookies.get("__accessToken_");
+        const token = Cookies.get("__accessToken_");
 
-      setUser(data.data);
-      api.defaults.headers["Authorization"] = `Bearer ${token}`;
+        setUser(data.data);
+        api.defaults.headers["Authorization"] = `Bearer ${token}`;
 
-      localStorage.setItem("currentUser", JSON.stringify(data.data));
+        localStorage.setItem("currentUser", JSON.stringify(data.data));
 
-      // navigate('/dashboard');
-    },
-    []
-  );
+        // navigate('/dashboard');
+      },
+      []
+    );
 
   const register = useCallback(async (register: RegisterFormData) => {
     const { data } = await api.post(endpoints.user.register, register, {
