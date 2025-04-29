@@ -104,6 +104,7 @@ export const endpoints = {
     register: '/register',
     logout: '/auth/logout',
     rotateToken: "/user/rotateToken",
+    verifyEmail: '/user/otp-generate'
   },
   password: {
     changePassword: '/change-password',

@@ -4,7 +4,7 @@ export interface UserI {
   displayName: string;
   email: string;
   role: string;
-  score: string;
+  totalScore: number;
   image: string | undefined;
 }
 

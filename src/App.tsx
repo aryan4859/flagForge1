@@ -8,6 +8,7 @@ import {
   Problem,
   TermsCondition,
   Register,
+  Profile,
 } from "./pages";
 import Navbar from "./layouts/Navbar";
 import Footer from "./layouts/Footer";
@@ -30,6 +31,7 @@ export const App = () => {
             <Route path="problems" element={<Problem />} />
             <Route path="problems/:problemId" element={<AProblem />} />
             <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="me/profile" element={<Profile />} />
           </Route>
 
           <Route path="terms-&-condition" element={<TermsCondition />} />

@@ -32,6 +32,8 @@ export const cardVariants = {
 };
 
 export const API_URL = import.meta.env.VITE_API_URL;
+export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+export const GOOGLE_CLIENT_SECRET = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
 export const FILE_SIZE = 2 * 1024 * 1024;
 
 export const FILE_EXTENSIONS = [

@@ -4,6 +4,7 @@ import { RegisterFormData } from './register';
 export type AuthContextType = {
   user: UserI | null;
   loading: boolean;
+  otp: string;
 
   authenticated: boolean;
   unauthenticated: boolean;
@@ -12,6 +13,7 @@ export type AuthContextType = {
   loginWithGoogle: () => Promise<void>;
   editProfile: (data: UserI) => Promise<void>;
   register: (register: RegisterFormData) => Promise<void>;
+  verifyOTP: (otp: unknown) => Promise<void>,
   logout: (req?: boolean) => Promise<void>;
 };
 

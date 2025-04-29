@@ -6,17 +6,25 @@ import PageTitle from "@/components/PageTitle";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { LoginFormData } from "@/types/register";
 import { toast } from "@/hooks/use-toast";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { ErrorResponseI } from "@/types/context";
+import { useGoogleLogin } from "@react-oauth/google";
 export default function Auth() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [isPending, setIsPending] = useState(false);
-  const backendUrl = import.meta.env.VITE_API_URL;
+  // const backendUrl = import.meta.env.VITE_API_URL;
 
-  const handleGoogleLogin = async () => {
-    window.location.href = `${backendUrl}/auth/google`;
-  };
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      const userInfo = await axios.get(
+        "https://www.googleapis.com/oauth2/v3/userinfo",
+        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } }
+      );
+      console.log(userInfo);
+    },
+    onError: (errorResponse) => console.log(errorResponse),
+  });
 
   const [formData, setFormData] = useState<{
     firstName: string;
@@ -138,7 +146,7 @@ export default function Auth() {
             <Button
               variant={"outline"}
               className="w-full"
-              onClick={handleGoogleLogin}
+              onClick={() => handleGoogleLogin()}
             >
               <img src={googleIcon} alt="Google icon" className="w-4" />
               <p>Continue with Google</p>

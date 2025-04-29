@@ -50,7 +50,11 @@ export default function Navbar() {
               <DropdownMenuContent align="end" className="mt-3 min-w-44">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <Link to="/me/profile" className="cursor-pointer">
+                  <DropdownMenuItem className="cursor-pointer">
+                    Profile
+                  </DropdownMenuItem>
+                </Link>
                 <DropdownMenuItem>Dashboard</DropdownMenuItem>
                 <DropdownMenuItem>
                   <button className="text-red-500 flex items-center gap-2">

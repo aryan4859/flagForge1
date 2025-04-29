@@ -13,6 +13,7 @@ export default function Leaderboard() {
     if (score < 3000) return "[0x6][Forger]";
     return "[0x7][Flag Conqueror]";
   };
+
   return (
     <>
       <div className="max-w-screen-2xl mx-auto w-full px-12 py-8 flex flex-col gap-12">

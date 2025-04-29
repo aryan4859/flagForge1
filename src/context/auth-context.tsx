@@ -25,6 +25,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: Props) {
   const [user, setUser] = useState<UserI | null>(null);
   const [loading, setLoading] = useState(true);
+  const [otp, setOtp] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
   // const [initialAuthCheckComplete, setInitialAuthCheckComplete] =
   //   useState(false);
@@ -154,6 +155,20 @@ export function AuthProvider({ children }: Props) {
     []
   );
 
+  const verifyOTP = useCallback(async (verifyOTP: string) => {
+    try {
+      const response = await api.post(endpoints.auth.verifyEmail, verifyOTP, {
+        withCredentials: true,
+      });
+      const otp = response.data.data;
+      setOtp(otp);
+      return otp;
+    } catch (error) {
+      console.error("Failed to send OTP", error);
+      throw error;
+    }
+  }, []);
+
   const register = useCallback(async (register: RegisterFormData) => {
     const { data } = await api.post(endpoints.user.register, register, {
       withCredentials: true,
@@ -183,9 +198,11 @@ export function AuthProvider({ children }: Props) {
       login,
       loginWithGoogle,
       refreshAuthToken,
+      verifyOTP,
       editProfile,
       register,
       logout,
+      otp,
     }),
     [
       user,
@@ -195,7 +212,9 @@ export function AuthProvider({ children }: Props) {
       editProfile,
       refreshAuthToken,
       loginWithGoogle,
+      verifyOTP,
       logout,
+      otp,
     ]
   );
 
