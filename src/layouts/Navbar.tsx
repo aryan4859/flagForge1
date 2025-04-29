@@ -14,7 +14,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
-  const { authenticated, user } = useAuth();
+  const { authenticated, user, logout } = useAuth();
+  const onHandleSubmit=()=>{
+    logout();
+  }
   return (
     <>
       <div className="px-6 py-2 flex items-center justify-between bg-white shadow-md shadow-gray-100 max-sm:px-4 max-w-screen-2xl mx-auto w-full">
@@ -57,7 +60,7 @@ export default function Navbar() {
                 </Link>
                 <DropdownMenuItem>Dashboard</DropdownMenuItem>
                 <DropdownMenuItem>
-                  <button className="text-red-500 flex items-center gap-2">
+                  <button onClick={onHandleSubmit} className="text-red-500 flex items-center gap-2">
                     <LogOut /> <p>Log out</p>
                   </button>
                 </DropdownMenuItem>

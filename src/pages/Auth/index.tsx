@@ -58,6 +58,7 @@ export default function Auth() {
         title: "Login successfully",
         variant: "success",
       });
+
       navigate("/problems");
     } catch (error: unknown) {
       const apiError = error as AxiosError<ErrorResponseI>;

@@ -36,11 +36,13 @@ export default function Register() {
     lastName: string;
     email: string;
     password: string;
+    otp: string;
   }>({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
+    otp: "",
   });
 
   const handleChange = (
@@ -53,6 +55,7 @@ export default function Register() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsPending(true);
     e.preventDefault();
+
     try {
       const payload: RegisterFormData = {
         name: `${formData.firstName} ${formData.lastName}`,
@@ -60,32 +63,42 @@ export default function Register() {
         password: formData.password,
         otp: storedOTP as string,
       };
-      await register(payload);
+
+      register(payload);
       toast({
         title: "Registered successfully",
         variant: "success",
       });
+
       navigate("/problems");
     } catch (error: unknown) {
       const apiError = error as AxiosError<ErrorResponseI>;
-      const validationErrors = apiError.response?.data?.errors;
-
-      if (validationErrors && typeof validationErrors === "object") {
-        Object.entries(validationErrors).forEach(([, errors]) => {
-          if (Array.isArray(errors)) {
-            errors.forEach((errorMessage) => {
-              toast({
-                title: `${errorMessage}`,
-                variant: "destructive",
-              });
-            });
-          }
-        });
-      } else {
+      if (apiError.response?.status === 500) {
+        console.error("Server error", apiError.response.data);
         toast({
-          title: apiError.response?.data?.message || "Something went wrong",
+          title: "Server Error try again",
           variant: "destructive",
         });
+      } else {
+        const validationErrors = apiError.response?.data?.errors;
+
+        if (validationErrors && typeof validationErrors === "object") {
+          Object.entries(validationErrors).forEach(([, errors]) => {
+            if (Array.isArray(errors)) {
+              errors.forEach((errorMessage) => {
+                toast({
+                  title: `${errorMessage}`,
+                  variant: "destructive",
+                });
+              });
+            }
+          });
+        } else {
+          toast({
+            title: apiError.response?.data?.message || "Something went wrong",
+            variant: "destructive",
+          });
+        }
       }
     } finally {
       setIsPending(false);
