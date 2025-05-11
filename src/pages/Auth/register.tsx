@@ -54,7 +54,6 @@ export default function Register() {
         email: formData.email,
         password: formData.password,
       };
-     
       register(payload)
       toast({
         title: "Registered successfully",

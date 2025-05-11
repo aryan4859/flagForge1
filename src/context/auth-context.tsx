@@ -33,7 +33,7 @@ export function AuthProvider({ children }: Props) {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
+    if (storedUser  && storedUser !== "undefined") {
       setUser(JSON.parse(storedUser));
     }
     setLoading(false);

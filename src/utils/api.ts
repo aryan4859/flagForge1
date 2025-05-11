@@ -93,6 +93,7 @@ export const endpoints = {
     login: '/user/login',
     register: '/user/signup',
     leaderboard: "/leaderboard",
+    profile: (id:string)=>`user/getUserProfile/${id}`
   },
   problems: {
     all: (page: number) => `/ctf/problems?page=${page}`,

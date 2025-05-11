@@ -8,12 +8,14 @@ import {
   Problem,
   TermsCondition,
   Register,
+  
 } from "./pages";
 import Navbar from "./layouts/Navbar";
 import Footer from "./layouts/Footer";
 import Provider from "./components/Providers";
 import LoginGuard from "./guards/LoginGuard";
 import AuthGuard from "./guards/AuthGuard";
+import ProfilePage from './pages/Profile/index';
 
 export const App = () => {
   return (
@@ -30,6 +32,7 @@ export const App = () => {
             <Route path="problems" element={<Problem />} />
             <Route path="problems/:problemId" element={<AProblem />} />
             <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="/getUserProfile/:id" element={<ProfilePage />} />
           </Route>
 
           <Route path="terms-&-condition" element={<TermsCondition />} />

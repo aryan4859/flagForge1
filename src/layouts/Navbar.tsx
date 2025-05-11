@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context";
 import { Link } from "react-router-dom";
 import { LogOut } from "lucide-react";
+import { useParams } from "react-router-dom";
 
 import {
   DropdownMenu,
@@ -18,6 +19,7 @@ export default function Navbar() {
   const onHandleSubmit=()=>{
     logout();
   }
+  const { id } = useParams(); 
   return (
     <>
       <div className="px-6 py-2 flex items-center justify-between bg-white shadow-md shadow-gray-100 max-sm:px-4 max-w-screen-2xl mx-auto w-full">
@@ -53,7 +55,7 @@ export default function Navbar() {
               <DropdownMenuContent align="end" className="mt-3 min-w-44">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem><Link to={ `/getUserProfile/${id}`}>Profile</Link></DropdownMenuItem>
                 <DropdownMenuItem>Dashboard</DropdownMenuItem>
                 <DropdownMenuItem>
                   <button onClick={onHandleSubmit} className="text-red-500 flex items-center gap-2">
