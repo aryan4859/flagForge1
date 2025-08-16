@@ -62,10 +62,28 @@ export async function GET(_req: any) {
       return Math.min(completed, 30); // Cap at 30 for simplicity
     };
 
+    // Use session image as fallback if database image is invalid
+    const getUserImage = () => {
+      const dbImage = user.image;
+      const sessionImage = session.user?.image;
+      
+      // Check if database image is valid
+      if (dbImage && 
+          dbImage.trim() !== '' && 
+          dbImage !== 'undefined' && 
+          dbImage !== 'null' && 
+          dbImage !== null) {
+        return dbImage;
+      }
+      
+      // Fallback to session image
+      return sessionImage || null;
+    };
+
     const profileData = {
       name: user.name,
       email: user.email,
-      image: user.image,
+      image: getUserImage(), // Use the smart image selection
       totalScore: user.totalScore || 0,
       rank: userRank,
       level: getLevel(user.totalScore || 0),
@@ -77,6 +95,7 @@ export async function GET(_req: any) {
 
     return NextResponse.json(profileData);
   } catch (error) {
+    console.error('Profile API error:', error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
-import { Crown } from "lucide-react";
+import { Crown, User } from "lucide-react";
 
 interface LeaderboardUser {
   name: string;
@@ -20,76 +20,55 @@ const LeaderboardPage = () => {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
+  // Handle image loading errors
+  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>, userName: string) => {
+    console.log(`Image failed to load for user: ${userName}`);
+    setImageErrors(prev => new Set([...prev, userName]));
+  }, []);
+
   const fetchLeaderboard = useCallback(async () => {
     try {
       setError("");
       const res = await fetch("/api/leaderboard", {
-        cache: "no-store", // Ensure fresh data
+        cache: "no-store",
       });
       if (!res.ok) {
         throw new Error("Failed to fetch leaderboard");
       }
       const data = await res.json();
       
-      // Data should already be sorted by the API, but ensure ranking
       const sortedData = data
         .sort((a: { totalScore: number }, b: { totalScore: number }) => b.totalScore - a.totalScore)
         .map((user: any, index: number) => ({
           ...user,
-          rank: index + 1, // Assign rank based on position
+          rank: index + 1,
         }));
       
       setLeaderboard(sortedData);
       setLastUpdated(new Date());
+      // Clear image errors when data refreshes
+      setImageErrors(new Set());
     } catch (err: any) {
       setError(err.message);
       console.error("Error fetching leaderboard:", err);
     } finally {
       setLoading(false);
     }
-  }, []); // Empty dependency array since this function doesn't depend on any props/state
+  }, []);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
     
     if (sessionStatus === "authenticated") {
-      // Initial fetch
       fetchLeaderboard();
-      
-      // Auto-refresh every 10 seconds
       intervalId = setInterval(fetchLeaderboard, 10000);
     }
     
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [sessionStatus, fetchLeaderboard]); // Add fetchLeaderboard to deps since it's wrapped in useCallback
+  }, [sessionStatus, fetchLeaderboard]); 
 
-  // Memoized function to handle image errors
-  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>, userId: string) => {
-    const target = e.target as HTMLImageElement;
-    setImageErrors(prev => {
-      if (prev.has(userId)) return prev; // Prevent unnecessary state updates
-      return new Set(prev).add(userId);
-    });
-    // Set fallback image immediately
-    target.src = `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(userId.charAt(0).toUpperCase())}`;
-  }, []);
-
-  // Memoized function to get image source with fallback
-  const getImageSrc = useCallback((user: LeaderboardUser): string => {
-    if (imageErrors.has(user.name)) {
-      return `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(user.name.charAt(0).toUpperCase())}`;
-    }
-    
-    if (!user.image || user.image.trim() === '') {
-      return `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(user.name.charAt(0).toUpperCase())}`;
-    }
-    
-    return user.image;
-  }, [imageErrors]);
-
-  // Helper function to calculate the level
   const getLevel = useCallback((score: number): string => {
     if (score < 200) return "[0x1][Newbie]";
     if (score < 500) return "[0x2][Scout]";
@@ -99,6 +78,13 @@ const LeaderboardPage = () => {
     if (score < 3000) return "[0x6][Forger]";
     return "[0x7][Flag Conqueror]";
   }, []);
+
+  // Check if user has a valid image
+  const hasValidImage = (user: LeaderboardUser) => {
+    return user.image && 
+           user.image.trim() !== '' && 
+           !imageErrors.has(user.name);
+  };
 
   if (sessionStatus === "loading" || loading) {
     return <Loading />;
@@ -140,7 +126,7 @@ const LeaderboardPage = () => {
             {leaderboard.map((user: LeaderboardUser, index: number) => (
               <div
                 className={`${index === 0 ? "col-span-full" : ""} transition-all duration-300 hover:scale-105`}
-                key={`${user.name}-${user.rank}-${user.totalScore}`} // More stable key
+                key={`${user.name}-${user.rank}-${user.totalScore}`}
               >
                 {user.totalScore > 0 ? (
                   <div
@@ -159,13 +145,24 @@ const LeaderboardPage = () => {
                     }`}>
                       #{user.rank}
                     </span>
-                    <img
-                      src={getImageSrc(user)}
-                      alt={`${user.name}'s avatar`}
-                      className="w-20 h-20 rounded-full object-cover mb-2 border-2 border-gray-200"
-                      onError={(e) => handleImageError(e, user.name)}
-                      loading="lazy" // Add lazy loading to prevent unnecessary requests
-                    />
+                    
+                    {/* Avatar with fallback */}
+                    <div className="w-20 h-20 rounded-full mb-2 border-2 border-gray-200 overflow-hidden bg-gray-200 flex items-center justify-center">
+                      {hasValidImage(user) ? (
+                        <img
+                          src={user.image}
+                          alt={`${user.name}'s avatar`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => handleImageError(e, user.name)}
+                          loading="lazy"
+                          crossOrigin="anonymous"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <User size={40} className="text-gray-500" />
+                      )}
+                    </div>
+                    
                     <span className="font-medium text-sm text-rose-400">
                       {getLevel(user.totalScore)}
                     </span>

@@ -40,7 +40,8 @@ const ProfilePage = () => {
         setProfileData(data);
         setError(null);
         setLastUpdated(new Date());
-        setImageError(false); // Reset image error state when new data arrives
+        // Reset image error when new data arrives
+        setImageError(false);
       } catch (error) {
         setError("Failed to load profile data");
       }
@@ -63,29 +64,46 @@ const ProfilePage = () => {
     };
   }, [session, fetchProfileData]);
 
-  // Handle image error
+  // Handle image error - be more specific about which image failed
   const handleImageError = useCallback(() => {
+    const currentImageSrc = getImageSrc();
+    console.log('Image failed to load:', currentImageSrc);
+    console.log('Profile image:', profileData?.image);
+    console.log('Session image:', session?.user?.image);
     setImageError(true);
-  }, []);
+  }, [profileData?.image, session?.user?.image]);
 
   // Get the appropriate image source
   const getImageSrc = useCallback(() => {
-    if (imageError) {
-      // Generate fallback image based on user name
-      const userName = profileData?.name || session?.user?.name || "User";
-      return `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(userName.charAt(0).toUpperCase())}`;
+    // If there's an image error with DB image, try session image
+    if (imageError && profileData?.image) {
+      const sessionImage = session?.user?.image;
+      if (sessionImage && sessionImage.trim() !== '' && sessionImage !== 'undefined' && sessionImage !== 'null') {
+        return sessionImage;
+      }
+      return null;
     }
-
-    // Try profileData image first, then session image, then fallback
-    const userImage = profileData?.image || session?.user?.image;
     
-    if (!userImage || userImage.trim() === '') {
-      const userName = profileData?.name || session?.user?.name || "User";
-      return `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(userName.charAt(0).toUpperCase())}`;
+    // Priority order: profileData.image -> session.user.image -> null
+    let userImage = profileData?.image || session?.user?.image;
+    
+    // Return valid image URL or null if none available
+    if (userImage && userImage.trim() !== '' && userImage !== 'undefined' && userImage !== 'null') {
+      return userImage;
     }
 
-    return userImage;
-  }, [profileData?.image, profileData?.name, session?.user?.image, session?.user?.name, imageError]);
+    // Return null if no valid image - we'll handle this in the render
+    return null;
+  }, [profileData?.image, session?.user?.image, imageError]);
+
+  // Reset image error when the image source changes, but be smarter about it
+  useEffect(() => {
+    // Only reset if we have a new image URL that's different from the failed one
+    const currentImage = profileData?.image || session?.user?.image;
+    if (currentImage && imageError) {
+      setImageError(false);
+    }
+  }, [profileData?.image, session?.user?.image]);
 
   // Handle loading and session checks
   if (loading || sessionStatus === "loading") {
@@ -118,16 +136,25 @@ const ProfilePage = () => {
       <div className="max-w-3xl w-full bg-gray-800 shadow-lg rounded-2xl p-6">
         <div className="flex flex-col items-center">
           <div className="relative">
-            <Image
-              src={getImageSrc()}
-              alt={profileData?.name || session?.user?.name || "Profile Picture"}
-              width={150}
-              height={150}
-              className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-green-400"
-              onError={handleImageError}
-              unoptimized // Add this to handle external images better
-            />
-            {/* Optional: Add a loading indicator or placeholder */}
+            {getImageSrc() ? (
+              <Image
+                src={getImageSrc()!}
+                alt={profileData?.name || session?.user?.name || "Profile Picture"}
+                width={150}
+                height={150}
+                className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-green-400"
+                onError={handleImageError}
+                unoptimized
+                key={`${profileData?.image || session?.user?.image}-${lastUpdated.getTime()}`}
+              />
+            ) : (
+              <div className="w-32 h-32 rounded-full bg-gray-600 flex items-center justify-center mb-4 border-4 border-green-400">
+                <span className="text-2xl font-bold text-gray-300">
+                  {(profileData?.name || session?.user?.name || "U").charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
+           
           </div>
           <h1 className="text-3xl font-bold mt-4">
             Welcome, {profileData?.name || session?.user?.name || "User"}!
