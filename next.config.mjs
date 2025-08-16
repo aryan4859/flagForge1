@@ -1,7 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["lh3.googleusercontent.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+    ],
   },
   async headers() {
     return [
@@ -16,11 +21,13 @@ const nextConfig = {
             key: "X-Frame-Options",
             value: "DENY",
           },
-         /* {
+          /*
+          {
             key: "Content-Security-Policy",
             value:
               "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://lh3.googleusercontent.com;",
-          },*/
+          },
+          */
           {
             key: "X-Content-Type-Options",
             value: "nosniff",
@@ -31,28 +38,27 @@ const nextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "no-referrer", // Other options: 'strict-origin', 'strict-origin-when-cross-origin'
+            value: "no-referrer", 
           },
           {
             key: "Permissions-Policy",
-            value:
-              "geolocation=(), microphone=(), camera=(), payment=()", // Disable specific APIs
+            value: "geolocation=(), microphone=(), camera=(), payment=()", 
           },
           {
             key: "Cache-Control",
-            value: "no-store, no-cache, must-revalidate, proxy-revalidate", // Security-oriented caching
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate", 
           },
           {
             key: "Pragma",
-            value: "no-cache", // Ensure no caching for older HTTP/1.0 clients
+            value: "no-cache", 
           },
           {
             key: "Server",
-            value: "", // Hides the server header for security
+            value: "", 
           },
           {
             key: "X-XSS-Protection",
-            value: "1; mode=block", // Enable basic XSS protection
+            value: "1; mode=block", 
           },
         ],
       },
@@ -61,5 +67,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
-

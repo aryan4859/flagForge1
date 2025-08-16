@@ -18,8 +18,6 @@ export const authOptions: AuthOptions = {
     ],
     callbacks: {
         async signIn({ user, account }) {
-            // Log account and user info for debugging
-            console.log('SignIn Callback:', { user, account });
 
             // Proceed only if the provider is Google
             if (account?.provider === "google") {
@@ -40,15 +38,12 @@ export const authOptions: AuthOptions = {
 
                         // Save new user to the database
                         await newUser.save();
-                        console.log("New user created:", newUser);
                     } else {
-                        console.log("Existing user signed in:", existingUser);
                     }
 
                     // Return true to allow sign-in
                     return true;
                 } catch (err) {
-                    console.log("Error during sign-in:", err);
                     return false; // Prevent sign-in if an error occurs
                 }
             }
@@ -75,7 +70,6 @@ export const authOptions: AuthOptions = {
                     // totalScore: token.totalScore || 0
                 };
             }
-            // console.log("Session callback:", { session, token });
 
             return session;
         },

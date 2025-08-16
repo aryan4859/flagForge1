@@ -1,5 +1,4 @@
 "use client";
-
 import { useSession } from "next-auth/react";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";

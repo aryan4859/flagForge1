@@ -12,7 +12,6 @@ import Image from "next/image";
 import doubt from "@/public/doubt.png";
 import ConfettiBoom from "react-confetti-boom";
 
-export const runtime = "edge";
 
 const Page = ({ params }: any) => {
   const router = useRouter();
@@ -37,7 +36,6 @@ const Page = ({ params }: any) => {
       setProblems(data.question);
       setLoading(false);
     } catch (error) {
-      console.error(error);
       setLoading(false);
     }
   };
@@ -67,7 +65,6 @@ const Page = ({ params }: any) => {
         setMessage(result.message || "An error occurred"); // Error message
       }
     } catch (error) {
-      console.error(error);
       setMessage("An error occurred. Please try again.");
     }
   };

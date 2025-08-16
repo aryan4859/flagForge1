@@ -16,6 +16,7 @@ const page = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [score, setScore] = useState<number>(0);
   const [questionDone, setQuestionDone] = useState<any>();
+  const [hasNextPage, setHasNextPage] = useState<boolean>(true); // Add this state
 
   type Problem = {
     _id: string;
@@ -46,20 +47,47 @@ const page = () => {
         data,
         totalScore,
         questionDone,
-      }: { data: Problem[]; totalScore: number; questionDone: any } =
-        await response.json();
+        hasMore, // Assume your API returns this
+        totalPages, // If your API provides total pages
+      }: { 
+        data: Problem[]; 
+        totalScore: number; 
+        questionDone: any;
+        hasMore?: boolean;
+        totalPages?: number;
+      } = await response.json();
 
       // Remove the `flag` field from each problem
       const sanitizedData = data.map(({ flag, ...rest }) => rest);
       setScore(totalScore);
       setProblems(sanitizedData);
       setQuestionDone(questionDone);
+      
+      // Determine if there are more pages - multiple fallback strategies
+      if (hasMore !== undefined) {
+        // Option 1: API explicitly tells us if there are more pages
+        setHasNextPage(hasMore);
+      } else if (totalPages !== undefined) {
+        // Option 2: API provides total pages
+        setHasNextPage(currentPage < totalPages);
+      } else if (data.length === 0) {
+        // Option 3: No data returned - definitely no more pages
+        setHasNextPage(false);
+        // Go back to previous page if we went too far
+        if (currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+      } else {
+        // Option 4: Assume there might be more if we got data
+        // We'll only know for sure when we try the next page and get empty results
+        setHasNextPage(true);
+      }
+
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error("Error fetching problems:", error.message);
         alert("Unable to fetch problems. Please try again later.");
       } else {
-        console.error("An unexpected error occurred:", error);
+        console.error("An unknown error occurred:", error);
       }
     } finally {
       setLoading(false); // Stop loading state
@@ -69,12 +97,17 @@ const page = () => {
   useEffect(() => {
     fetchProblems();
   }, [currentPage]);
+
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    if (hasNextPage) { // Only proceed if there's a next page
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
   };
 
   const handlePrevPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
+    if (currentPage > 1) { // Additional safety check
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
   };
 
   if (loading) {
@@ -87,9 +120,11 @@ const page = () => {
   if (sessionStatus === "unauthenticated") {
     return <AuthError />;
   }
+  
   const handleMenuClick: () => void = () => {
     setOpen(!open);
   };
+
   return (
     <div className="flex flex-col justify-center items-center gap-8 mx-8">
       <h1 className="text-4xl sm:text-5xl tracking-tight text-center text-rose-500 font-bold">
@@ -138,21 +173,34 @@ const page = () => {
           )}
         </div>
       </div>
-      <div className="flex justify-end gap-4 w-full">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className="bg-rose-500 hover:bg-rose-800 font-medium text-base rounded-lg px-4 py-2 text-white"
-        >
-          Previous
-        </button>
-        <button
-          onClick={handleNextPage}
-          className="bg-rose-500 hover:bg-rose-800 font-medium text-base rounded-lg px-4 py-2 text-white"
-        >
-          Next
-        </button>
-      </div>
+
+      {/* Show pagination only if there are problems or if not on first page */}
+      {(problems.length > 0 || currentPage > 1) && (
+        <div className="flex justify-end gap-4 w-full">
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className={`font-medium text-base rounded-lg px-4 py-2 text-white ${
+              currentPage === 1 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-rose-500 hover:bg-rose-800'
+            }`}
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNextPage}
+            disabled={!hasNextPage} // Disable when no next page
+            className={`font-medium text-base rounded-lg px-4 py-2 text-white ${
+              !hasNextPage 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-rose-500 hover:bg-rose-800'
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

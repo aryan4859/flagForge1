@@ -22,10 +22,8 @@ export async function GET() {
         }));
 
         // Return the leaderboard as JSON
-       // return NextResponse.json(leaderboard);
-        return NextResponse.json({users});
+        return NextResponse.json(leaderboard);
     } catch (error) {
-        console.error("Error fetching leaderboard:", error);
         return NextResponse.json(
             { error: "Failed to fetch leaderboard" },
             { status: 500 }
