@@ -22,7 +22,6 @@ const LeaderboardPage = () => {
 
   // Handle image loading errors
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>, userName: string) => {
-    console.log(`Image failed to load for user: ${userName}`);
     setImageErrors(prev => new Set([...prev, userName]));
   }, []);
 
@@ -50,7 +49,6 @@ const LeaderboardPage = () => {
       setImageErrors(new Set());
     } catch (err: any) {
       setError(err.message);
-      console.error("Error fetching leaderboard:", err);
     } finally {
       setLoading(false);
     }
