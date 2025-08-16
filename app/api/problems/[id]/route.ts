@@ -6,37 +6,35 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
-import { redirect } from "next/navigation";
-import next from "next";
-
-
 
 export async function GET(
   _: NextRequest,
-  { params }: { params: { id: string; }; }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-
   try {
     await connect();
+    const { id } = await params; // Await the params
     const session = await getServerSession(authOptions);
-    const question = await QuestionModel.findById(params.id);
-    question.flag = undefined;
+    const question = await QuestionModel.findById(id);
+    
+    if (question) {
+      question.flag = undefined;
+    }
 
     const user = await userSchema.findOne({ email: session?.user.email });
 
-    const userQuestion = await UserQuestionModel.find({ userId: user.id });
+    const userQuestion = await UserQuestionModel.find({ userId: user?.id });
 
     const isDone = userQuestion.some(
-      (item: { questionId: string; }) =>
-        item.questionId.toString() === params.id
+      (item: { questionId: string }) =>
+        item.questionId.toString() === id
     );
-
 
     if (question) {
       return NextResponse.json({ question, isDone });
     }
     return NextResponse.json(
-      { message: `Product ${params.id} not found`, isDone: isDone },
+      { message: `Product ${id} not found`, isDone: isDone },
       { status: HttpStatusCode.NotFound }
     );
   } catch (error) {
@@ -47,14 +45,15 @@ export async function GET(
   }
 }
 
-
-
-
-export async function POST(req: NextRequest, { params }: { params: { id: string; }; }) {
+export async function POST(
+  req: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await connect();
-    const body: { flag: string; } = await req.json();
-    const question = await QuestionModel.findById(params.id);
+    const { id } = await params; // Await the params
+    const body: { flag: string } = await req.json();
+    const question = await QuestionModel.findById(id);
     const session = await getServerSession(authOptions);
 
     if (!session) {
@@ -69,9 +68,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string;
       );
     }
 
-    if (body.flag == question.flag) {
+    if (body.flag == question?.flag) {
       user.totalScore = (user.totalScore || 0) + question.points;
-      const userQuestion = await UserQuestionModel.create({ userId: user.id, questionId: params.id });
+      const userQuestion = await UserQuestionModel.create({ 
+        userId: user.id, 
+        questionId: id 
+      });
 
       await userQuestion.save();
       await user.save();
@@ -80,12 +82,16 @@ export async function POST(req: NextRequest, { params }: { params: { id: string;
         { success: true, message: "Your Flag Is Right!" },
         { status: HttpStatusCode.Created }
       );
-
+    } else {
+      return NextResponse.json(
+        { success: false, message: "Incorrect flag" },
+        { status: HttpStatusCode.BadRequest }
+      );
     }
 
   } catch (error) {
     return NextResponse.json(
-      { success: false, message: "An error occured" },
+      { success: false, message: "An error occurred" },
       { status: HttpStatusCode.InternalServerError }
     );
   }
