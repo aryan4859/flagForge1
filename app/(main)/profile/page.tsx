@@ -45,7 +45,6 @@ const ProfilePage = () => {
     return <Image src={Conqueror} alt="Flag Conqueror" width={size} height={size} />;
   }, []);
 
-  // Get current badge name based on score
   const getCurrentBadgeName = useCallback((score: number) => {
     if (score < 200) return "Newbie";
     if (score < 500) return "Scout";
@@ -61,7 +60,7 @@ const ProfilePage = () => {
       try {
         setLoading(true);
         const res = await fetch(`/api/profile`, {
-          cache: "no-store", // Ensure fresh data
+          cache: "no-store",
         });
         if (!res.ok) {
           throw new Error('Failed to fetch profile data');
@@ -70,7 +69,6 @@ const ProfilePage = () => {
         setProfileData(data);
         setError(null);
         setLastUpdated(new Date());
-        // Reset image error when new data arrives
         setImageError(false);
       } catch (error) {
         setError("Failed to load profile data");
@@ -85,7 +83,6 @@ const ProfilePage = () => {
     if (session) {
       fetchProfileData();
       
-      // Auto-refresh profile data every 30 seconds
       interval = setInterval(fetchProfileData, 30000);
     }
 
@@ -94,7 +91,6 @@ const ProfilePage = () => {
     };
   }, [session, fetchProfileData]);
 
-  // Handle image error - be more specific about which image failed
   const handleImageError = useCallback(() => {
     const currentImageSrc = getImageSrc();
     console.log('Image failed to load:', currentImageSrc);
@@ -103,9 +99,7 @@ const ProfilePage = () => {
     setImageError(true);
   }, [profileData?.image, session?.user?.image]);
 
-  // Get the appropriate image source
   const getImageSrc = useCallback(() => {
-    // If there's an image error with DB image, try session image
     if (imageError && profileData?.image) {
       const sessionImage = session?.user?.image;
       if (sessionImage && sessionImage.trim() !== '' && sessionImage !== 'undefined' && sessionImage !== 'null') {
@@ -114,28 +108,22 @@ const ProfilePage = () => {
       return null;
     }
     
-    // Priority order: profileData.image -> session.user.image -> null
     let userImage = profileData?.image || session?.user?.image;
     
-    // Return valid image URL or null if none available
     if (userImage && userImage.trim() !== '' && userImage !== 'undefined' && userImage !== 'null') {
       return userImage;
     }
 
-    // Return null if no valid image - we'll handle this in the render
     return null;
   }, [profileData?.image, session?.user?.image, imageError]);
 
-  // Reset image error when the image source changes, but be smarter about it
   useEffect(() => {
-    // Only reset if we have a new image URL that's different from the failed one
     const currentImage = profileData?.image || session?.user?.image;
     if (currentImage && imageError) {
       setImageError(false);
     }
   }, [profileData?.image, session?.user?.image]);
 
-  // Handle loading and session checks
   if (loading || sessionStatus === "loading") {
     return <Loading />;
   }
@@ -165,7 +153,6 @@ const ProfilePage = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <div className="max-w-3xl w-full bg-white shadow-lg rounded-2xl p-8">
         <div className="flex flex-col items-center">
-          {/* Profile Image */}
           <div className="relative">
             {getImageSrc() ? (
               <Image
@@ -196,11 +183,9 @@ const ProfilePage = () => {
           </p>
         </div>
 
-        {/* Current Badge - Large and Prominent */}
         <div className="mt-8 text-center bg-gradient-to-r from-rose-50 to-blue-50 rounded-2xl p-8 border-2 border-rose-200 shadow-lg">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Current Achievement</h2>
           <div className="flex flex-col items-center space-y-4">
-            {/* Large current badge */}
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-rose-400 to-blue-400 rounded-full blur-lg opacity-30 scale-110"></div>
               <div className="relative bg-white rounded-full p-4 shadow-xl border-4 border-rose-300">
@@ -222,7 +207,6 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="text-center bg-gray-50 rounded-lg p-4 border border-gray-200">
             <h2 className="text-xl font-bold text-rose-500">Rank</h2>
