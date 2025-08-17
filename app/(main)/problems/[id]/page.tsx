@@ -1,73 +1,174 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Loading from "@/components/loading";
 import { Questions } from "@/interfaces";
 import { useSession } from "next-auth/react";
 import AuthError from "@/components/authError";
 import { initialQuestion } from "@/utlis/data";
-// import { useRouter } from "next/router";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import doubt from "@/public/doubt.png";
 import ConfettiBoom from "react-confetti-boom";
 
+export const runtime = "edge";
 
 const Page = ({ params }: any) => {
+  const unwrappedParams = React.use(params);
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const { status: sessionStatus } = useSession();
   const [problems, setProblems] = useState<Questions>(initialQuestion);
-  const [flag, setFlag] = useState<string>(""); // State for the flag input
-  const [message, setMessage] = useState<string | null>(null); // State for success/error message
+  const [flag, setFlag] = useState<string>("");
+  const [message, setMessage] = useState<string | null>(null);
   const [isDone, setIsDone] = useState<boolean>(false);
-  const [showConfetti, setShowConfetti] = useState<boolean>(false); // State for confetti explosion
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
+  const [isCorrect, setIsCorrect] = useState<boolean>(false);
 
-  // Fetch problem data
+  // Duplicate prevention refs
+  const lastSubmissionTime = useRef<number>(0);
+  const lastSubmittedFlag = useRef<string>("");
+  const submissionInProgress = useRef<boolean>(false);
+  const abortController = useRef<AbortController | null>(null);
+
+  const MIN_SUBMISSION_INTERVAL = 1000;
+
   const fetchProblems = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/problems/${params.id}`);
+      const response = await fetch(`/api/problems/${unwrappedParams.id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch problems");
       }
       const data = await response.json();
       setIsDone(data.isDone);
+      setIsCorrect(data.isDone);
       setProblems(data.question);
       setLoading(false);
     } catch (error) {
+      console.error(error);
       setLoading(false);
     }
   };
 
-  // Handle flag submission
+  const canSubmit = () => {
+    const now = Date.now();
+    const timeSinceLastSubmission = now - lastSubmissionTime.current;
+    const flagTrimmed = flag.trim();
+    
+    if (submitting || submissionInProgress.current || isCorrect) {
+      return false;
+    }
+    
+    if (!flagTrimmed) {
+      setMessage("Please enter a flag");
+      return false;
+    }
+    
+    if (lastSubmittedFlag.current === flagTrimmed) {
+      setMessage("This flag was already submitted");
+      return false;
+    }
+    
+    if (timeSinceLastSubmission < MIN_SUBMISSION_INTERVAL) {
+      setMessage("Please wait before submitting again");
+      return false;
+    }
+    
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!canSubmit()) {
+      return;
+    }
+
+    // Cancel existing request
+    if (abortController.current) {
+      abortController.current.abort();
+    }
+
     try {
-      const response = await fetch(`/api/problems/${params.id}`, {
+      setSubmitting(true);
+      submissionInProgress.current = true;
+      const now = Date.now();
+      const flagTrimmed = flag.trim();
+      
+      lastSubmissionTime.current = now;
+      lastSubmittedFlag.current = flagTrimmed;
+      
+      abortController.current = new AbortController();
+      setMessage(null);
+
+      const response = await fetch(`/api/problems/${unwrappedParams.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ flag }),
+        body: JSON.stringify({ flag: flagTrimmed }),
+        signal: abortController.current.signal,
       });
+
+      if (abortController.current.signal.aborted) {
+        return;
+      }
 
       const result = await response.json();
 
-      // setIsDone(result);
-
       if (response.ok) {
-        setMessage(result.message); // Success message
+        setMessage(result.message);
         if (result.message.includes("Right")) {
-          setShowConfetti(true); // Trigger confetti
-          setTimeout(() => setShowConfetti(false), 3000); // Hide confetti after 3 seconds
+          setIsCorrect(true);
+          setIsDone(true);
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 3000);
+          setFlag("");
+          setTimeout(() => {
+            router.push("/problems");
+          }, 3000);
+        } else {
+          setTimeout(() => {
+            lastSubmittedFlag.current = "";
+          }, MIN_SUBMISSION_INTERVAL);
         }
       } else {
-        setMessage(result.message || "An error occurred"); // Error message
+        setMessage(result.message || "An error occurred");
+        setTimeout(() => {
+          lastSubmittedFlag.current = "";
+        }, MIN_SUBMISSION_INTERVAL);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        return;
+      }
+      
+      console.error(error);
       setMessage("An error occurred. Please try again.");
+      setTimeout(() => {
+        lastSubmittedFlag.current = "";
+      }, MIN_SUBMISSION_INTERVAL);
+    } finally {
+      setSubmitting(false);
+      submissionInProgress.current = false;
+      abortController.current = null;
     }
   };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (abortController.current) {
+        abortController.current.abort();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     fetchProblems();
@@ -144,12 +245,20 @@ const Page = ({ params }: any) => {
                 placeholder="Flag here!"
                 value={flag}
                 onChange={(e) => setFlag(e.target.value)}
+                onKeyPress={handleKeyPress}
+                disabled={submitting || isCorrect}
+                maxLength={100}
               />
               <button
-                className="bg-rose-500 w-full sm:w-[180px] border border-rose-500 hover:bg-rose-800 rounded-lg px-4 py-2 text-white"
+                className={`w-full sm:w-[180px] border rounded-lg px-4 py-2 text-white transition-colors ${
+                  submitting || isCorrect
+                    ? "bg-gray-400 border-gray-400 cursor-not-allowed"
+                    : "bg-rose-500 border-rose-500 hover:bg-rose-800"
+                }`}
                 onClick={handleSubmit}
+                disabled={submitting || isCorrect}
               >
-                Submit
+                {submitting ? "Submitting..." : isCorrect ? "Solved!" : "Submit"}
               </button>
               {message && (
                 <div
@@ -162,7 +271,6 @@ const Page = ({ params }: any) => {
                   {message}
                 </div>
               )}
-              {/* Show Confetti */}
               {showConfetti && (
                 <ConfettiBoom
                   colors={[
@@ -172,11 +280,11 @@ const Page = ({ params }: any) => {
                     "#1E90FF",
                     "#FF69B4",
                   ]}
-                  particleCount={100} // Number of confetti particles
+                  particleCount={100}
                   shapeSize={30}
                   deg={270}
                   effectCount={Infinity}
-                  effectInterval={3000} // Duration of confetti in ms
+                  effectInterval={3000}
                   spreadDeg={60}
                   x={0.5}
                   y={0.5}
