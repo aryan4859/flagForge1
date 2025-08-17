@@ -13,7 +13,12 @@ import ConfettiBoom from "react-confetti-boom";
 
 export const runtime = "edge";
 
-const Page = ({ params }: any) => {
+// Option 1: Define a type for the params
+interface PageParams {
+  id: string;
+}
+
+const Page = ({ params }: { params: Promise<PageParams> }) => {
   const unwrappedParams = React.use(params);
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
