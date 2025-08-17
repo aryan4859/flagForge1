@@ -4,12 +4,21 @@ import { useSession } from "next-auth/react";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { Crown, User } from "lucide-react";
+import Image from 'next/image';
+import Newbie from '../../../public/badges/novice.svg'
+import Scout from '../../../public/badges/apprentice.svg'
+import Codebreaker from '../../../public/badges/0X7.svg'
+import Hacker from '../../../public/badges/0x8.svg'
+import Cipher from '../../../public/badges/0xA.svg'
+import Forger from '../../../public/badges/0xB.svg'
+import Conqueror from '../../../public/badges/god.svg'
 
 interface LeaderboardUser {
   name: string;
   totalScore: number;
   rank: number;
   image: string;
+  roomsCompleted: number;
 }
 
 const LeaderboardPage = () => {
@@ -38,6 +47,7 @@ const LeaderboardPage = () => {
       
       const sortedData = data
         .sort((a: { totalScore: number }, b: { totalScore: number }) => b.totalScore - a.totalScore)
+        .slice(0, 50) // Limit to top 50 users
         .map((user: any, index: number) => ({
           ...user,
           rank: index + 1,
@@ -68,13 +78,23 @@ const LeaderboardPage = () => {
   }, [sessionStatus, fetchLeaderboard]); 
 
   const getLevel = useCallback((score: number): string => {
-    if (score < 200) return "[0x1][Newbie]";
-    if (score < 500) return "[0x2][Scout]";
-    if (score < 1000) return "[0x3][Codebreaker]";
-    if (score < 1500) return "[0x4][Hacker]";
-    if (score < 2000) return "[0x5][Cipher Hunter]";
-    if (score < 3000) return "[0x6][Forger]";
-    return "[0x7][Flag Conqueror]";
+    if (score < 200) return "[0x1][NEWBIE]";
+    if (score < 500) return "[0x2][SCOUT]";
+    if (score < 1000) return "[0x3][CODEBREAKER]";
+    if (score < 1500) return "[0x4][HACKER]";
+    if (score < 2000) return "[0x5][CIPHER HUNTER]";
+    if (score < 3000) return "[0x6][FORGER]";
+    return "[0x7][FLAG CONQUEROR]";
+  }, []);
+
+  const getBadgeComponent = useCallback((score: number) => {
+    if (score < 200) return <Image src={Newbie} alt="Newbie" width={24} height={24} />;
+    if (score < 500) return <Image src={Scout} alt="Scout" width={24} height={24} />;
+    if (score < 1000) return <Image src={Codebreaker} alt="Codebreaker" width={24} height={24} />;
+    if (score < 1500) return <Image src={Hacker} alt="Hacker" width={24} height={24} />;
+    if (score < 2000) return <Image src={Cipher} alt="Cipher Hunter" width={24} height={24} />;
+    if (score < 3000) return <Image src={Forger} alt="Forger" width={24} height={24} />;
+    return <Image src={Conqueror} alt="Flag Conqueror" width={24} height={24} />;
   }, []);
 
   // Check if user has a valid image
@@ -116,82 +136,207 @@ const LeaderboardPage = () => {
         </h1>
       </div>
       
-      <div className="w-full max-screen-w-2xl p-4">
+      <div className="w-full max-w-6xl">
         {leaderboard.length === 0 ? (
           <p className="text-center text-gray-500">No data available</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {leaderboard.map((user: LeaderboardUser, index: number) => (
-              <div
-                className={`${index === 0 ? "col-span-full" : ""} transition-all duration-300 hover:scale-105`}
-                key={`${user.name}-${user.rank}-${user.totalScore}`}
-              >
-                {user.totalScore > 0 ? (
-                  <div
-                    className={`flex flex-col bg-gray-50 rounded-lg px-6 py-5 shadow-lg shadow-gray-100 relative overflow-clip border border-gray-200 ${
-                      index === 0 ? 'ring-2 ring-yellow-400' : ''
-                    } ${
-                      index === 1 ? 'ring-2 ring-gray-400' : ''
-                    } ${
-                      index === 2 ? 'ring-2 ring-orange-400' : ''
-                    }`}
-                  >
-                    <span className={`text-xl font-bold absolute top-2 right-4 ${
-                      index === 0 ? 'text-yellow-500' : 
-                      index === 1 ? 'text-gray-500' :
-                      index === 2 ? 'text-orange-500' : 'text-rose-500'
-                    }`}>
-                      #{user.rank}
-                    </span>
-                    
-                    {/* Avatar with fallback */}
-                    <div className="w-20 h-20 rounded-full mb-2 border-2 border-gray-200 overflow-hidden bg-gray-200 flex items-center justify-center">
-                      {hasValidImage(user) ? (
+          <>
+            {/* First Place - Full Width */}
+            {leaderboard.length > 0 && (
+              <div className="mb-6">
+                <div className="flex flex-col bg-gray-50 rounded-lg px-6 py-5 shadow-lg shadow-gray-100 relative overflow-clip border border-gray-200 ring-2 ring-yellow-400">
+                  <span className="text-xl font-bold absolute top-2 right-4 text-yellow-500">
+                    #{leaderboard[0].rank}
+                  </span>
+                  
+                  {/* Crown */}
+                  <div className="absolute right-0 bottom-0 w-20 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
+                    <div className="absolute right-2 bottom-2">
+                      <Crown color="white" size={16} />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-6">
+                    {/* Avatar */}
+                    <div className="w-24 h-24 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
+                      {hasValidImage(leaderboard[0]) ? (
                         <img
-                          src={user.image}
-                          alt={`${user.name}'s avatar`}
+                          src={leaderboard[0].image}
+                          alt={`${leaderboard[0].name}'s avatar`}
                           className="w-full h-full object-cover"
-                          onError={(e) => handleImageError(e, user.name)}
+                          onError={(e) => handleImageError(e, leaderboard[0].name)}
                           loading="lazy"
                           crossOrigin="anonymous"
                           referrerPolicy="no-referrer"
                         />
                       ) : (
-                        <User size={40} className="text-gray-500" />
+                        <User size={48} className="text-gray-500" />
                       )}
                     </div>
-                    
-                    <span className="font-medium text-sm text-rose-400">
-                      {getLevel(user.totalScore)}
-                    </span>
-                    <h2 className="text-lg font-semibold text-gray-800 truncate">
-                      {user.name}
-                    </h2>
-                    <p className="text-sm text-gray-600">
-                      Score: {user.totalScore.toLocaleString()}
-                    </p>
-                    {index === 0 && (
-                      <div className="absolute right-0 bottom-0 w-20 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
-                        <div className="absolute right-2 bottom-2">
-                          <Crown color="white" size={16} />
+
+                    <div className="flex-1">
+                      <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                        {leaderboard[0].name}
+                      </h2>
+                      <span className="font-medium text-rose-400 text-lg">
+                        {getLevel(leaderboard[0].totalScore)}
+                      </span>
+                      <div className="flex items-center space-x-4 mt-2 text-gray-600">
+                        <p className="text-lg">
+                          Points: <span className="font-bold">{leaderboard[0].totalScore.toLocaleString()}</span>
+                        </p>
+                        <p className="text-lg">
+                          Rooms in: <span className="font-bold">{leaderboard[0].roomsCompleted || 0}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* God Badge for 1st place */}
+                    <div className="flex-shrink-0">
+                      <Image src={Conqueror} alt="God Badge" width={48} height={48} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 2nd to 5th Place - Grid Layout */}
+            {leaderboard.length > 1 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                {leaderboard.slice(1, 5).map((user: LeaderboardUser, index: number) => {
+                  const actualIndex = index + 1; // Since we're starting from index 1
+                  return (
+                    <div
+                      key={`${user.name}-${user.rank}-${user.totalScore}`}
+                      className="transition-all duration-300 hover:scale-105"
+                    >
+                      <div
+                        className={`flex flex-col bg-gray-50 rounded-lg px-6 py-5 shadow-lg shadow-gray-100 relative overflow-clip border border-gray-200 ${
+                          actualIndex === 1 ? 'ring-2 ring-gray-400' : ''
+                        } ${
+                          actualIndex === 2 ? 'ring-2 ring-orange-400' : ''
+                        }`}
+                      >
+                        <span className={`text-xl font-bold absolute top-2 right-4 ${
+                          actualIndex === 1 ? 'text-gray-500' :
+                          actualIndex === 2 ? 'text-orange-500' : 'text-rose-500'
+                        }`}>
+                          #{user.rank}
+                        </span>
+                        
+                        {/* Avatar */}
+                        <div className="w-20 h-20 rounded-full mb-2 border-2 border-gray-200 overflow-hidden bg-gray-200 flex items-center justify-center mx-auto">
+                          {hasValidImage(user) ? (
+                            <img
+                              src={user.image}
+                              alt={`${user.name}'s avatar`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => handleImageError(e, user.name)}
+                              loading="lazy"
+                              crossOrigin="anonymous"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <User size={40} className="text-gray-500" />
+                          )}
+                        </div>
+
+                        {/* Badge */}
+                        <div className="flex justify-center mb-2">
+                          {getBadgeComponent(user.totalScore)}
+                        </div>
+                        
+                        <span className="font-medium text-sm text-rose-400 text-center">
+                          {getLevel(user.totalScore)}
+                        </span>
+                        <h2 className="text-lg font-semibold text-gray-800 truncate text-center">
+                          {user.name}
+                        </h2>
+                        <p className="text-sm text-gray-600 text-center">
+                          Score: {user.totalScore.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-gray-600 text-center">
+                          Rooms: {user.roomsCompleted || 0}
+                        </p>
+                        
+                        {actualIndex === 1 && (
+                          <div className="absolute right-0 bottom-0 w-16 h-12 bg-gradient-to-br from-gray-400 to-gray-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
+                            <div className="absolute right-1 bottom-1 text-white text-xs font-bold">2nd</div>
+                          </div>
+                        )}
+                        {actualIndex === 2 && (
+                          <div className="absolute right-0 bottom-0 w-16 h-12 bg-gradient-to-br from-orange-400 to-orange-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
+                            <div className="absolute right-1 bottom-1 text-white text-xs font-bold">3rd</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Table for remaining users */}
+            {leaderboard.length > 5 && (
+              <div className="bg-gray-50 rounded-lg overflow-hidden shadow-lg">
+                {/* Table Header */}
+                <div className="grid grid-cols-5 gap-4 p-4 bg-rose-500 text-sm font-medium text-white border-b border-rose-600">
+                  <div>Rank</div>
+                  <div>Username</div>
+                  <div>Points</div>
+                  <div>Rooms</div>
+                  <div>Badge</div>
+                </div>
+                
+                {/* Table Body */}
+                <div className="divide-y divide-gray-200">
+                  {leaderboard.slice(5).map((user: LeaderboardUser, index: number) => (
+                    <div
+                      key={`${user.name}-${user.rank}-${user.totalScore}`}
+                      className="grid grid-cols-5 gap-4 p-4 text-sm hover:bg-gray-100 transition-colors"
+                    >
+                      {/* Rank */}
+                      <div className="text-gray-800 font-medium">{user.rank}</div>
+                      
+                      {/* Username with Avatar */}
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
+                          {hasValidImage(user) ? (
+                            <img
+                              src={user.image}
+                              alt={`${user.name}'s avatar`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => handleImageError(e, user.name)}
+                              loading="lazy"
+                              crossOrigin="anonymous"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <User size={16} className="text-gray-500" />
+                          )}
+                        </div>
+                        <div>
+                          <div className="text-rose-500 font-medium truncate">{user.name}</div>
+                          <div className="text-xs text-gray-500">{getLevel(user.totalScore)}</div>
                         </div>
                       </div>
-                    )}
-                    {index === 1 && (
-                      <div className="absolute right-0 bottom-0 w-16 h-12 bg-gradient-to-br from-gray-400 to-gray-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
-                        <div className="absolute right-1 bottom-1 text-white text-xs font-bold">2nd</div>
+                      
+                      {/* Points */}
+                      <div className="text-gray-800">{user.totalScore.toLocaleString()}</div>
+                      
+                      {/* Rooms */}
+                      <div className="text-gray-800">{user.roomsCompleted || 0}</div>
+                      
+                      {/* Badge */}
+                      <div className="flex items-center">
+                        {getBadgeComponent(user.totalScore)}
                       </div>
-                    )}
-                    {index === 2 && (
-                      <div className="absolute right-0 bottom-0 w-16 h-12 bg-gradient-to-br from-orange-400 to-orange-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
-                        <div className="absolute right-1 bottom-1 text-white text-xs font-bold">3rd</div>
-                      </div>
-                    )}
-                  </div>
-                ) : null}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>

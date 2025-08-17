@@ -40,3 +40,4 @@ package-lock.json
 k6-test.js
 
 bun.lockb
+remove-duplicate.js

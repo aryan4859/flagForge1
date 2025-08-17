@@ -27,9 +27,67 @@ export async function GET(_req: any) {
       );
     }
 
-    // Get user's completed questions count
-    const completedQuestions = await UserQuestionModel.countDocuments({ userId: user._id });
-    
+    // DEBUG: Log user info
+    console.log('User ID:', user._id);
+    console.log('User email:', user.email);
+
+    // DEBUG: Get ALL user questions to see the structure
+    const allUserQuestions = await UserQuestionModel.find({ userId: user._id });
+    console.log('All user questions count:', allUserQuestions.length);
+    console.log('Sample user questions:', allUserQuestions.slice(0, 3)); // Log first 3 records
+
+    // DEBUG: Try different possible field names for completion
+    const possibleCompletionFields = [
+      'isCompleted',
+      'isSolved', 
+      'solved',
+      'completed',
+      'status',
+      'isCorrect',
+      'success'
+    ];
+
+    // Check what fields exist in the records
+    if (allUserQuestions.length > 0) {
+      console.log('Available fields in UserQuestionModel:', Object.keys(allUserQuestions[0].toObject()));
+    }
+
+    // For now, let's use the original count while we debug
+    const completedQuestions = allUserQuestions.length;
+
+    // DEBUG: Try some possible queries to see which works
+    const testQueries = [];
+    for (const field of possibleCompletionFields) {
+      try {
+        const count = await UserQuestionModel.countDocuments({ 
+          userId: user._id,
+          [field]: true 
+        });
+        if (count > 0) {
+          testQueries.push({ field, count });
+        }
+      } catch (e) {
+        // Field doesn't exist, continue
+      }
+    }
+    console.log('Test queries with results:', testQueries);
+
+    // Try status-based queries
+    const statusTests = ['completed', 'solved', 'correct', 'success'];
+    for (const status of statusTests) {
+      try {
+        const count = await UserQuestionModel.countDocuments({ 
+          userId: user._id,
+          status: status 
+        });
+        if (count > 0) {
+          testQueries.push({ field: 'status', value: status, count });
+        }
+      } catch (e) {
+        // Continue
+      }
+    }
+
     // Get all users to calculate rank
     const allUsers = await UserSchema.find({}).sort({ totalScore: -1 }).select('_id totalScore');
     const userRank = allUsers.findIndex(u => u._id.toString() === user._id.toString()) + 1;
@@ -83,14 +141,20 @@ export async function GET(_req: any) {
     const profileData = {
       name: user.name,
       email: user.email,
-      image: getUserImage(), // Use the smart image selection
+      image: getUserImage(),
       totalScore: user.totalScore || 0,
       rank: userRank,
       level: getLevel(user.totalScore || 0),
       completedQuestions,
+      roomsCompleted: completedQuestions,
       badges: getBadges(completedQuestions),
       streak: getStreak(completedQuestions),
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
+      debug: {
+        totalUserQuestions: allUserQuestions.length,
+        testQueries,
+        availableFields: allUserQuestions.length > 0 ? Object.keys(allUserQuestions[0].toObject()) : []
+      }
     };
 
     return NextResponse.json(profileData);
