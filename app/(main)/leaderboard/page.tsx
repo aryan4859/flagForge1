@@ -1,141 +1,113 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
-import { 
-  Flag, 
-  Trophy, 
-  Target, 
-  Users, 
-  Clock, 
-  CheckCircle, 
-  PlayCircle,
-  TrendingUp,
-  Shield,
-  Zap
-} from "lucide-react";
+import { Crown, User } from "lucide-react";
+import Image from 'next/image';
+import Newbie from '../../../public/badges/novice.svg'
+import Scout from '../../../public/badges/apprentice.svg'
+import Codebreaker from '../../../public/badges/0X7.svg'
+import Hacker from '../../../public/badges/0x8.svg'
+import Cipher from '../../../public/badges/0xA.svg'
+import Forger from '../../../public/badges/0xB.svg'
+import Conqueror from '../../../public/badges/god.svg'
+import Flagforge from '../../../public/flagforge.gif'
 
-interface UserStats {
+interface LeaderboardUser {
+  name: string;
   totalScore: number;
   rank: number;
-  level: string;
-  completedQuestions: number;
-  badges: number;
-  streak: number;
+  image: string;
+  roomsCompleted: number;
 }
 
-interface LatestRoom {
-  _id: string;
-  title: string;
-  category: string;
-  points: number;
-  description: string;
-  createdAt: string;
-  difficulty?: string;
-}
-
-interface SolvedRoom {
-  _id: string;
-  title: string;
-  category: string;
-  points: number;
-  solvedAt: string;
-}
-
-interface PlatformStats {
-  totalUsers: number;
-  totalChallenges: number;
-  totalFlags: number;
-}
-
-const Home = () => {
-  const { status: sessionStatus, data: session } = useSession();
+const LeaderboardPage = () => {
+  const { status: sessionStatus } = useSession();
+  const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userStats, setUserStats] = useState<UserStats | null>(null);
-  const [latestRoom, setLatestRoom] = useState<LatestRoom | null>(null);
-  const [lastSolved, setLastSolved] = useState<SolvedRoom | null>(null);
-  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
+  const [error, setError] = useState("");
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (sessionStatus === "authenticated") {
-      fetchUserStats();
-      fetchLatestRoom();
-      fetchLastSolved();
-      fetchPlatformStats();
-    }
-  }, [sessionStatus]);
+  // Handle image loading errors
+  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>, userName: string) => {
+    setImageErrors(prev => new Set([...prev, userName]));
+  }, []);
 
-  const fetchUserStats = async () => {
+  const fetchLeaderboard = useCallback(async () => {
     try {
-      const response = await fetch('/api/profile');
-      if (response.ok) {
-        const data = await response.json();
-        setUserStats(data);
+      setError("");
+      const res = await fetch("/api/leaderboard", {
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        throw new Error("Failed to fetch leaderboard");
       }
-    } catch (error) {
-      console.error('Failed to fetch user stats:', error);
-    }
-  };
-
-  const fetchLatestRoom = async () => {
-    try {
-      const response = await fetch('/api/problems?page=1&latest=true');
-      if (response.ok) {
-        const data = await response.json();
-        setLatestRoom(data.data[0]); // Get only the latest room
-      }
-    } catch (error) {
-      console.error('Failed to fetch latest room:', error);
-    }
-  };
-
-  const fetchLastSolved = async () => {
-    try {
-      const response = await fetch('/api/user/last-solved');
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.length > 0) {
-          setLastSolved(data[0]); // Get the most recent solved
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch last solved:', error);
+      const data = await res.json();
+      
+      const sortedData = data
+        .sort((a: { totalScore: number }, b: { totalScore: number }) => b.totalScore - a.totalScore)
+        .slice(0, 50) // Limit to top 50 users
+        .map((user: any, index: number) => ({
+          ...user,
+          rank: index + 1,
+        }));
+      
+      setLeaderboard(sortedData);
+      setLastUpdated(new Date());
+      // Clear image errors when data refreshes
+      setImageErrors(new Set());
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchPlatformStats = async () => {
-    try {
-      const response = await fetch('/api/platform-stats');
-      if (response.ok) {
-        const data = await response.json();
-        setPlatformStats(data);
-      }
-    } catch (error) {
-      console.error('Failed to fetch platform stats:', error);
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    
+    if (sessionStatus === "authenticated") {
+      fetchLeaderboard();
+      intervalId = setInterval(fetchLeaderboard, 10000);
     }
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      'Web': 'bg-red-100 text-red-800',
-      'Crypto': 'bg-purple-100 text-purple-800', 
-      'Forensics': 'bg-green-100 text-green-800',
-      'Reverse Engineering': 'bg-blue-100 text-blue-800',
-      'PWN': 'bg-orange-100 text-orange-800',
-      'OSINT': 'bg-cyan-100 text-cyan-800',
-      'Misc': 'bg-gray-100 text-gray-800'
+    
+    return () => {
+      if (intervalId) clearInterval(intervalId);
     };
-    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  }, [sessionStatus, fetchLeaderboard]); 
+
+  const getLevel = useCallback((score: number): string => {
+    if (score < 200) return "[0x1][NEWBIE]";
+    if (score < 500) return "[0x2][SCOUT]";
+    if (score < 1000) return "[0x3][CODEBREAKER]";
+    if (score < 1500) return "[0x4][HACKER]";
+    if (score < 2000) return "[0x5][CIPHER HUNTER]";
+    if (score < 3000) return "[0x6][FORGER]";
+    return "[0x7][FLAG CONQUEROR]";
+  }, []);
+
+  const getBadgeComponent = useCallback((score: number) => {
+    if (score < 200) return <Image src={Newbie} alt="Newbie" width={24} height={24} />;
+    if (score < 500) return <Image src={Scout} alt="Scout" width={24} height={24} />;
+    if (score < 1000) return <Image src={Codebreaker} alt="Codebreaker" width={24} height={24} />;
+    if (score < 1500) return <Image src={Hacker} alt="Hacker" width={24} height={24} />;
+    if (score < 2000) return <Image src={Cipher} alt="Cipher Hunter" width={24} height={24} />;
+    if (score < 3000) return <Image src={Forger} alt="Forger" width={24} height={24} />;
+    return <Image src={Conqueror} alt="Flag Conqueror" width={24} height={24} />;
+  }, []);
+
+  // Check if user has a valid image - if not, should show Flagforge
+  const hasValidImage = (user: LeaderboardUser) => {
+    return user.image && 
+           user.image.trim() !== '' && 
+           !imageErrors.has(user.name);
   };
 
-  const getDifficultyColor = (points: number) => {
-    if (points <= 100) return 'text-green-600';
-    if (points <= 300) return 'text-yellow-600';
-    if (points <= 500) return 'text-orange-600';
-    return 'text-red-600';
+  // Get the appropriate image source - either user image or Flagforge fallback
+  const getImageSource = (user: LeaderboardUser) => {
+    return hasValidImage(user) ? user.image : Flagforge.src;
   };
 
   if (sessionStatus === "loading" || loading) {
@@ -146,246 +118,223 @@ const Home = () => {
     return <AuthError />;
   }
 
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-red-50 to-rose-50 border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <Flag className="h-8 w-8 text-[#EF4444]" />
-              <h1 className="text-4xl font-bold text-[#EF4444]">flagforge</h1>
-            </div>
-            <p className="text-gray-600 max-w-xl mx-auto">
-              Master cybersecurity through hands-on CTF challenges
-            </p>
-          </div>
-
-          {/* Stats Cards */}
-          {userStats && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                <Trophy className="h-6 w-6 text-[#EF4444] mx-auto mb-2" />
-                <div className="text-xl font-bold text-gray-900">{userStats.totalScore}</div>
-                <div className="text-xs text-gray-500">Points</div>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                <Target className="h-6 w-6 text-[#EF4444] mx-auto mb-2" />
-                <div className="text-xl font-bold text-gray-900">#{userStats.rank}</div>
-                <div className="text-xs text-gray-500">Rank</div>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                <CheckCircle className="h-6 w-6 text-[#EF4444] mx-auto mb-2" />
-                <div className="text-xl font-bold text-gray-900">{userStats.completedQuestions}</div>
-                <div className="text-xs text-gray-500">Solved</div>
-              </div>
-
-              <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-                <Zap className="h-6 w-6 text-[#EF4444] mx-auto mb-2" />
-                <div className="text-xl font-bold text-gray-900">{userStats.streak}</div>
-                <div className="text-xs text-gray-500">Streak</div>
-              </div>
-            </div>
-          )}
-
-          {/* User Level */}
-          {userStats && (
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200">
-                <Shield className="h-5 w-5 text-[#EF4444]" />
-                <span className="font-semibold text-[#EF4444]">{userStats.level}</span>
-                <div className="flex gap-1 ml-2">
-                  {Array.from({ length: userStats.badges }).map((_, i) => (
-                    <div key={i} className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center mt-[20vh]">
+        <h1 className="text-2xl sm:text-2xl text-center text-rose-500 font-bold mb-4">
+          Error: {error}
+        </h1>
+        <button 
+          onClick={fetchLeaderboard}
+          className="px-4 py-2 bg-rose-500 text-white rounded hover:bg-rose-600"
+        >
+          Retry
+        </button>
       </div>
+    );
+  }
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Latest Challenge */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Clock className="h-5 w-5 text-[#EF4444]" />
-              <h2 className="text-xl font-bold text-gray-900">Latest Challenge</h2>
-            </div>
-            
-            {latestRoom ? (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 hover:text-[#EF4444] transition-colors">
-                      {latestRoom.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {latestRoom.description.substring(0, 100)}...
-                    </p>
+  return (
+    <div className="flex flex-col justify-center items-center mt-16 px-8">
+      <div className="flex flex-col items-center mb-6">
+        <h1 className="text-3xl sm:text-3xl tracking-tight text-center text-rose-500 font-bold mb-2">
+          Leaderboard
+        </h1>
+      </div>
+      
+      <div className="w-full max-w-6xl">
+        {leaderboard.length === 0 ? (
+          <p className="text-center text-gray-500">No data available</p>
+        ) : (
+          <>
+            {/* First Place - Full Width */}
+            {leaderboard.length > 0 && (
+              <div className="mb-6">
+                <div className="flex flex-col bg-gray-50 rounded-lg px-6 py-5 shadow-lg shadow-gray-100 relative overflow-clip border border-gray-200 ring-2 ring-yellow-400">
+                  <span className="text-xl font-bold absolute top-2 right-4 text-yellow-500">
+                    #{leaderboard[0].rank}
+                  </span>
+                  
+                  {/* Crown */}
+                  <div className="absolute right-0 bottom-0 w-20 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
+                    <div className="absolute right-2 bottom-2">
+                      <Crown color="white" size={16} />
+                    </div>
                   </div>
-                  <div className="ml-4 text-right">
-                    <div className={`text-lg font-bold ${getDifficultyColor(latestRoom.points)}`}>
-                      {latestRoom.points} pts
+
+                  <div className="flex items-center space-x-6">
+                    {/* Avatar */}
+                    <div className="w-24 h-24 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
+                      <img
+                        src={getImageSource(leaderboard[0])}
+                        alt={`${leaderboard[0].name}'s avatar`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => handleImageError(e, leaderboard[0].name)}
+                        loading="lazy"
+                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+
+                    <div className="flex-1">
+                      <h2 className="text-2xl font-bold text-gray-800 mb-1">
+                        {leaderboard[0].name}
+                      </h2>
+                      <span className="font-medium text-rose-400 text-lg">
+                        {getLevel(leaderboard[0].totalScore)}
+                      </span>
+                      <div className="flex items-center space-x-4 mt-2 text-gray-600">
+                        <p className="text-lg">
+                          Points: <span className="font-bold">{leaderboard[0].totalScore.toLocaleString()}</span>
+                        </p>
+                        <p className="text-lg">
+                          Rooms in: <span className="font-bold">{leaderboard[0].roomsCompleted || 0}</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* God Badge for 1st place */}
+                    <div className="flex-shrink-0">
+                      <Image src={Conqueror} alt="God Badge" width={48} height={48} />
                     </div>
                   </div>
                 </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(latestRoom.category)}`}>
-                    {latestRoom.category}
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-[#EF4444] hover:text-red-600">
-                    <PlayCircle className="h-4 w-4" />
-                    Start Challenge
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-6 text-gray-500">
-                <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>No challenges available</p>
               </div>
             )}
 
-            <div className="mt-4 text-center">
-              <button className="bg-[#EF4444] hover:bg-red-500 text-white font-medium px-6 py-2 rounded-lg transition-colors">
-                View All Challenges
-              </button>
-            </div>
-          </div>
+            {/* 2nd to 5th Place - Grid Layout */}
+            {leaderboard.length > 1 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                {leaderboard.slice(1, 5).map((user: LeaderboardUser, index: number) => {
+                  const actualIndex = index + 1; // Since we're starting from index 1
+                  return (
+                    <div
+                      key={`${user.name}-${user.rank}-${user.totalScore}`}
+                      className="transition-all duration-300 hover:scale-105"
+                    >
+                      <div
+                        className={`flex flex-col bg-gray-50 rounded-lg px-6 py-5 shadow-lg shadow-gray-100 relative overflow-clip border border-gray-200 ${
+                          actualIndex === 1 ? 'ring-2 ring-gray-400' : ''
+                        } ${
+                          actualIndex === 2 ? 'ring-2 ring-orange-400' : ''
+                        }`}
+                      >
+                        <span className={`text-xl font-bold absolute top-2 right-4 ${
+                          actualIndex === 1 ? 'text-gray-500' :
+                          actualIndex === 2 ? 'text-orange-500' : 'text-rose-500'
+                        }`}>
+                          #{user.rank}
+                        </span>
+                        
+                        {/* Avatar */}
+                        <div className="w-20 h-20 rounded-full mb-2 border-2 border-gray-200 overflow-hidden bg-gray-200 flex items-center justify-center mx-auto">
+                          <img
+                            src={getImageSource(user)}
+                            alt={`${user.name}'s avatar`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => handleImageError(e, user.name)}
+                            loading="lazy"
+                            crossOrigin="anonymous"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
 
-          {/* Last Solved & Quick Actions */}
-          <div className="space-y-6">
-            {/* Last Solved Problem */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <h2 className="text-xl font-bold text-gray-900">Last Solved</h2>
-              </div>
-
-              {lastSolved ? (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded">
-                      <Flag className="h-4 w-4 text-green-600" />
+                        {/* Badge */}
+                        <div className="flex justify-center mb-2">
+                          {getBadgeComponent(user.totalScore)}
+                        </div>
+                        
+                        <span className="font-medium text-sm text-rose-400 text-center">
+                          {getLevel(user.totalScore)}
+                        </span>
+                        <h2 className="text-lg font-semibold text-gray-800 truncate text-center">
+                          {user.name}
+                        </h2>
+                        <p className="text-sm text-gray-600 text-center">
+                          Score: {user.totalScore.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-gray-600 text-center">
+                          Rooms: {user.roomsCompleted || 0}
+                        </p>
+                        
+                        {actualIndex === 1 && (
+                          <div className="absolute right-0 bottom-0 w-16 h-12 bg-gradient-to-br from-gray-400 to-gray-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
+                            <div className="absolute right-1 bottom-1 text-white text-xs font-bold">2nd</div>
+                          </div>
+                        )}
+                        {actualIndex === 2 && (
+                          <div className="absolute right-0 bottom-0 w-16 h-12 bg-gradient-to-br from-orange-400 to-orange-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
+                            <div className="absolute right-1 bottom-1 text-white text-xs font-bold">3rd</div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-gray-900">{lastSolved.title}</div>
-                      <div className="text-sm text-gray-600">{lastSolved.category} • {lastSolved.points} pts</div>
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(lastSolved.solvedAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-6 text-gray-500">
-                  <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No challenges solved yet</p>
-                  <p className="text-xs">Complete your first challenge!</p>
-                </div>
-              )}
-            </div>
+                  );
+                })}
+              </div>
+            )}
 
-            {/* Quick Actions */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <button className="bg-[#EF4444] hover:bg-red-500 text-white font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
-                  <Target className="h-4 w-4" />
-                  Browse
-                </button>
-                <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
-                  <TrendingUp className="h-4 w-4" />
-                  Leaderboard
-                </button>
-                <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
-                  <Users className="h-4 w-4" />
-                  Profile
-                </button>
-                <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
-                  <Trophy className="h-4 w-4" />
-                  Achievements
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Welcome Message for New Users */}
-        {userStats?.completedQuestions === 0 && (
-          <div className="mt-8 bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <div className="max-w-2xl mx-auto">
-              <div className="flex justify-center mb-4">
-                <div className="p-3 bg-red-100 rounded-full">
-                  <Shield className="h-8 w-8 text-[#EF4444]" />
+            {/* Table for remaining users */}
+            {leaderboard.length > 5 && (
+              <div className="bg-gray-50 rounded-lg overflow-hidden shadow-lg">
+                {/* Table Header */}
+                <div className="grid grid-cols-5 gap-4 p-4 bg-rose-500 text-sm font-medium text-white border-b border-rose-600">
+                  <div>Rank</div>
+                  <div>Username</div>
+                  <div>Points</div>
+                  <div>Rooms</div>
+                  <div>Badge</div>
+                </div>
+                
+                {/* Table Body */}
+                <div className="divide-y divide-gray-200">
+                  {leaderboard.slice(5).map((user: LeaderboardUser, index: number) => (
+                    <div
+                      key={`${user.name}-${user.rank}-${user.totalScore}`}
+                      className="grid grid-cols-5 gap-4 p-4 text-sm hover:bg-gray-100 transition-colors"
+                    >
+                      {/* Rank */}
+                      <div className="text-gray-800 font-medium">{user.rank}</div>
+                      
+                      {/* Username with Avatar */}
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0">
+                          <img
+                            src={getImageSource(user)}
+                            alt={`${user.name}'s avatar`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => handleImageError(e, user.name)}
+                            loading="lazy"
+                            crossOrigin="anonymous"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                        <div>
+                          <div className="text-rose-500 font-medium truncate">{user.name}</div>
+                          <div className="text-xs text-gray-500">{getLevel(user.totalScore)}</div>
+                        </div>
+                      </div>
+                      
+                      {/* Points */}
+                      <div className="text-gray-800">{user.totalScore.toLocaleString()}</div>
+                      
+                      {/* Rooms */}
+                      <div className="text-gray-800">{user.roomsCompleted || 0}</div>
+                      
+                      {/* Badge */}
+                      <div className="flex items-center">
+                        {getBadgeComponent(user.totalScore)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Welcome to the Forge!
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Ready to test your cybersecurity skills? Practice with realistic scenarios 
-                and showcase your abilities in our gamified environment.
-              </p>
-              <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-500 mb-6">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-[#EF4444] rounded-full"></div>
-                  Web
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  Crypto
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Forensics
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  Reverse
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  PWN
-                </div>
-              </div>
-              <button className="bg-[#EF4444] hover:bg-red-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
-                Start Your First Challenge
-              </button>
-            </div>
-          </div>
+            )}
+          </>
         )}
-
-        {/* Platform Stats */}
-        <div className="mt-8 grid grid-cols-3 gap-4">
-          <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#EF4444] mb-1">
-              {platformStats?.totalUsers?.toLocaleString() || '...'}
-            </div>
-            <div className="text-sm text-gray-600">Active Users</div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#EF4444] mb-1">
-              {platformStats?.totalChallenges?.toLocaleString() || '...'}
-            </div>
-            <div className="text-sm text-gray-600">Challenges</div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#EF4444] mb-1">
-              {platformStats?.totalFlags?.toLocaleString() || '...'}
-            </div>
-            <div className="text-sm text-gray-600">Flags Captured</div>
-          </div>
-        </div>
       </div>
     </div>
   );
 };
 
-export default Home;
+export default LeaderboardPage;
