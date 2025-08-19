@@ -48,7 +48,7 @@ const Navbar: React.FC = () => {
   return (
     <header className="bg-white top-0 shadow-lg shadow-gray-100 w-full py-2 md:px-8 px-4">
       <nav className="flex justify-between w-full items-center">
-        <Link href="/">
+        <Link href="/home">
           <div className="flex items-center text-xl font-bold">
             <Image src={logo} alt="logo" height={70} width={70} />
             flagforge

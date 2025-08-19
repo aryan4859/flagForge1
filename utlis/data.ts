@@ -2,7 +2,7 @@ import { NavbarItems, Questions } from "@/interfaces";
 
 export const NavbarData: NavbarItems[] = [
   {
-    href: "/",
+    href: "/home",
     tags: "Home",
     style: undefined
   },
