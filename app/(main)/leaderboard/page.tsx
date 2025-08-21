@@ -337,4 +337,4 @@ const LeaderboardPage = () => {
   );
 };
 
-export default LeaderboardPage;
+export default LeaderboardPage; 
