@@ -3,15 +3,15 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
-import { Crown, User } from "lucide-react";
+import { User } from "lucide-react";
 import Image from 'next/image';
-import Newbie from '../../../public/badges/novice.svg'
-import Scout from '../../../public/badges/apprentice.svg'
-import Codebreaker from '../../../public/badges/0X7.svg'
-import Hacker from '../../../public/badges/0x8.svg'
-import Cipher from '../../../public/badges/0xA.svg'
-import Forger from '../../../public/badges/0xB.svg'
-import Conqueror from '../../../public/badges/god.svg'
+import Newbie from '../../../public/badges/0x1.png'
+import Scout from '../../../public/badges/0x2.png'
+import Codebreaker from '../../../public/badges/0x3.png'
+import Hacker from '../../../public/badges/0x4.png'
+import Cipher from '../../../public/badges/0x5.png'
+import Forger from '../../../public/badges/0x6.png'
+import Conqueror from '../../../public/badges/0x7.png'
 import Flagforge from '../../../public/flagforge.gif'
 
 interface LeaderboardUser {
@@ -88,14 +88,22 @@ const LeaderboardPage = () => {
     return "[0x7][FLAG CONQUEROR]";
   }, []);
 
-  const getBadgeComponent = useCallback((score: number) => {
-    if (score < 200) return <Image src={Newbie} alt="Newbie" width={24} height={24} />;
-    if (score < 500) return <Image src={Scout} alt="Scout" width={24} height={24} />;
-    if (score < 1000) return <Image src={Codebreaker} alt="Codebreaker" width={24} height={24} />;
-    if (score < 1500) return <Image src={Hacker} alt="Hacker" width={24} height={24} />;
-    if (score < 2000) return <Image src={Cipher} alt="Cipher Hunter" width={24} height={24} />;
-    if (score < 3000) return <Image src={Forger} alt="Forger" width={24} height={24} />;
-    return <Image src={Conqueror} alt="Flag Conqueror" width={24} height={24} />;
+  const getBadgeComponent = useCallback((score: number, size: 'small' | 'medium' | 'large' = 'medium') => {
+    const dimensions = {
+      small: { width: 32, height: 32 },
+      medium: { width: 40, height: 40 },
+      large: { width: 56, height: 56 }
+    };
+    
+    const { width, height } = dimensions[size];
+    
+    if (score < 200) return <Image src={Newbie} alt="Newbie" width={width} height={height} />;
+    if (score < 500) return <Image src={Scout} alt="Scout" width={width} height={height} />;
+    if (score < 1000) return <Image src={Codebreaker} alt="Codebreaker" width={width} height={height} />;
+    if (score < 1500) return <Image src={Hacker} alt="Hacker" width={width} height={height} />;
+    if (score < 2000) return <Image src={Cipher} alt="Cipher Hunter" width={width} height={height} />;
+    if (score < 3000) return <Image src={Forger} alt="Forger" width={width} height={height} />;
+    return <Image src={Conqueror} alt="Flag Conqueror" width={width} height={height} />;
   }, []);
 
   // Check if user has a valid image - if not, should show Flagforge
@@ -155,11 +163,9 @@ const LeaderboardPage = () => {
                     #{leaderboard[0].rank}
                   </span>
                   
-                  {/* Crown */}
+                  {/* Golden corner decoration for 1st place */}
                   <div className="absolute right-0 bottom-0 w-20 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 [clip-path:polygon(100%_0,0_100%,100%_100%)]">
-                    <div className="absolute right-2 bottom-2">
-                      <Crown color="white" size={16} />
-                    </div>
+                    <div className="absolute right-1 bottom-1 text-white text-xs font-bold">1st</div>
                   </div>
 
                   <div className="flex items-center space-x-6">
@@ -193,9 +199,9 @@ const LeaderboardPage = () => {
                       </div>
                     </div>
 
-                    {/* God Badge for 1st place */}
+                    {/* Level Badge for 1st place */}
                     <div className="flex-shrink-0">
-                      <Image src={Conqueror} alt="God Badge" width={48} height={48} />
+                      {getBadgeComponent(leaderboard[0].totalScore)}
                     </div>
                   </div>
                 </div>
@@ -337,4 +343,4 @@ const LeaderboardPage = () => {
   );
 };
 
-export default LeaderboardPage; 
+export default LeaderboardPage;

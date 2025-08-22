@@ -131,7 +131,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-500 to-rose-600">
+      <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-500 to-rose-600 dark:bg-[#1b212a]">
         <div className="absolute inset-0 opacity-30">
           <div
             className="absolute inset-0"

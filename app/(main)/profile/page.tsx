@@ -4,13 +4,14 @@ import Image from "next/image";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { useSession } from "next-auth/react";
-import Newbie from '../../../public/badges/novice.svg'
-import Scout from '../../../public/badges/apprentice.svg'
-import Codebreaker from '../../../public/badges/defender.svg'
-import Hacker from '../../../public/badges/0x8.svg'
-import Cipher from '../../../public/badges/guardian.svg'
-import Forger from '../../../public/badges/0xB.svg'
-import Conqueror from '../../../public/badges/god.svg'
+import { Trophy, Award, Flame, CheckCircle, User, Calendar, MapPin, Star } from "lucide-react";
+import Newbie from '../../../public/badges/0x1.png'
+import Scout from '../../../public/badges/0x2.png'
+import Codebreaker from '../../../public/badges/0x3.png'
+import Hacker from '../../../public/badges/0x4.png'
+import Cipher from '../../../public/badges/0x5.png'
+import Forger from '../../../public/badges/0x6.png'
+import Conqueror from '../../../public/badges/0x7.png'
 import Flagforge from '../../../public/flagforge.gif'
 
 // Types
@@ -50,35 +51,26 @@ interface CreatedRoom {
 
 // Badge configuration
 const BADGE_CONFIG = [
-  { name: "Newbie", threshold: 0 },
-  { name: "Scout", threshold: 200 },
-  { name: "Codebreaker", threshold: 500 },
-  { name: "Hacker", threshold: 1000 },
-  { name: "Cipher Hunter", threshold: 1500 },
-  { name: "Forger", threshold: 2000 },
-  { name: "Flag Conqueror", threshold: 3000 },
+  { name: "Newbie", threshold: 0, color: "from-gray-400 to-gray-600" },
+  { name: "Scout", threshold: 200, color: "from-blue-400 to-blue-600" },
+  { name: "Codebreaker", threshold: 500, color: "from-green-400 to-green-600" },
+  { name: "Hacker", threshold: 1000, color: "from-purple-400 to-purple-600" },
+  { name: "Cipher Hunter", threshold: 1500, color: "from-orange-400 to-orange-600" },
+  { name: "Forger", threshold: 2000, color: "from-red-400 to-red-600" },
+  { name: "Flag Conqueror", threshold: 3000, color: "from-yellow-400 to-yellow-600" },
 ];
 
 const CATEGORY_ICONS: { [key: string]: string } = {
-  'Web': '🌐',
-  'Crypto': '🔐',
-  'Network': '📡',
-  'Forensics': '🔍',
-  'OSINT': '🕵️',
-  'Pwn': '💀',
-  'Reverse': '🔄',
-  'Misc': '🎯',
-  'Security': '🔓',
-  'Defense': '🛡️',
-  'Tutorial': '📚',
-  'Networking': '🌐'
+  'Web': '🌐', 'Crypto': '🔐', 'Network': '📡', 'Forensics': '🔍',
+  'OSINT': '🕵️', 'Pwn': '💀', 'Reverse': '🔄', 'Misc': '🎯',
+  'Security': '🔓', 'Defense': '🛡️', 'Tutorial': '📚', 'Networking': '🌐'
 };
 
-const DIFFICULTY_COLORS: { [key: string]: string } = {
-  'Easy': 'text-green-600',
-  'Medium': 'text-yellow-600', 
-  'Hard': 'text-red-600',
-  'Insane': 'text-purple-600'
+const DIFFICULTY_CONFIG: { [key: string]: { color: string; bg: string; border: string } } = {
+  'Easy': { color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-200' },
+  'Medium': { color: 'text-yellow-700', bg: 'bg-yellow-50', border: 'border-yellow-200' },
+  'Hard': { color: 'text-red-700', bg: 'bg-red-50', border: 'border-red-200' },
+  'Insane': { color: 'text-purple-700', bg: 'bg-purple-50', border: 'border-purple-200' }
 };
 
 const ProfilePage = () => {
@@ -109,17 +101,17 @@ const ProfilePage = () => {
 
   // Utility Functions
   const getBadgeComponent = useCallback((score: number, size: number = 48) => {
-    if (score < 200) return <Image src={Newbie} alt="Newbie" width={size} height={size} />;
-    if (score < 500) return <Image src={Scout} alt="Scout" width={size} height={size} />;
-    if (score < 1000) return <Image src={Codebreaker} alt="Codebreaker" width={size} height={size} />;
-    if (score < 1500) return <Image src={Hacker} alt="Hacker" width={size} height={size} />;
-    if (score < 2000) return <Image src={Cipher} alt="Cipher Hunter" width={size} height={size} />;
-    if (score < 3000) return <Image src={Forger} alt="Forger" width={size} height={size} />;
-    return <Image src={Conqueror} alt="Flag Conqueror" width={size} height={size} />;
+    if (score < 200) return <Image src={Newbie} alt="Newbie" width={size} height={size} className="drop-shadow-sm" />;
+    if (score < 500) return <Image src={Scout} alt="Scout" width={size} height={size} className="drop-shadow-sm" />;
+    if (score < 1000) return <Image src={Codebreaker} alt="Codebreaker" width={size} height={size} className="drop-shadow-sm" />;
+    if (score < 1500) return <Image src={Hacker} alt="Hacker" width={size} height={size} className="drop-shadow-sm" />;
+    if (score < 2000) return <Image src={Cipher} alt="Cipher Hunter" width={size} height={size} className="drop-shadow-sm" />;
+    if (score < 3000) return <Image src={Forger} alt="Forger" width={size} height={size} className="drop-shadow-sm" />;
+    return <Image src={Conqueror} alt="Flag Conqueror" width={size} height={size} className="drop-shadow-sm" />;
   }, []);
 
   const getCurrentBadgeName = useCallback((score: number) => {
-    const badge = BADGE_CONFIG.reverse().find(badge => score >= badge.threshold);
+    const badge = BADGE_CONFIG.slice().reverse().find(badge => score >= badge.threshold);
     return badge ? badge.name : "Newbie";
   }, []);
 
@@ -135,37 +127,25 @@ const ProfilePage = () => {
     return {
       nextThreshold: nextBadge.threshold,
       pointsNeeded: nextBadge.threshold - score,
-      progress: Math.min(progress, 100)
+      progress: Math.min(progress, 100),
+      nextBadgeName: nextBadge.name
     };
   }, []);
 
   const getImageSrc = useCallback(() => {
-    const sources = [
-      profileData?.image,
-      session?.user?.image
-    ];
-    
+    const sources = [profileData?.image, session?.user?.image];
     for (const src of sources) {
-      if (src && 
-          typeof src === 'string' && 
-          src.trim() !== '' && 
-          src !== 'undefined' && 
-          src !== 'null' && 
-          src.toLowerCase() !== 'null') {
+      if (src && typeof src === 'string' && src.trim() !== '' && 
+          src !== 'undefined' && src !== 'null' && src.toLowerCase() !== 'null') {
         return src;
       }
     }
-    
     return null;
   }, [profileData?.image, session?.user?.image]);
 
-  const getCategoryIcon = (category: string) => {
-    return CATEGORY_ICONS[category] || '📝';
-  };
+  const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || '📝';
 
-  const getDifficultyColor = (difficulty: string) => {
-    return DIFFICULTY_COLORS[difficulty] || 'text-gray-600';
-  };
+  const getDifficultyStyle = (difficulty: string) => DIFFICULTY_CONFIG[difficulty] || DIFFICULTY_CONFIG['Easy'];
 
   // API Functions
   const fetchProfileData = useCallback(async () => {
@@ -174,16 +154,10 @@ const ProfilePage = () => {
     try {
       const res = await fetch(`/api/profile`, {
         method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-        },
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
       });
       
-      if (!res.ok) {
-        throw new Error(`Failed to fetch profile data: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`Failed to fetch profile data: ${res.status}`);
       
       const data = await res.json();
       setProfileData(data);
@@ -199,48 +173,32 @@ const ProfilePage = () => {
     if (!session?.user?.email) return;
     
     setProblemsLoading(true);
-    
     try {
       const res = await fetch(`/api/problems/completed?page=${problemsCurrentPage}`, {
         method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-        },
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
       });
       
-      if (!res.ok) {
-        throw new Error(`Failed to fetch completed problems: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`Failed to fetch completed problems: ${res.status}`);
       
       const data = await res.json();
       
       if (data.success) {
-        // Assuming your API returns pagination info similar to problems and rooms API
-        const {
-          completedProblems: problemsData = [],
-          totalProblems,
-          hasMore,
-          totalPages
-        } = data;
-        
+        const { completedProblems: problemsData = [], totalProblems, hasMore, totalPages } = data;
         setCompletedProblems(problemsData);
         setTotalCompletedProblems(totalProblems || problemsData.length);
         
-        // Determine if there are more pages - similar logic to other paginated sections
         if (hasMore !== undefined) {
           setProblemsHasNextPage(hasMore);
         } else if (totalPages !== undefined) {
           setProblemsHasNextPage(problemsCurrentPage < totalPages);
         } else if (problemsData.length === 0) {
           setProblemsHasNextPage(false);
-          if (problemsCurrentPage > 1) {
-            setProblemsCurrentPage(prev => prev - 1);
-          }
+          if (problemsCurrentPage > 1) setProblemsCurrentPage(prev => prev - 1);
         } else {
           setProblemsHasNextPage(true);
         }
       } else {
-        console.error('API returned error:', data.message);
         setCompletedProblems([]);
         setTotalCompletedProblems(0);
         setProblemsHasNextPage(false);
@@ -259,45 +217,30 @@ const ProfilePage = () => {
     if (!session?.user?.email) return;
     
     setRoomsLoading(true);
-    
     try {
       const res = await fetch(`/api/rooms/created?page=${roomsCurrentPage}`, {
         method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-        },
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
       });
       
-      if (!res.ok) {
-        throw new Error(`Failed to fetch created rooms: ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`Failed to fetch created rooms: ${res.status}`);
       
       const data = await res.json();
-      
-      const {
-        createdRooms: roomsData = [],
-        totalRooms,
-        hasMore,
-        totalPages
-      } = data;
+      const { createdRooms: roomsData = [], totalRooms, hasMore, totalPages } = data;
       
       setCreatedRooms(roomsData);
       setTotalCreatedRooms(totalRooms || roomsData.length);
       
-      // Determine if there are more pages - similar logic to problems
       if (hasMore !== undefined) {
         setRoomsHasNextPage(hasMore);
       } else if (totalPages !== undefined) {
         setRoomsHasNextPage(roomsCurrentPage < totalPages);
       } else if (roomsData.length === 0) {
         setRoomsHasNextPage(false);
-        if (roomsCurrentPage > 1) {
-          setRoomsCurrentPage(prev => prev - 1);
-        }
+        if (roomsCurrentPage > 1) setRoomsCurrentPage(prev => prev - 1);
       } else {
         setRoomsHasNextPage(true);
       }
-      
     } catch (error) {
       console.error("Failed to load created rooms:", error);
       setCreatedRooms([]);
@@ -308,30 +251,21 @@ const ProfilePage = () => {
     }
   }, [session?.user?.email, roomsCurrentPage]);
 
-  // Pagination handlers for completed problems
+  // Pagination handlers
   const handleProblemsNextPage = () => {
-    if (problemsHasNextPage && !problemsLoading) {
-      setProblemsCurrentPage(prev => prev + 1);
-    }
+    if (problemsHasNextPage && !problemsLoading) setProblemsCurrentPage(prev => prev + 1);
   };
 
   const handleProblemsPrevPage = () => {
-    if (problemsCurrentPage > 1 && !problemsLoading) {
-      setProblemsCurrentPage(prev => prev - 1);
-    }
+    if (problemsCurrentPage > 1 && !problemsLoading) setProblemsCurrentPage(prev => prev - 1);
   };
 
-  // Pagination handlers for created rooms
   const handleRoomsNextPage = () => {
-    if (roomsHasNextPage && !roomsLoading) {
-      setRoomsCurrentPage(prev => prev + 1);
-    }
+    if (roomsHasNextPage && !roomsLoading) setRoomsCurrentPage(prev => prev + 1);
   };
 
   const handleRoomsPrevPage = () => {
-    if (roomsCurrentPage > 1 && !roomsLoading) {
-      setRoomsCurrentPage(prev => prev - 1);
-    }
+    if (roomsCurrentPage > 1 && !roomsLoading) setRoomsCurrentPage(prev => prev - 1);
   };
 
   // Effects
@@ -350,11 +284,8 @@ const ProfilePage = () => {
       
       interval = setInterval(() => {
         fetchProfileData();
-        if (activeTab === 'completed') {
-          fetchCompletedProblems();
-        } else if (activeTab === 'created') {
-          fetchCreatedRooms();
-        }
+        if (activeTab === 'completed') fetchCompletedProblems();
+        else if (activeTab === 'created') fetchCreatedRooms();
       }, 30000);
     }
 
@@ -363,27 +294,17 @@ const ProfilePage = () => {
     };
   }, [session, activeTab, fetchProfileData, fetchCompletedProblems, fetchCreatedRooms]);
 
-  // Reset pagination when switching tabs
   useEffect(() => {
-    if (activeTab === 'completed') {
-      setProblemsCurrentPage(1);
-    } else if (activeTab === 'created') {
-      setRoomsCurrentPage(1);
-    }
+    if (activeTab === 'completed') setProblemsCurrentPage(1);
+    else if (activeTab === 'created') setRoomsCurrentPage(1);
   }, [activeTab]);
 
-  // Fetch completed problems when page changes
   useEffect(() => {
-    if (activeTab === 'completed' && session?.user?.email) {
-      fetchCompletedProblems();
-    }
+    if (activeTab === 'completed' && session?.user?.email) fetchCompletedProblems();
   }, [problemsCurrentPage, activeTab, session?.user?.email, fetchCompletedProblems]);
 
-  // Fetch created rooms when page changes
   useEffect(() => {
-    if (activeTab === 'created' && session?.user?.email) {
-      fetchCreatedRooms();
-    }
+    if (activeTab === 'created' && session?.user?.email) fetchCreatedRooms();
   }, [roomsCurrentPage, activeTab, session?.user?.email, fetchCreatedRooms]);
 
   // Components
@@ -399,25 +320,21 @@ const ProfilePage = () => {
           alt={`${displayName} Profile Picture`}
           width={120}
           height={120}
-          className="w-30 h-30 rounded-full object-cover border-4 border-red-500 shadow-lg"
+          className="w-30 h-30 rounded-full object-cover ring-4 ring-white/30 shadow-xl"
           unoptimized
           priority
-          onError={(e) => {
-            console.error('Image load error:', e);
-            setHasError(true);
-          }}
+          onError={() => setHasError(true)}
         />
       );
     }
 
-    // Fallback to Flagforge gif when no image or image fails to load
     return (
       <Image
         src={Flagforge}
         alt={`${displayName} Profile Picture`}
         width={120}
         height={120}
-        className="w-30 h-30 rounded-full object-cover border-4 border-red-500 shadow-lg"
+        className="w-30 h-30 rounded-full object-cover ring-4 ring-white/30 shadow-xl"
         unoptimized
         priority
       />
@@ -428,89 +345,69 @@ const ProfilePage = () => {
     if (!showBadgeTooltip) return null;
     
     return (
-      <div className="absolute top-full mt-2 right-0 bg-gray-800 text-white p-4 rounded-lg shadow-xl z-10 w-80">
-        <h4 className="text-sm font-bold mb-3 text-center">Badge Progress</h4>
-        <div className="grid grid-cols-2 gap-2">
-          {BADGE_CONFIG.map((badge) => (
-            <div key={badge.name} className={`text-center p-2 rounded ${
-              (profileData?.totalScore || 0) >= badge.threshold ? 'bg-green-600' : 'bg-gray-600'
-            } ${
-              getCurrentBadgeName(profileData?.totalScore || 0) === badge.name ? 'ring-2 ring-yellow-400' : ''
-            }`}>
-              <div className="flex justify-center mb-1">
-                {getBadgeComponent(badge.threshold, 20)}
+      <div className="absolute top-full mt-2 right-0 bg-white border border-red-200 shadow-xl rounded-xl p-6 z-10 w-80">
+        <h4 className="text-lg font-semibold text-red-600 mb-4 text-center">Badge Progress</h4>
+        <div className="grid grid-cols-2 gap-3">
+          {BADGE_CONFIG.map((badge) => {
+            const earned = (profileData?.totalScore || 0) >= badge.threshold;
+            const current = getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
+            
+            return (
+              <div key={badge.name} className={`text-center p-3 rounded-lg border transition-all ${
+                earned 
+                  ? current 
+                    ? 'border-slate-300 bg-slate-50 shadow-sm ring-2 ring-slate-200' 
+                    : 'border-emerald-200 bg-emerald-50'
+                  : 'border-slate-200 bg-slate-100 opacity-60'
+              }`}>
+                <div className="flex justify-center mb-2">
+                  {getBadgeComponent(badge.threshold, 24)}
+                </div>
+                <p className="text-xs font-medium text-slate-900">{badge.name}</p>
+                <p className="text-xs text-slate-600">({badge.threshold}+)</p>
               </div>
-              <p className="text-xs">{badge.name}</p>
-              <p className="text-xs opacity-75">({badge.threshold}+)</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
   };
 
-  const StatsGrid = () => (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="text-center bg-white border-2 border-red-500 rounded-lg p-4 shadow-md">
-        <div className="flex items-center justify-center mb-2">
-          <span className="text-red-500 mr-2 text-xl">🏆</span>
-          <span className="text-sm text-gray-600 font-medium">Rank</span>
+  const HeroStats = () => (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mt-8">
+      {[
+        { icon: Trophy, label: "Rank", value: `#${profileData?.rank || 'N/A'}`, color: "text-white", bg: "bg-white/10", border: "border-white/20" },
+        { icon: Award, label: "Badges", value: profileData?.badges || 0, color: "text-white", bg: "bg-white/10", border: "border-white/20" },
+        { icon: Flame, label: "Streak", value: profileData?.streak || 0, color: "text-white", bg: "bg-white/10", border: "border-white/20" },
+        { icon: CheckCircle, label: "Completed", value: profileData?.completedQuestions || profileData?.roomsCompleted || 0, color: "text-white", bg: "bg-white/10", border: "border-white/20" }
+      ].map((stat, index) => (
+        <div key={index} className={`${stat.bg} ${stat.border} backdrop-blur-sm border rounded-xl p-4 lg:p-6 text-center transition-all hover:bg-white/20 hover:scale-105`}>
+          <stat.icon className={`w-6 h-6 lg:w-8 lg:h-8 ${stat.color} mx-auto mb-2 lg:mb-3`} />
+          <p className="text-xs lg:text-sm font-medium text-white/80 mb-1">{stat.label}</p>
+          <p className={`text-lg lg:text-2xl font-bold ${stat.color}`}>{stat.value}</p>
         </div>
-        <p className="text-2xl font-bold text-red-500">
-          #{profileData?.rank || 'N/A'}
-        </p>
-      </div>
-      
-      <div className="text-center bg-white border-2 border-red-500 rounded-lg p-4 shadow-md">
-        <div className="flex items-center justify-center mb-2">
-          <span className="text-red-500 mr-2 text-xl">🎖️</span>
-          <span className="text-sm text-gray-600 font-medium">Badges</span>
-        </div>
-        <p className="text-2xl font-bold text-red-500">
-          {profileData?.badges || 0}
-        </p>
-      </div>
-      
-      <div className="text-center bg-white border-2 border-red-500 rounded-lg p-4 shadow-md">
-        <div className="flex items-center justify-center mb-2">
-          <span className="text-red-500 mr-2 text-xl">🔥</span>
-          <span className="text-sm text-gray-600 font-medium">Streak</span>
-        </div>
-        <p className="text-2xl font-bold text-red-500">
-          {profileData?.streak || 0}
-        </p>
-      </div>
-      
-      <div className="text-center bg-white border-2 border-red-500 rounded-lg p-4 shadow-md">
-        <div className="flex items-center justify-center mb-2">
-          <span className="text-red-500 mr-2 text-xl">✅</span>
-          <span className="text-sm text-gray-600 font-medium">Completed</span>
-        </div>
-        <p className="text-2xl font-bold text-red-500">
-          {profileData?.completedQuestions || profileData?.roomsCompleted || 0}
-        </p>
-      </div>
+      ))}
     </div>
   );
 
   const TabNavigation = () => (
-    <div className="border-b-2 border-red-500 mb-6">
+    <div className="border-b border-red-200">
       <nav className="flex space-x-8">
         {[
-          { id: 'completed', label: 'Completed Problems', icon: '✅', count: totalCompletedProblems },
-          { id: 'badges', label: 'All Badges', icon: '🎖️', count: null },
-          { id: 'created', label: 'Created Rooms', icon: '🏗️', count: totalCreatedRooms },
+          { id: 'completed', label: 'Completed Problems', icon: CheckCircle, count: totalCompletedProblems },
+          { id: 'badges', label: 'Badge Collection', icon: Award, count: null },
+          { id: 'created', label: 'Created Rooms', icon: Star, count: totalCreatedRooms },
         ].map((tab) => (
           <button 
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`border-b-2 py-3 px-1 text-sm font-medium flex items-center transition-colors ${
+            className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center transition-all ${
               activeTab === tab.id
-                ? 'border-red-500 text-red-500' 
+                ? 'border-red-500 text-red-600' 
                 : 'border-transparent text-gray-500 hover:text-red-500 hover:border-red-300'
             }`}
           >
-            <span className="mr-2">{tab.icon}</span>
+            <tab.icon className="w-4 h-4 mr-2" />
             {tab.label} {tab.count !== null && `(${tab.count})`}
           </button>
         ))}
@@ -519,25 +416,23 @@ const ProfilePage = () => {
   );
 
   // Render conditions
-  if (loading || sessionStatus === "loading") {
-    return <Loading />;
-  }
-
-  if (sessionStatus === "unauthenticated") {
-    return <AuthError />;
-  }
+  if (loading || sessionStatus === "loading") return <Loading />;
+  if (sessionStatus === "unauthenticated") return <AuthError />;
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
-        <div className="max-w-4xl w-full bg-white shadow-lg rounded-2xl p-6 text-center border-2 border-red-500">
-          <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
-          <p className="text-gray-600">{error}</p>
+      <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white shadow-lg rounded-2xl p-8 text-center border border-red-200">
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="w-8 h-8 text-red-600" />
+          </div>
+          <h1 className="text-xl font-semibold text-red-900 mb-2">Unable to Load Profile</h1>
+          <p className="text-red-600 mb-6">{error}</p>
           <button 
             onClick={fetchProfileData}
-            className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            className="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
           >
-            Retry
+            Try Again
           </button>
         </div>
       </div>
@@ -545,338 +440,379 @@ const ProfilePage = () => {
   }
 
   const nextBadge = getNextBadgeInfo(profileData?.totalScore || 0);
+  const memberSince = profileData?.createdAt ? new Date(profileData.createdAt).getFullYear() : new Date().getFullYear();
 
   return (
-    <div className="min-h-screen bg-white p-4">
-      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-2xl p-8 border-2 border-red-500">
-        {/* Auto-reload indicator */}
-        <div className="flex justify-between items-center mb-6">
-          <div></div>
-          <div className="text-xs text-gray-500">
-            Last updated: {lastUpdated.toLocaleTimeString()}
-          </div>
-        </div>
-
-        {/* Profile Header Section */}
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 mb-8">
-          {/* Profile Image */}
-          <div className="flex-shrink-0">
-            <ProfileImage />
-          </div>
-
-          {/* Profile Info */}
-          <div className="flex-grow text-center lg:text-left">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
-              <div>
-                <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                  {profileData?.name || session?.user?.name || "User"}
-                </h1>
-                <p className="text-xl font-semibold mb-2 text-red-500">
-                  {profileData?.level || "[0x1][NEWBIE]"}
-                </p>
-                <p className="text-gray-600 text-lg">
-                  {profileData?.email || session?.user?.email || "Not available"}
-                </p>
-              </div>
-              
-              {/* Current Badge with Tooltip */}
-              <div className="relative mt-4 lg:mt-0">
-                <div 
-                  className="cursor-pointer transform hover:scale-105 transition-transform"
-                  onMouseEnter={() => setShowBadgeTooltip(true)}
-                  onMouseLeave={() => setShowBadgeTooltip(false)}
-                >
-                  <div className="bg-white rounded-full p-4 shadow-lg border-2 border-red-500">
-                    {getBadgeComponent(profileData?.totalScore || 0, 80)}
-                  </div>
-                </div>
-                
-                <BadgeTooltip />
-              </div>
+    <div className="min-h-screen bg-red-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-red-600 via-red-600 to-red-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
+            {/* Profile Image */}
+            <div className="flex-shrink-0">
+              <ProfileImage />
             </div>
 
-            {/* Current Score and Progress */}
-            <div className="bg-red-50 border-2 border-red-500 rounded-xl p-6 mb-6">
-              <div className="flex flex-col md:flex-row items-center justify-between">
-                <div className="text-center md:text-left mb-4 md:mb-0">
-                  <h3 className="text-2xl font-bold text-red-500 mb-1">
-                    {getCurrentBadgeName(profileData?.totalScore || 0)}
-                  </h3>
-                  <p className="text-3xl font-bold text-red-500">
-                    {profileData?.totalScore || 0} points
+            {/* Profile Info */}
+            <div className="flex-grow text-center lg:text-left text-white">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
+                <div className="mb-6 lg:mb-0">
+                  <h1 className="text-4xl lg:text-5xl font-bold mb-3">
+                    {profileData?.name || session?.user?.name || "User"}
+                  </h1>
+                  <p className="text-xl text-red-200 mb-4">
+                    {profileData?.level || "[0x1][NEWBIE]"}
                   </p>
-                </div>
-                
-                {nextBadge && (
-                  <div className="text-center md:text-right">
-                    <p className="text-sm text-gray-600 mb-2">
-                      Next Badge: {nextBadge.pointsNeeded} points needed
-                    </p>
-                    <div className="w-48 bg-gray-200 rounded-full h-3">
-                      <div 
-                        className="bg-red-500 h-3 rounded-full transition-all duration-500"
-                        style={{ width: `${nextBadge.progress}%` }}
-                      ></div>
+                  
+                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-red-200">
+                    <div className="flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      <span className="text-sm">{profileData?.email || session?.user?.email}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {nextBadge.progress.toFixed(1)}% complete
+                    <div className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span className="text-sm">Member since {memberSince}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Current Badge */}
+                <div className="relative">
+                  <div 
+                    className="cursor-pointer transform hover:scale-105 transition-transform"
+                    onMouseEnter={() => setShowBadgeTooltip(true)}
+                    onMouseLeave={() => setShowBadgeTooltip(false)}
+                  >
+                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                      {getBadgeComponent(profileData?.totalScore || 0, 80)}
+                    </div>
+                  </div>
+                  <BadgeTooltip />
+                </div>
+              </div>
+
+              {/* Score and Progress */}
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 mt-8">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                  <div className="text-center md:text-left">
+                    <h3 className="text-2xl font-bold text-white mb-2">
+                      {getCurrentBadgeName(profileData?.totalScore || 0)}
+                    </h3>
+                    <p className="text-3xl font-bold text-white">
+                      {profileData?.totalScore?.toLocaleString() || 0} points
                     </p>
                   </div>
-                )}
+                  
+                  {nextBadge && (
+                    <div className="text-center md:text-right flex-shrink-0">
+                      <p className="text-sm text-red-200 mb-3">
+                        Next: {nextBadge.nextBadgeName} ({nextBadge.pointsNeeded} points needed)
+                      </p>
+                      <div className="w-48 bg-white/20 rounded-full h-3 overflow-hidden">
+                        <div 
+                          className="bg-gradient-to-r from-red-400 to-red-500 h-3 rounded-full transition-all duration-700 ease-out"
+                          style={{ width: `${nextBadge.progress}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-red-300 mt-2">
+                        {nextBadge.progress.toFixed(1)}% complete
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <StatsGrid />
+              {/* Stats Grid in Hero */}
+              <HeroStats />
+            </div>
           </div>
         </div>
+      </div>
 
-        <TabNavigation />
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Tabs */}
+        <div className="bg-white rounded-2xl shadow-sm border border-red-200">
+          <div className="p-6 pb-0">
+            <TabNavigation />
+          </div>
 
-        {/* Tab Content */}
-        {activeTab === 'completed' && (
-          <div>
-            {/* Loading indicator for completed problems */}
-            {problemsLoading && (
-              <div className="flex justify-center items-center py-8">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
-              </div>
-            )}
-
-            {!problemsLoading && completedProblems.length > 0 ? (
+          <div className="p-6">
+            {/* Tab Content */}
+            {activeTab === 'completed' && (
               <div>
-                <div className="mx-auto my-0 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1 sm:grid-cols-2 items-center gap-4 mb-8">
-                  {completedProblems.map((problem) => (
-                    <div 
-                      key={problem._id} 
-                      className="bg-white rounded-lg p-6 border-2 border-red-500 hover:shadow-lg transition-all duration-200 hover:border-red-600"
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-bold text-lg text-gray-800">{problem.title}</h3>
-                        <span className="font-bold text-red-500">
-                          +{problem.points}
-                        </span>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                        {problem.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className={`text-sm font-medium ${getDifficultyColor(problem.difficulty)}`}>
-                          {problem.difficulty}
-                        </span>
-                        <div className="flex gap-2">
-                          <span className="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full border border-green-500">
-                            ✅ Completed
-                          </span>
-                          <span className="px-3 py-1 bg-red-100 text-red-700 text-xs rounded-full border border-red-500">
-                            {problem.category}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Pagination for Completed Problems */}
-                {(completedProblems.length > 0 || problemsCurrentPage > 1) && (
-                  <div className="flex justify-between items-center mt-8">
-                    <div className="text-sm text-gray-600">
-                      Page {problemsCurrentPage} {totalCompletedProblems > 0 && `• Total: ${totalCompletedProblems} problems`}
-                    </div>
-                    <div className="flex gap-4">
-                      <button
-                        onClick={handleProblemsPrevPage}
-                        disabled={problemsCurrentPage === 1 || problemsLoading}
-                        className={`font-medium text-base rounded-lg px-4 py-2 text-white transition-colors ${
-                          problemsCurrentPage === 1 || problemsLoading
-                            ? 'bg-gray-400 cursor-not-allowed' 
-                            : 'bg-red-500 hover:bg-red-600'
-                        }`}
-                      >
-                        Previous
-                      </button>
-                      <button
-                        onClick={handleProblemsNextPage}
-                        disabled={!problemsHasNextPage || problemsLoading}
-                        className={`font-medium text-base rounded-lg px-4 py-2 text-white transition-colors ${
-                          !problemsHasNextPage || problemsLoading
-                            ? 'bg-gray-400 cursor-not-allowed' 
-                            : 'bg-red-500 hover:bg-red-600'
-                        }`}
-                      >
-                        Next
-                      </button>
-                    </div>
+                {problemsLoading && (
+                  <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
                   </div>
                 )}
-              </div>
-            ) : !problemsLoading && completedProblems.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🎯</div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  {problemsCurrentPage === 1 ? "No Problems Completed Yet" : "No More Problems"}
-                </h3>
-                <p className="text-gray-600">
-                  {problemsCurrentPage === 1 
-                    ? "Start solving challenges to see your progress here!" 
-                    : "You've reached the end of your completed problems."}
-                </p>
-              </div>
-            ) : null}
-          </div>
-        )}
 
-        {activeTab === 'badges' && (
-          <div>
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Badge Collection</h3>
-              <p className="text-gray-600">Earn badges by accumulating points through completed challenges</p>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {BADGE_CONFIG.map((badge) => {
-                const earned = (profileData?.totalScore || 0) >= badge.threshold;
-                const current = getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
-                
-                return (
-                  <div key={badge.name} className={`p-6 rounded-xl border-2 transition-all duration-200 ${
-                    earned 
-                      ? current 
-                        ? 'border-red-500 bg-red-50 shadow-lg ring-2 ring-red-200' 
-                        : 'border-green-500 bg-green-50 hover:shadow-md'
-                      : 'border-gray-300 bg-gray-50 opacity-60'
-                  }`}>
-                    <div className={`mb-3 flex justify-center ${earned ? '' : 'opacity-50 grayscale'}`}>
-                      {getBadgeComponent(badge.threshold, 64)}
+                {!problemsLoading && completedProblems.length > 0 ? (
+                  <div>
+                    <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                      {completedProblems.map((problem) => {
+                        const diffStyle = getDifficultyStyle(problem.difficulty);
+                        return (
+                          <div 
+                            key={problem._id} 
+                            className="bg-white border border-red-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-red-300"
+                          >
+                            <div className="flex items-start justify-between mb-4">
+                              <h3 className="font-semibold text-lg text-slate-900 leading-tight">{problem.title}</h3>
+                              <span className="font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-full text-sm ml-3 flex-shrink-0">
+                                +{problem.points}
+                              </span>
+                            </div>
+                            
+                            <p className="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                              {problem.description}
+                            </p>
+                            
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm font-medium px-3 py-1 rounded-full ${diffStyle.color} ${diffStyle.bg} border ${diffStyle.border}`}>
+                                {problem.difficulty}
+                              </span>
+                              <div className="flex gap-2">
+                                <span className="px-3 py-1 bg-green-50 text-green-700 text-xs rounded-full border border-green-200">
+                                  <CheckCircle className="w-3 h-3 inline mr-1" />
+                                  Completed
+                                </span>
+                                <span className="px-3 py-1 bg-red-50 text-red-700 text-xs rounded-full border border-red-200">
+                                  {problem.category}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    <h4 className={`font-bold text-center mb-1 ${
-                      earned ? current ? 'text-red-500' : 'text-green-700' : 'text-gray-500'
-                    }`}>
-                      {badge.name}
-                    </h4>
-                    <p className="text-xs text-center text-gray-600">
-                      {badge.threshold}+ points required
-                    </p>
-                    {current && (
-                      <div className="mt-2 text-center">
-                        <span className="px-2 py-1 bg-red-500 text-white text-xs rounded-full">
-                          Current
-                        </span>
+
+                    {/* Pagination */}
+                    {(completedProblems.length > 0 || problemsCurrentPage > 1) && (
+                      <div className="flex justify-between items-center pt-6 border-t border-red-200">
+                        <div className="text-sm text-gray-600">
+                          Page {problemsCurrentPage} {totalCompletedProblems > 0 && `• ${totalCompletedProblems} problems total`}
+                        </div>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={handleProblemsPrevPage}
+                            disabled={problemsCurrentPage === 1 || problemsLoading}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                              problemsCurrentPage === 1 || problemsLoading
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                : 'bg-red-500 text-white hover:bg-red-600'
+                            }`}
+                          >
+                            Previous
+                          </button>
+                          <button
+                            onClick={handleProblemsNextPage}
+                            disabled={!problemsHasNextPage || problemsLoading}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                              !problemsHasNextPage || problemsLoading
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                : 'bg-red-500 text-white hover:bg-red-600'
+                            }`}
+                          >
+                            Next
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'created' && (
-          <div>
-            {/* Loading indicator for rooms */}
-            {roomsLoading && (
-              <div className="flex justify-center items-center py-8">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+                ) : !problemsLoading && completedProblems.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle className="w-8 h-8 text-red-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-red-900 mb-2">
+                      {problemsCurrentPage === 1 ? "No Problems Completed Yet" : "No More Problems"}
+                    </h3>
+                    <p className="text-red-600 max-w-md mx-auto">
+                      {problemsCurrentPage === 1 
+                        ? "Start solving challenges to build your portfolio and earn badges!" 
+                        : "You've reached the end of your completed problems."}
+                    </p>
+                  </div>
+                ) : null}
               </div>
             )}
 
-            {!roomsLoading && createdRooms.length > 0 ? (
+            {activeTab === 'badges' && (
               <div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                  {createdRooms.map((room) => (
-                    <div key={room._id} className="bg-white rounded-lg p-6 border-2 border-red-500 hover:shadow-lg transition-all duration-200 hover:border-red-600">
-                      <div className="flex items-center mb-4">
-                        <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4 border border-red-500">
-                          <span className="text-red-500 text-xl">
-                            {getCategoryIcon(room.category)}
-                          </span>
-                        </div>
-                        <div className="flex-grow">
-                          <h3 className="font-bold text-lg text-gray-800">{room.title}</h3>
-                          <p className="text-sm text-gray-500">
-                            Created: {new Date(room.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            room.isPublished 
-                              ? 'bg-green-100 text-green-700 border border-green-500' 
-                              : 'bg-gray-100 text-gray-700 border border-gray-500'
-                          }`}>
-                            {room.isPublished ? 'Published' : 'Draft'}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                        {room.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <span className="text-sm mr-2">📊</span>
-                          <span className={`text-sm font-medium ${getDifficultyColor(room.difficulty)}`}>
-                            {room.difficulty}
-                          </span>
-                        </div>
-                        <span className="px-3 py-1 bg-red-100 text-red-700 text-xs rounded-full border border-red-500">
-                          {room.category}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                <div className="text-center mb-10">
+                  <h3 className="text-2xl font-bold text-red-900 mb-3">Badge Collection</h3>
+                  <p className="text-red-600 max-w-2xl mx-auto">
+                    Unlock prestigious badges by accumulating points through completed challenges. Each badge represents your growing expertise in cybersecurity.
+                  </p>
                 </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {BADGE_CONFIG.map((badge) => {
+                    const earned = (profileData?.totalScore || 0) >= badge.threshold;
+                    const current = getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
+                    
+                    return (
+                      <div key={badge.name} className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
+                        earned 
+                          ? current 
+                            ? `border-slate-300 bg-gradient-to-br ${badge.color} shadow-lg ring-2 ring-slate-200 text-white` 
+                            : 'border-emerald-300 bg-emerald-50 hover:shadow-md hover:border-emerald-400'
+                          : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                      }`}>
+                        {current && (
+                          <div className="absolute -top-2 -right-2">
+                            <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                              Current
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className={`mb-4 flex justify-center ${earned ? '' : 'opacity-40 grayscale'}`}>
+                          {getBadgeComponent(badge.threshold, 72)}
+                        </div>
+                        
+                        <h4 className={`font-bold text-center mb-2 text-lg ${
+                          earned ? current ? 'text-white' : 'text-emerald-800' : 'text-slate-500'
+                        }`}>
+                          {badge.name}
+                        </h4>
+                        
+                        <p className={`text-sm text-center ${
+                          earned ? current ? 'text-white/80' : 'text-emerald-600' : 'text-slate-400'
+                        }`}>
+                          {badge.threshold}+ points required
+                        </p>
+                        
+                        {earned && !current && (
+                          <div className="mt-3 text-center">
+                            <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs rounded-full font-medium border border-emerald-200">
+                              <CheckCircle className="w-3 h-3 inline mr-1" />
+                              Earned
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-                {/* Pagination for Created Rooms */}
-                {(createdRooms.length > 0 || roomsCurrentPage > 1) && (
-                  <div className="flex justify-between items-center mt-8">
-                    <div className="text-sm text-gray-600">
-                      Page {roomsCurrentPage} {totalCreatedRooms > 0 && `• Total: ${totalCreatedRooms} rooms`}
-                    </div>
-                    <div className="flex gap-4">
-                      <button
-                        onClick={handleRoomsPrevPage}
-                        disabled={roomsCurrentPage === 1 || roomsLoading}
-                        className={`font-medium text-base rounded-lg px-4 py-2 text-white transition-colors ${
-                          roomsCurrentPage === 1 || roomsLoading
-                            ? 'bg-gray-400 cursor-not-allowed' 
-                            : 'bg-red-500 hover:bg-red-600'
-                        }`}
-                      >
-                        Previous
-                      </button>
-                      <button
-                        onClick={handleRoomsNextPage}
-                        disabled={!roomsHasNextPage || roomsLoading}
-                        className={`font-medium text-base rounded-lg px-4 py-2 text-white transition-colors ${
-                          !roomsHasNextPage || roomsLoading
-                            ? 'bg-gray-400 cursor-not-allowed' 
-                            : 'bg-red-500 hover:bg-red-600'
-                        }`}
-                      >
-                        Next
-                      </button>
-                    </div>
+            {activeTab === 'created' && (
+              <div>
+                {roomsLoading && (
+                  <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
                   </div>
                 )}
+
+                {!roomsLoading && createdRooms.length > 0 ? (
+                  <div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                      {createdRooms.map((room) => {
+                        const diffStyle = getDifficultyStyle(room.difficulty);
+                        return (
+                          <div key={room._id} className="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-slate-300">
+                            <div className="flex items-start mb-6">
+                              <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mr-4 border border-slate-200">
+                                <span className="text-slate-600 text-xl">
+                                  {getCategoryIcon(room.category)}
+                                </span>
+                              </div>
+                              <div className="flex-grow">
+                                <h3 className="font-semibold text-lg text-slate-900 mb-1">{room.title}</h3>
+                                <div className="flex items-center text-sm text-slate-500">
+                                  <Calendar className="w-4 h-4 mr-1" />
+                                  Created {new Date(room.createdAt).toLocaleDateString()}
+                                </div>
+                              </div>
+                              <div>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                                  room.isPublished 
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                    : 'bg-amber-50 text-amber-700 border-amber-200'
+                                }`}>
+                                  {room.isPublished ? 'Published' : 'Draft'}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <p className="text-slate-600 text-sm mb-6 line-clamp-2 leading-relaxed">
+                              {room.description}
+                            </p>
+                            
+                            <div className="flex items-center justify-between">
+                              <span className={`text-sm font-medium px-3 py-1 rounded-full ${diffStyle.color} ${diffStyle.bg} border ${diffStyle.border}`}>
+                                {room.difficulty}
+                              </span>
+                              <span className="px-3 py-1 bg-slate-50 text-slate-700 text-xs rounded-full border border-slate-200">
+                                {room.category}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Pagination */}
+                    {(createdRooms.length > 0 || roomsCurrentPage > 1) && (
+                      <div className="flex justify-between items-center pt-6 border-t border-slate-200">
+                        <div className="text-sm text-slate-600">
+                          Page {roomsCurrentPage} {totalCreatedRooms > 0 && `• ${totalCreatedRooms} rooms total`}
+                        </div>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={handleRoomsPrevPage}
+                            disabled={roomsCurrentPage === 1 || roomsLoading}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                              roomsCurrentPage === 1 || roomsLoading
+                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                            }`}
+                          >
+                            Previous
+                          </button>
+                          <button
+                            onClick={handleRoomsNextPage}
+                            disabled={!roomsHasNextPage || roomsLoading}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                              !roomsHasNextPage || roomsLoading
+                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                            }`}
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : !roomsLoading && createdRooms.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Star className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                      {roomsCurrentPage === 1 ? "No Rooms Created Yet" : "No More Rooms"}
+                    </h3>
+                    <p className="text-slate-600 mb-8 max-w-md mx-auto">
+                      {roomsCurrentPage === 1 
+                        ? "Share your knowledge by creating cybersecurity challenges for the community!" 
+                        : "You've reached the end of your created rooms."}
+                    </p>
+                    {roomsCurrentPage === 1 && (
+                      <button className="px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium inline-flex items-center">
+                        <Star className="w-4 h-4 mr-2" />
+                        Create Your First Room
+                      </button>
+                    )}
+                  </div>
+                ) : null}
               </div>
-            ) : !roomsLoading && createdRooms.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4">🏗️</div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  {roomsCurrentPage === 1 ? "No Rooms Created Yet" : "No More Rooms"}
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  {roomsCurrentPage === 1 
-                    ? "Start creating your own challenges to share with the community!" 
-                    : "You've reached the end of your created rooms."}
-                </p>
-                {roomsCurrentPage === 1 && (
-                  <button className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium">
-                    Create Your First Room
-                  </button>
-                )}
-              </div>
-            ) : null}
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
