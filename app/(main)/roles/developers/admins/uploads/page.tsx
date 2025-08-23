@@ -147,7 +147,7 @@ const Page = () => {
               Resource Link
             </label>
             <input
-              id="resourceLink"
+              id="link"
               type="text"
               placeholder="link here"
               value={formData.link}
