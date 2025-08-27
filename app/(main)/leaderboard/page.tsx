@@ -90,20 +90,20 @@ const LeaderboardPage = () => {
 
   const getBadgeComponent = useCallback((score: number, size: 'small' | 'medium' | 'large' = 'medium') => {
     const dimensions = {
-      small: { width: 32, height: 32 },
-      medium: { width: 40, height: 40 },
-      large: { width: 56, height: 56 }
+      small: { width: 48, height: 48 },
+      medium: { width: 56, height: 56 },
+      large: { width: 72, height: 72 }
     };
     
     const { width, height } = dimensions[size];
     
-    if (score < 200) return <Image src={Newbie} alt="Newbie" width={width} height={height} />;
-    if (score < 500) return <Image src={Scout} alt="Scout" width={width} height={height} />;
-    if (score < 1000) return <Image src={Codebreaker} alt="Codebreaker" width={width} height={height} />;
-    if (score < 1500) return <Image src={Hacker} alt="Hacker" width={width} height={height} />;
-    if (score < 2000) return <Image src={Cipher} alt="Cipher Hunter" width={width} height={height} />;
-    if (score < 3000) return <Image src={Forger} alt="Forger" width={width} height={height} />;
-    return <Image src={Conqueror} alt="Flag Conqueror" width={width} height={height} />;
+    if (score < 200) return <Image src={Newbie} alt="Newbie" width={width} height={height} className="drop-shadow-md" />;
+    if (score < 500) return <Image src={Scout} alt="Scout" width={width} height={height} className="drop-shadow-md" />;
+    if (score < 1000) return <Image src={Codebreaker} alt="Codebreaker" width={width} height={height} className="drop-shadow-md" />;
+    if (score < 1500) return <Image src={Hacker} alt="Hacker" width={width} height={height} className="drop-shadow-md" />;
+    if (score < 2000) return <Image src={Cipher} alt="Cipher Hunter" width={width} height={height} className="drop-shadow-md" />;
+    if (score < 3000) return <Image src={Forger} alt="Forger" width={width} height={height} className="drop-shadow-md" />;
+    return <Image src={Conqueror} alt="Flag Conqueror" width={width} height={height} className="drop-shadow-md" />;
   }, []);
 
   // Check if user has a valid image - if not, should show Flagforge
@@ -148,6 +148,9 @@ const LeaderboardPage = () => {
         <h1 className="text-3xl sm:text-3xl tracking-tight text-center text-rose-500 font-bold mb-2">
           Leaderboard
         </h1>
+        <p className="text-sm text-gray-600 text-center">
+          Showing top 50 players only
+        </p>
       </div>
       
       <div className="w-full max-w-6xl">
@@ -200,7 +203,7 @@ const LeaderboardPage = () => {
                     </div>
 
                     {/* Level Badge for 1st place */}
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 ">
                       {getBadgeComponent(leaderboard[0].totalScore)}
                     </div>
                   </div>
@@ -257,7 +260,7 @@ const LeaderboardPage = () => {
                           {user.name}
                         </h2>
                         <p className="text-sm text-gray-600 text-center">
-                          Score: {user.totalScore.toLocaleString()}
+                          Points: {user.totalScore.toLocaleString()}
                         </p>
                         <p className="text-sm text-gray-600 text-center">
                           Rooms: {user.roomsCompleted || 0}
