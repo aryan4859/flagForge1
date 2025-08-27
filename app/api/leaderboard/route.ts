@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import User from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import connect from "@/utlis/db";
+export const runtime = "nodejs";
 
 // GET /api/leaderboard
 export async function GET() {

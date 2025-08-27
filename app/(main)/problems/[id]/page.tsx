@@ -126,7 +126,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
           setIsCorrect(true);
           setIsDone(true);
           setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 6000);
+          setTimeout(() => setShowConfetti(false), 9000);
           setFlag("");
           setTimeout(() => {
             router.push("/problems");

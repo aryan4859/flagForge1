@@ -444,9 +444,36 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-red-50">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-br from-red-600 via-red-600 to-red-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+     {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-500 to-rose-600 dark:bg-[#1b212a]">
+        <div className="absolute inset-0 opacity-30">
+          <div 
+            className="absolute inset-0" 
+            style={{ 
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`, 
+              backgroundSize: "20px 20px" 
+            }}
+          ></div>
+        </div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 animate-bounce">
+          <div className="w-3 h-3 bg-white/20 rounded-full"></div>
+        </div>
+        <div className="absolute top-32 right-20 animate-pulse">
+          <div className="w-2 h-2 bg-white/30 rounded-full"></div>
+        </div>
+        <div className="absolute bottom-20 left-1/4 animate-bounce delay-300">
+          <div className="w-4 h-4 bg-white/15 rounded-full"></div>
+        </div>
+        <div className="absolute top-40 right-1/3 animate-pulse delay-500">
+          <div className="w-3 h-3 bg-white/25 rounded-full"></div>
+        </div>
+        <div className="absolute bottom-32 right-10 animate-bounce delay-700">
+          <div className="w-2 h-2 bg-white/20 rounded-full"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
             {/* Profile Image */}
             <div className="flex-shrink-0">
@@ -505,16 +532,16 @@ const ProfilePage = () => {
                   
                   {nextBadge && (
                     <div className="text-center md:text-right flex-shrink-0">
-                      <p className="text-sm text-red-200 mb-3">
+                      <p className="text-sm  mb-3">
                         Next: {nextBadge.nextBadgeName} ({nextBadge.pointsNeeded} points needed)
                       </p>
                       <div className="w-48 bg-white/20 rounded-full h-3 overflow-hidden">
                         <div 
-                          className="bg-gradient-to-r from-red-400 to-red-500 h-3 rounded-full transition-all duration-700 ease-out"
+                          className="bg-gradient-to-r  from-red-400 to-red-500 h-3 rounded-full transition-all duration-700 ease-out"
                           style={{ width: `${nextBadge.progress}%` }}
                         ></div>
                       </div>
-                      <p className="text-xs text-red-300 mt-2">
+                      <p className="text-xs  mt-2">
                         {nextBadge.progress.toFixed(1)}% complete
                       </p>
                     </div>

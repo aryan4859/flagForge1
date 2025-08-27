@@ -7,6 +7,7 @@ import userSchema from "@/models/userSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
+export const runtime = "nodejs";
 
 
 export async function POST(req: NextRequest) {
