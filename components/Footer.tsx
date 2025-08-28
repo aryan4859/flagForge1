@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "@/public/flagforge-logo.png";
+import logo from "/public/flagforge-logo.png";
 function Footer() {
   return (
     <footer className="bg-white rounded-lg m-4">
@@ -13,33 +13,33 @@ function Footer() {
           >
             <Image src={logo} alt="logo" height={70} width={70} />
             <span className="self-center text-2xl font-semibold whitespace-nowrap ">
-              flagforge
+              FlagForge
             </span>
           </Link>
           <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 ">
             <li>
-              <Link href="#" className="hover:underline me-4 md:me-6">
+              <Link href="/about" className="hover:underline me-4 md:me-6">
                 About
               </Link>
             </li>
             <li>
-              <Link href="#" className="hover:underline me-4 md:me-6">
+              <Link href="/privacy-policy" className="hover:underline me-4 md:me-6">
                 Privacy Policy
               </Link>
             </li>
             <li>
-              <Link href="#" className="hover:underline me-4 md:me-6">
+              <Link href="/licensing" className="hover:underline me-4 md:me-6">
                 Licensing
               </Link>
             </li>
             <li>
-              <Link href="#" className="hover:underline">
+              <Link href="/contact" className="hover:underline">
                 Contact
               </Link>
             </li>
           </ul>
         </div>
-        <hr className="my-6 border-gray-200 sm:mx-auto  lg:my-8" />
+        <hr className="my-6 border-gray-200 sm:mx-auto  lg:my-3" />
         <span className="block text-sm text-gray-500 sm:text-center ">
           © Maintained By{" "}
           <Link
