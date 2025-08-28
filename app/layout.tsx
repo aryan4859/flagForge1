@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Flag Forge",
   description:
     "Join FlagForge, the premier Capture The Flag (CTF) platform designed to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
-  metadataBase: new URL("https://flagforge.xyz"),
+  metadataBase: new URL("https://flagforge.aryan4.com.np"),
   alternates: {
     canonical: "/",
     languages: {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: "FlagForge - The Ultimate CTF Platform",
     description:
       "FlagForge is the go-to platform for Capture The Flag (CTF) competitions. Test your hacking skills with thrilling challenges in cybersecurity.",
-    url: "https://flagforge.xyz",
+    url: "https://flagforge.aryan4.com.np",
     siteName: "FlagForge",
     images: [
       {
