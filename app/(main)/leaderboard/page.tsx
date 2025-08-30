@@ -145,7 +145,7 @@ const LeaderboardPage = () => {
   return (
     <div className="flex flex-col justify-center items-center mt-16 px-8">
       <div className="flex flex-col items-center mb-6">
-        <h1 className="text-3xl sm:text-3xl tracking-tight text-center text-rose-500 font-bold mb-2">
+        <h1 className="text-2xl sm:text-5xl tracking-tight text-center text-rose-500 font-bold mb-2">
           Leaderboard
         </h1>
         <p className="text-sm text-gray-600 text-center">

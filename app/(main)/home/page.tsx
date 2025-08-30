@@ -1,11 +1,11 @@
-"use client"
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import Loading from "@/components/loading"
-import AuthError from "@/components/authError"
-import Image from "next/image"
-import FlagForge from "../../../public/flagforge.gif"
-import Link from "next/link"
+"use client";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import Loading from "@/components/loading";
+import AuthError from "@/components/authError";
+import Image from "next/image";
+import FlagForge from "../../../public/flagforge.gif";
+import Link from "next/link";
 import {
   Flag,
   LayoutDashboard,
@@ -19,87 +19,87 @@ import {
   Shield,
   Zap,
   Star,
-} from "lucide-react"
+} from "lucide-react";
 
 interface UserStats {
-  totalScore: number
-  rank: number
-  level: string
-  completedQuestions: number
-  badges: number
-  streak: number
+  totalScore: number;
+  rank: number;
+  level: string;
+  completedQuestions: number;
+  badges: number;
+  streak: number;
 }
 
 interface LatestRoom {
-  _id: string
-  title: string
-  category: string
-  points: number
-  description: string
-  createdAt: string
-  difficulty?: string
+  _id: string;
+  title: string;
+  category: string;
+  points: number;
+  description: string;
+  createdAt: string;
+  difficulty?: string;
 }
 
 interface SolvedRoom {
-  _id: string
-  title: string
-  category: string
-  points: number
-  solvedAt: string
+  _id: string;
+  title: string;
+  category: string;
+  points: number;
+  solvedAt: string;
 }
 
 const Home = () => {
-  const { status: sessionStatus, data: session } = useSession()
-  const [loading, setLoading] = useState(true)
-  const [userStats, setUserStats] = useState<UserStats | null>(null)
-  const [latestRoom, setLatestRoom] = useState<LatestRoom | null>(null)
-  const [lastSolved, setLastSolved] = useState<SolvedRoom | null>(null)
+  const { status: sessionStatus, data: session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [latestRoom, setLatestRoom] = useState<LatestRoom | null>(null);
+  const [lastSolved, setLastSolved] = useState<SolvedRoom | null>(null);
 
   useEffect(() => {
     if (sessionStatus === "authenticated") {
-      fetchUserStats()
-      fetchLatestRoom()
-      fetchLastSolved()
+      fetchUserStats();
+      fetchLatestRoom();
+      fetchLastSolved();
     }
-  }, [sessionStatus])
+  }, [sessionStatus]);
 
   const fetchUserStats = async () => {
     try {
-      const response = await fetch("/api/profile")
+      const response = await fetch("/api/profile");
       if (response.ok) {
-        const data = await response.json()
-        setUserStats(data)
+        const data = await response.json();
+        setUserStats(data);
       }
     } catch (error) {
-      console.error("Failed to fetch user stats:", error)
+      console.error("Failed to fetch user stats:", error);
     }
-  }
+  };
 
   const fetchLatestRoom = async () => {
     try {
-      const response = await fetch("/api/problems?page=1&latest=true")
+      const response = await fetch("/api/problems?page=1&latest=true");
       if (response.ok) {
-        const data = await response.json()
-        setLatestRoom(data.data[0])
+        const data = await response.json();
+        setLatestRoom(data.data[0]);
       }
     } catch (error) {
-      console.error("Failed to fetch latest room:", error)
+      console.error("Failed to fetch latest room:", error);
     }
-  }
+  };
 
   const fetchLastSolved = async () => {
     try {
-      const response = await fetch("/api/user/recent-solved")
+      const response = await fetch("/api/user/recent-solved");
       if (response.ok) {
-        const data = await response.json()
-        setLastSolved(data[0])
+        const data = await response.json();
+        setLastSolved(data[0]);
       }
     } catch (error) {
-      console.error("Failed to fetch last solved:", error)
+      console.error("Failed to fetch last solved:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getCategoryColor = (category: string) => {
     const colors = {
@@ -110,23 +110,25 @@ const Home = () => {
       PWN: "bg-orange-100 text-orange-800",
       OSINT: "bg-cyan-100 text-cyan-800",
       Misc: "bg-gray-100 text-gray-800",
-    }
-    return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
-  }
+    };
+    return (
+      colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
+    );
+  };
 
   const getDifficultyColor = (points: number) => {
-    if (points <= 100) return "text-green-600"
-    if (points <= 300) return "text-yellow-600"
-    if (points <= 500) return "text-orange-600"
-    return "text-red-600"
-  }
+    if (points <= 100) return "text-green-600";
+    if (points <= 300) return "text-yellow-600";
+    if (points <= 500) return "text-orange-600";
+    return "text-red-600";
+  };
 
   if (sessionStatus === "loading" || loading) {
-    return <Loading />
+    return <Loading />;
   }
 
   if (sessionStatus === "unauthenticated") {
-    return <AuthError />
+    return <AuthError />;
   }
 
   return (
@@ -166,16 +168,20 @@ const Home = () => {
                     alt="flagforge"
                     className="rounded-lg shadow-2xl"
                   />
-
                 </div>
-                <h1 className="text-6xl font-black text-white tracking-tight drop-shadow-2xl">FlagForge</h1>
+                <h1 className="text-6xl font-black text-white tracking-tight drop-shadow-2xl">
+                  FlagForge
+                </h1>
               </div>
               <p className="text-xl text-white/90 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed drop-shadow-lg mb-6">
-                Master cybersecurity through hands-on CTF challenges and compete with hackers worldwide
+                Master cybersecurity through hands-on CTF challenges and compete
+                with hackers worldwide
               </p>
               <div className="flex items-center justify-center lg:justify-start gap-2">
                 <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
-                <span className="text-white/80 font-medium">Join 500+ Active Security Professionals</span>
+                <span className="text-white/80 font-medium">
+                  Join 500+ Active Security Professionals
+                </span>
                 <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
               </div>
               <div className="flex text-center justify-center pt-10">
@@ -188,11 +194,17 @@ const Home = () => {
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
                       </div>
                       <div className="text-left">
-                        <div className="text-2xl font-bold text-white drop-shadow-lg">{userStats.level}</div>
-                        <div className="text-sm text-white/70">Security Level</div>
+                        <div className="text-2xl font-bold text-white drop-shadow-lg">
+                          {userStats.level}
+                        </div>
+                        <div className="text-sm text-white/70">
+                          Security Level
+                        </div>
                       </div>
                       <div className="flex gap-1 ml-4">
-                        {Array.from({ length: Math.min(userStats.badges, 5) }).map((_, i) => (
+                        {Array.from({
+                          length: Math.min(userStats.badges, 5),
+                        }).map((_, i) => (
                           <div
                             key={i}
                             className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full shadow-lg animate-pulse"
@@ -200,7 +212,9 @@ const Home = () => {
                           ></div>
                         ))}
                         {userStats.badges > 5 && (
-                          <span className="text-white/80 text-sm font-medium ml-2">+{userStats.badges - 5}</span>
+                          <span className="text-white/80 text-sm font-medium ml-2">
+                            +{userStats.badges - 5}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -217,14 +231,20 @@ const Home = () => {
                   <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">
                     {userStats.totalScore.toLocaleString()}
                   </div>
-                  <div className="text-sm text-white/70 font-medium">Total Points</div>
+                  <div className="text-sm text-white/70 font-medium">
+                    Total Points
+                  </div>
                 </div>
 
                 <div className="group relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
                   {/* <Target className="h-8 w-8 text-orange-300 mx-auto mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" /> */}
-                  <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">#{userStats.rank}</div>
-                  <div className="text-sm text-white/70 font-medium">Global Rank</div>
+                  <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">
+                    #{userStats.rank}
+                  </div>
+                  <div className="text-sm text-white/70 font-medium">
+                    Global Rank
+                  </div>
                 </div>
 
                 <div className="group relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
@@ -233,19 +253,25 @@ const Home = () => {
                   <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">
                     {userStats.completedQuestions}
                   </div>
-                  <div className="text-sm text-white/70 font-medium">Challenges Solved</div>
+                  <div className="text-sm text-white/70 font-medium">
+                    Challenges Solved
+                  </div>
                 </div>
 
                 <div className="group relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
                   {/* <Zap className="h-8 w-8 text-blue-300 mx-auto mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" /> */}
-                  <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">{userStats.streak}</div>
-                  <div className="text-sm text-white/70 font-medium">Day Streak</div>
+                  <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">
+                    {userStats.streak}
+                  </div>
+                  <div className="text-sm text-white/70 font-medium">
+                    Day Streak
+                  </div>
                 </div>
               </div>
             )}
           </div>
-        </div>       
+        </div>
       </div>
 
       {/* Main Content */}
@@ -255,7 +281,9 @@ const Home = () => {
           <div className="bg-white border border-gray-200 rounded-lg p-6">
             <div className="flex items-center gap-3 mb-4">
               <Clock className="h-5 w-5 text-[#EF4444]" />
-              <h2 className="text-xl font-bold text-gray-900">Latest Challenge</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                Latest Challenge
+              </h2>
             </div>
             {latestRoom ? (
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer">
@@ -264,23 +292,31 @@ const Home = () => {
                     <h3 className="text-lg font-semibold text-gray-900 hover:text-[#EF4444] transition-colors">
                       {latestRoom.title}
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">{latestRoom.description.substring(0, 100)}...</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {latestRoom.description.substring(0, 100)}...
+                    </p>
                   </div>
                   <div className="ml-4 text-right">
-                    <div className={`text-lg font-bold ${getDifficultyColor(latestRoom.points)}`}>
+                    <div
+                      className={`text-lg font-bold ${getDifficultyColor(
+                        latestRoom.points
+                      )}`}
+                    >
                       {latestRoom.points} pts
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(latestRoom.category)}`}
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(
+                      latestRoom.category
+                    )}`}
                   >
                     {latestRoom.category}
                   </span>
                   <div className="flex items-center gap-2 text-sm text-[#EF4444] hover:text-red-600">
                     <PlayCircle className="h-4 w-4" />
-                   <Link href='/problems'> Start Challenge </Link>
+                    <Link href="/problems"> Start Challenge </Link>
                   </div>
                 </div>
               </div>
@@ -292,7 +328,10 @@ const Home = () => {
             )}
 
             <div className="mt-4 text-center">
-              <Link href="/problems" className="bg-[#EF4444] hover:bg-red-500 text-white font-medium px-6 py-2 rounded-lg transition-colors">
+              <Link
+                href="/problems"
+                className="bg-[#EF4444] hover:bg-red-500 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+              >
                 View All Challenges
               </Link>
             </div>
@@ -314,12 +353,16 @@ const Home = () => {
                       <Flag className="h-4 w-4 text-green-600" />
                     </div>
                     <div className="flex-1">
-                      <div className="font-semibold text-gray-900">{lastSolved.title}</div>
+                      <div className="font-semibold text-gray-900">
+                        {lastSolved.title}
+                      </div>
                       <div className="text-sm text-gray-600">
                         {lastSolved.category} • {lastSolved.points} pts
                       </div>
                     </div>
-                    <div className="text-xs text-gray-500">{new Date(lastSolved.solvedAt).toLocaleDateString()}</div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(lastSolved.solvedAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -333,24 +376,41 @@ const Home = () => {
 
             {/* Quick Actions */}
             <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                Quick Actions
+              </h3>
               <div className="grid grid-cols-2 gap-3">
-                <Link href='/problems' className="bg-[#EF4444] hover:bg-red-500 text-white font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+                <Link
+                  href="/problems"
+                  className="bg-[#EF4444] hover:bg-red-500 text-white font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                >
                   <Target className="h-4 w-4" />
                   Browse
                 </Link>
-                <Link href='/leaderboard' className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+
+                <Link
+                  href="/leaderboard"
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                >
                   <TrendingUp className="h-4 w-4" />
                   Leaderboard
                 </Link>
-                <Link href='/profile' className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+
+                <Link
+                  href="/profile"
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                >
                   <Users className="h-4 w-4" />
                   Profile
                 </Link>
-                <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm">
+
+                <Link
+                  href="/"
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-4 py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                >
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -365,10 +425,13 @@ const Home = () => {
                   <Shield className="h-8 w-8 text-[#EF4444]" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">Welcome to the Forge!</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Welcome to the Forge!
+              </h2>
               <p className="text-gray-600 mb-4">
-                Ready to test your cybersecurity skills? Practice with realistic scenarios and showcase your abilities
-                in our gamified environment.
+                Ready to test your cybersecurity skills? Practice with realistic
+                scenarios and showcase your abilities in our gamified
+                environment.
               </p>
               <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-500 mb-6">
                 <div className="flex items-center gap-1">
@@ -416,7 +479,7 @@ const Home = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
