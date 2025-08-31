@@ -4,11 +4,13 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Authprovider from "@/providers/auth-provider";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { Analytics } from "@vercel/analytics/react";
+
 const dmSans = DM_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Flag Forge",
+  title: "FlagForge",
   description:
     "Join FlagForge, the premier Capture The Flag (CTF) platform designed to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
   metadataBase: new URL("https://flagforge.aryan4.com.np"),
@@ -20,7 +22,6 @@ export const metadata: Metadata = {
       bn: "/bn",
     },
   },
-
   applicationName: "FlagForge CTF",
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -53,7 +54,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary_large-image",
     site: "@Aryanstha",
     title: "FlagForge - The Ultimate CTF Platform",
     description:
@@ -64,9 +65,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
@@ -76,18 +77,21 @@ export default function RootLayout({
           name="google-site-verification"
           content="your-google-verification-code"
         />
-        {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className={dmSans.className}>
-        <Authprovider>
-          <div className="mx-auto grid min-h-[100dvh] grid-rows-[auto_1fr_auto]">
-            <Navbar />
-            {children}
-            <Analytics />
-            <Footer />
-          </div>
-        </Authprovider>
+      <body
+        className={`${dmSans.className} antialiased transition-colors duration-300 bg-white dark:bg-gray-900`}
+      >
+        <ThemeProvider>
+          <Authprovider>
+            <div className="mx-auto grid min-h-[100dvh] grid-rows-[auto_1fr_auto]">
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Analytics />
+              <Footer />
+            </div>
+          </Authprovider>
+        </ThemeProvider>
       </body>
     </html>
   );

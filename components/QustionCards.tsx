@@ -3,7 +3,7 @@ import { Questions } from "@/interfaces";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
-const QustionCards = ({
+const QuestionCards = ({
   title,
   description,
   category,
@@ -18,33 +18,33 @@ const QustionCards = ({
   return (
     <Link
       href={isDone ? "#" : `/problems/${_id}`}
-      className={`w-full h-full bg-[white]/40 backdrop-blur-[150px] mx-auto my-0 flex flex-col gap-4 shadow-lg shadow-gray-200/50 px-6 py-5 rounded-2xl z-2 hover:bg-gray-100/70 border border-gray-200 ${
+      className={`w-full h-full bg-[white]/40 dark:bg-gray-800 backdrop-blur-[150px] mx-auto my-0 flex flex-col gap-4 shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 px-6 py-5 rounded-2xl z-2 hover:bg-gray-100/70 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors duration-300 ${
         isDone
-          ? "border-green-400 cursor-not-allowed bg-gray-100 pointer-events-none grayscale"
+          ? "border-green-400 cursor-not-allowed bg-gray-100 pointer-events-none grayscale dark:bg-gray-700"
           : ""
       }`}
     >
       <div className="flex flex-col">
-        <h1 className="text-[1.5rem] text-start font-bold tracking-tight line-clamp-2">
+        <h1 className="text-[1.5rem] text-start font-bold tracking-tight line-clamp-2 text-gray-900 dark:text-gray-100 transition-colors duration-300">
           {title}
         </h1>
         <div className="flex flex-col gap-2 justify-between">
-          <h1 className="text-sm sm:text-base font-medium">
-            Points : <span className="text-red-700">{points}</span>
+          <h1 className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-300 transition-colors duration-300">
+            Points : <span className="text-red-500 font-bold">{points}</span>
           </h1>
           <div className="text-sm sm:text-base font-bold">
-            <span className="text-white text-xs tracking-tight font-bold px-2 py-1 bg-red-700 rounded-full">
+            <span className="text-white dark:text-gray-100 text-xs tracking-tight font-bold px-3 py-1 bg-red-500 dark:bg-red-600 rounded-full transition-colors duration-300">
               {category}
             </span>
           </div>
         </div>
       </div>
-      <h3 className="font-base font-[0.5rem] text-black line-clamp-2">
-        {description}
-        {"..."} <span className="text-red-700 font-bold">more</span>
+      <h3 className="font-base font-[0.5rem] text-black dark:text-gray-200 line-clamp-2 transition-colors duration-300">
+        {description}...{" "}
+        <span className="text-red-500 dark:text-red-400 font-bold">more</span>
       </h3>
     </Link>
   );
 };
 
-export default QustionCards;
+export default QuestionCards;
