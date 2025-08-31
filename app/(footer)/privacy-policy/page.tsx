@@ -79,7 +79,7 @@ export default function PrivacyPolicy() {
           <p className="text-gray-600 dark:text-gray-300">
             We may update this policy periodically. For questions, contact us at{" "}
             <span className="text-rose-600 dark:text-rose-500 font-medium">
-              contact@aryan4.com.np
+              info@flagforge.xyz
             </span>
           </p>
         </div>

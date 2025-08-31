@@ -206,7 +206,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
         <div className="max-w-screen-2xl mx-12 my-0">
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <h1 className="text-2xl sm:text-3xl flex items-center justify-center gap-4 text-black font-bold">
+              <h1 className="text-2xl dark:text-white sm:text-3xl flex items-center justify-center gap-4 text-black font-bold">
                 {problems.title}
                 <span className="text-sm hidden sm:block px-2 py-1 shadow-xl text-center bg-rose-500 rounded-full tracking-tight font-semibold text-white hover:bg-rose-700">
                   {problems.category}

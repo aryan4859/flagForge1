@@ -4,124 +4,95 @@ import QuestionModel from "@/models/qustionsSchema";
 import { HttpStatusCode } from "axios";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-
+import userSchema from "@/models/userSchema";
+import UserQuestionModel from "@/models/userQuestionSchema";
 export const runtime = "nodejs";
 
 export async function GET(
-  req: NextRequest,
+  _: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connect();
+    const { id } = await params; // Await the params
+    const session = await getServerSession(authOptions);
+    const question = await QuestionModel.findById(id);
     
-    const { id } = await params;
-    
-    if (!id || id.length !== 24) {
-      return NextResponse.json(
-        { message: "Invalid problem ID" },
-        { status: HttpStatusCode.BadRequest }
-      );
+    if (question) {
+      question.flag = undefined;
     }
 
-    // Find the specific question by ID
-    const question = await QuestionModel.findById(id).select("-flag");
-    
-    if (!question) {
-      return NextResponse.json(
-        { message: "Problem not found" },
-        { status: HttpStatusCode.NotFound }
-      );
+    const user = await userSchema.findOne({ email: session?.user.email });
+
+    const userQuestion = await UserQuestionModel.find({ userId: user?.id });
+
+    const isDone = userQuestion.some(
+      (item: { questionId: string }) =>
+        item.questionId.toString() === id
+    );
+
+    if (question) {
+      return NextResponse.json({ question, isDone });
     }
-
-    // Check if user has solved this problem (you'll need to implement this based on your user schema)
-    // For now, defaulting to false - replace with actual logic
-    const isDone = false; // TODO: Check user's solved problems
-
-    return NextResponse.json({
-      question: question,
-      isDone: isDone
-    });
-
-  } catch (error) {
-    console.error("Error fetching problem:", error);
     return NextResponse.json(
-      { message: "Failed to fetch problem" },
-      { status: HttpStatusCode.InternalServerError }
+      { message: `Product ${id} not found`, isDone: isDone },
+      { status: HttpStatusCode.NotFound }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: error },
+      { status: HttpStatusCode.BadRequest }
     );
   }
 }
 
 export async function POST(
-  req: NextRequest,
+  req: NextRequest, 
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connect();
-    
-    // Get user session for authentication
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: HttpStatusCode.Unauthorized }
-      );
-    }
-
-    const { id } = await params;
-    const { flag } = await req.json();
-
-    // Validate inputs
-    if (!id || id.length !== 24) {
-      return NextResponse.json(
-        { message: "Invalid problem ID" },
-        { status: HttpStatusCode.BadRequest }
-      );
-    }
-
-    if (!flag || typeof flag !== 'string') {
-      return NextResponse.json(
-        { message: "Flag is required" },
-        { status: HttpStatusCode.BadRequest }
-      );
-    }
-
-    // Find the question with the flag included
+    const { id } = await params; // Await the params
+    const body: { flag: string } = await req.json();
     const question = await QuestionModel.findById(id);
-    
-    if (!question) {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    const user = await userSchema.findOne({ email: session?.user?.email });
+    if (!user) {
       return NextResponse.json(
-        { message: "Problem not found" },
+        { success: false, message: "User not found" },
         { status: HttpStatusCode.NotFound }
       );
     }
 
-    // Check if flag is correct
-    const trimmedFlag = flag.trim();
-    const isCorrect = question.flag === trimmedFlag;
-
-    if (isCorrect) {
-      // TODO: Mark problem as solved for this user in your user/progress schema
-      // Example: await UserProgress.findOneAndUpdate(
-      //   { userId: session.user.id, questionId: id },
-      //   { solved: true, solvedAt: new Date() },
-      //   { upsert: true }
-      // );
-
-      return NextResponse.json({
-        message: "Right! Well done!",
-        correct: true
+    if (body.flag == question?.flag) {
+      user.totalScore = (user.totalScore || 0) + question.points;
+      const userQuestion = await UserQuestionModel.create({ 
+        userId: user.id, 
+        questionId: id 
       });
+
+      await userQuestion.save();
+      await user.save();
+
+      return NextResponse.json(
+        { success: true, message: "Your Flag Is Right!" },
+        { status: HttpStatusCode.Created }
+      );
     } else {
-      return NextResponse.json({
-        message: "Wrong flag. Try again!",
-        correct: false
-      });
+      return NextResponse.json(
+        { success: false, message: "Incorrect flag" },
+        { status: HttpStatusCode.BadRequest }
+      );
     }
 
   } catch (error) {
-    console.error("Error submitting flag:", error);
     return NextResponse.json(
-      { message: "Failed to submit flag" },
+      { success: false, message: "An error occurred" },
       { status: HttpStatusCode.InternalServerError }
     );
   }
