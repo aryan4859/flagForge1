@@ -9,7 +9,6 @@ import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
 export const runtime = "nodejs";
 
-
 export async function POST(req: NextRequest) {
   try {
     await connect();
@@ -33,20 +32,38 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const qpage = parseInt(searchParams.get("page") ?? "1", 10);
   const page: number = qpage;
-  const limit = 8;
+  
+  // Allow custom limit from query params, default to 8 for normal pagination
+  const requestedLimit = searchParams.get("limit");
+  const limit = requestedLimit ? parseInt(requestedLimit, 10) : 8;
+  
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
 
   if (!session) {
     return new Response("Unauthorized", { status: 401 });
   }
+  
   try {
     await connect();
-    const questions = await QuestionModel.find().select('-flag').skip(startIndex).limit(limit);
+    
+    // Build the query
+    let query = QuestionModel.find().select('-flag');
+    
+    // Add sorting - newest first by default
+    query = query.sort({ createdAt: -1 });
+    
+    // Apply pagination only if limit is reasonable (not trying to get all)
+    if (limit <= 1000) {
+      query = query.skip(startIndex).limit(limit);
+    }
+    
+    const questions = await query.exec();
 
     const user = await userSchema.findOne({ email: session?.user?.email });
     if (!user) {
@@ -58,7 +75,22 @@ export async function GET(request: NextRequest) {
 
     const userQuestion = await UserQuestionModel.find({ userId: user.id });
 
-    return NextResponse.json({ data: questions, totalScore: user.totalScore, questionDone: userQuestion });
+    // Get total count for pagination info
+    const totalQuestions = await QuestionModel.countDocuments();
+
+    return NextResponse.json({ 
+      data: questions, 
+      totalScore: user.totalScore, 
+      questionDone: userQuestion,
+      pagination: {
+        page,
+        limit,
+        total: totalQuestions,
+        totalPages: Math.ceil(totalQuestions / limit),
+        hasNext: page < Math.ceil(totalQuestions / limit),
+        hasPrev: page > 1
+      }
+    });
   } catch (error) {
     return NextResponse.json({ error });
   }

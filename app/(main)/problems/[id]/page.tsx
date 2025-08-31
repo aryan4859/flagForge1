@@ -124,13 +124,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
         setMessage(result.message);
         if (result.message.includes("Right")) {
           setIsCorrect(true);
-          setIsDone(true);
           setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 9000);
+          setTimeout(() => setShowConfetti(false), 3000);
           setFlag("");
+           setTimeout(() => {
+           setIsDone(true);
+          }, 5000); 
           setTimeout(() => {
             router.push("/problems");
-          }, 3000);
+          }, 8000);
         } else {
           setTimeout(() => {
             lastSubmittedFlag.current = "";

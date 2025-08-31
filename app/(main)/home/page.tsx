@@ -77,10 +77,38 @@ const Home = () => {
 
   const fetchLatestRoom = async () => {
     try {
-      const response = await fetch("/api/problems?page=1&latest=true");
+      // Fetch ALL problems with a large limit to get the truly latest one
+      const response = await fetch("/api/problems?limit=1000");
+      
       if (response.ok) {
         const data = await response.json();
-        setLatestRoom(data.data[0]);
+        console.log("Latest room API response:", data); // Debug log
+        
+        let rooms = [];
+        
+        // Handle different response structures
+        if (Array.isArray(data)) {
+          rooms = data;
+        } else if (data.data && Array.isArray(data.data)) {
+          rooms = data.data;
+        } else if (data.problems && Array.isArray(data.problems)) {
+          rooms = data.problems;
+        } else if (data.questions && Array.isArray(data.questions)) {
+          rooms = data.questions;
+        }
+        
+        console.log(`Total rooms fetched: ${rooms.length} out of expected 36+`);
+        
+        if (rooms.length > 0) {
+          setLatestRoom(rooms[0]);
+        
+        } else {
+          console.log("No rooms found in response");
+        }
+      } else {
+        console.error("API response not ok:", response.status, response.statusText);
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
       }
     } catch (error) {
       console.error("Failed to fetch latest room:", error);
@@ -90,9 +118,25 @@ const Home = () => {
   const fetchLastSolved = async () => {
     try {
       const response = await fetch("/api/user/recent-solved");
+      
       if (response.ok) {
         const data = await response.json();
-        setLastSolved(data[0]);
+        console.log("Last solved API response:", data); // Debug log
+        
+        // Handle different response structures
+        if (Array.isArray(data) && data.length > 0) {
+          setLastSolved(data[0]);
+          console.log("Last solved set:", data[0]); // Debug log
+        } else if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+          setLastSolved(data.data[0]);
+          console.log("Last solved set:", data.data[0]); // Debug log
+        } else {
+          console.log("No solved problems found or empty response");
+        }
+      } else {
+        console.error("Recent solved API response not ok:", response.status, response.statusText);
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
       }
     } catch (error) {
       console.error("Failed to fetch last solved:", error);
@@ -133,12 +177,12 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-500 to-rose-600 dark:bg-[#1b212a]">
+      <div className="relative overflow-hidden bg-white border-b border-gray-200">
         <div className="absolute inset-0 opacity-30">
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(239,68,68,0.15) 1px, transparent 0)`,
               backgroundSize: "20px 20px",
             }}
           ></div>
@@ -146,13 +190,13 @@ const Home = () => {
 
         {/* Floating Elements */}
         <div className="absolute top-20 left-10 animate-bounce">
-          <div className="w-3 h-3 bg-white/20 rounded-full"></div>
+          <div className="w-3 h-3 bg-red-200 rounded-full"></div>
         </div>
         <div className="absolute top-32 right-20 animate-pulse">
-          <div className="w-2 h-2 bg-white/30 rounded-full"></div>
+          <div className="w-2 h-2 bg-red-300 rounded-full"></div>
         </div>
         <div className="absolute bottom-20 left-1/4 animate-bounce delay-300">
-          <div className="w-4 h-4 bg-white/15 rounded-full"></div>
+          <div className="w-4 h-4 bg-red-100 rounded-full"></div>
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 py-16">
@@ -169,35 +213,35 @@ const Home = () => {
                     className="rounded-lg shadow-2xl"
                   />
                 </div>
-                <h1 className="text-6xl font-black text-white tracking-tight drop-shadow-2xl">
-                  FlagForge
+                <h1 className="text-6xl font-black text-gray-900 tracking-tight drop-shadow-sm">
+                  Flag<span className="text-red-500">Forge</span>
                 </h1>
               </div>
-              <p className="text-xl text-white/90 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed drop-shadow-lg mb-6">
+              <p className="text-xl text-gray-700 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed mb-6">
                 Master cybersecurity through hands-on CTF challenges and compete
                 with hackers worldwide
               </p>
               <div className="flex items-center justify-center lg:justify-start gap-2">
-                <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
-                <span className="text-white/80 font-medium">
+                <Star className="h-5 w-5 text-red-500 fill-red-500" />
+                <span className="text-gray-600 font-medium">
                   Join 500+ Active Security Professionals
                 </span>
-                <Star className="h-5 w-5 text-yellow-300 fill-yellow-300" />
+                <Star className="h-5 w-5 text-red-500 fill-red-500" />
               </div>
               <div className="flex text-center justify-center pt-10">
                 {/* Enhanced User Level Display */}
                 {userStats && (
                   <div className="text-end">
-                    <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-white/15 backdrop-blur-md border border-white/30 shadow-2xl">
+                    <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-gray-50 border border-gray-200 shadow-lg">
                       <div className="relative">
-                        <Shield className="h-8 w-8 text-white drop-shadow-lg" />
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                        <Shield className="h-8 w-8 text-red-500" />
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-400 rounded-full animate-pulse"></div>
                       </div>
                       <div className="text-left">
-                        <div className="text-2xl font-bold text-white drop-shadow-lg">
+                        <div className="text-2xl font-bold text-gray-900">
                           {userStats.level}
                         </div>
-                        <div className="text-sm text-white/70">
+                        <div className="text-sm text-gray-600">
                           Security Level
                         </div>
                       </div>
@@ -207,12 +251,12 @@ const Home = () => {
                         }).map((_, i) => (
                           <div
                             key={i}
-                            className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full shadow-lg animate-pulse"
+                            className="w-3 h-3 bg-gradient-to-r from-red-400 to-red-500 rounded-full shadow-sm animate-pulse"
                             style={{ animationDelay: `${i * 0.2}s` }}
                           ></div>
                         ))}
                         {userStats.badges > 5 && (
-                          <span className="text-white/80 text-sm font-medium ml-2">
+                          <span className="text-gray-600 text-sm font-medium ml-2">
                             +{userStats.badges - 5}
                           </span>
                         )}
@@ -225,51 +269,109 @@ const Home = () => {
 
             {userStats && (
               <div className="grid grid-cols-2 gap-6">
-                <div className="group relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
-                  {/* <Trophy className="h-8 w-8 text-yellow-300 mx-auto mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" /> */}
-                  <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">
+                <div className="group relative bg-gray-50 border border-gray-200 rounded-2xl p-6 text-center hover:bg-gray-100 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                  <div className="absolute inset-0  rounded-2xl"></div>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
                     {userStats.totalScore.toLocaleString()}
                   </div>
-                  <div className="text-sm text-white/70 font-medium">
+                  <div className="text-sm text-gray-600 font-medium">
                     Total Points
                   </div>
                 </div>
 
-                <div className="group relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
-                  {/* <Target className="h-8 w-8 text-orange-300 mx-auto mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" /> */}
-                  <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">
+                <div className="group relative bg-gray-50 border border-gray-200 rounded-2xl p-6 text-center hover:bg-gray-100 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                  <div className="absolute inset-0  rounded-2xl"></div>
+                  <div className="text-3xl font-bold text-red-500 mb-1">
                     #{userStats.rank}
                   </div>
-                  <div className="text-sm text-white/70 font-medium">
+                  <div className="text-sm text-gray-600 font-medium">
                     Global Rank
                   </div>
                 </div>
 
-                <div className="group relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
-                  {/* <CheckCircle className="h-8 w-8 text-green-300 mx-auto mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" /> */}
-                  <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">
+                <div className="group relative bg-gray-50 border border-gray-200 rounded-2xl p-6 text-center hover:bg-gray-100 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                  <div className="absolute inset-0  rounded-2xl"></div>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">
                     {userStats.completedQuestions}
                   </div>
-                  <div className="text-sm text-white/70 font-medium">
+                  <div className="text-sm text-gray-600 font-medium">
                     Challenges Solved
                   </div>
                 </div>
 
-                <div className="group relative bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl"></div>
-                  {/* <Zap className="h-8 w-8 text-blue-300 mx-auto mb-3 drop-shadow-lg group-hover:scale-110 transition-transform" /> */}
-                  <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">
+                <div className="group relative bg-gray-50 border border-gray-200 rounded-2xl p-6 text-center hover:bg-gray-100 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                  <div className="absolute inset-0  rounded-2xl"></div>
+                  <div className="text-3xl font-bold text-red-500 mb-1">
                     {userStats.streak}
                   </div>
-                  <div className="text-sm text-white/70 font-medium">
+                  <div className="text-sm text-gray-600 font-medium">
                     Day Streak
                   </div>
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Welcome Message for New Users */}
+        {userStats?.completedQuestions === 0 && (
+          <div className="mt-8 bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <div className="max-w-2xl mx-auto">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-red-100 rounded-full">
+                  <Shield className="h-8 w-8 text-[#EF4444]" />
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                Welcome to the Forge!
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Ready to test your cybersecurity skills? Practice with realistic
+                scenarios and showcase your abilities in our gamified
+                environment.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-500 mb-6">
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-[#EF4444] rounded-full"></div>
+                  Web
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  Crypto
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  Forensics
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  Reverse
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  PWN
+                </div>
+              </div>
+              <button className="bg-[#EF4444] hover:bg-red-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+                Start Your First Challenge
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Platform Stats */}
+        <div className="mt-8 grid grid-cols-3 gap-4">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-[#EF4444] mb-1">500+</div>
+            <div className="text-sm text-gray-600">Active Users</div>
+          </div>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-[#EF4444] mb-1">150+</div>
+            <div className="text-sm text-gray-600">Challenges</div>
+          </div>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-[#EF4444] mb-1">2500+</div>
+            <div className="text-sm text-gray-600">Flags Captured</div>
           </div>
         </div>
       </div>
@@ -295,6 +397,10 @@ const Home = () => {
                     <p className="text-sm text-gray-600 mt-1">
                       {latestRoom.description.substring(0, 100)}...
                     </p>
+                    {/* Added creation date display */}
+                    <p className="text-xs text-gray-500 mt-2">
+                      Created: {new Date(latestRoom.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
                   <div className="ml-4 text-right">
                     <div
@@ -308,7 +414,7 @@ const Home = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(
+                    className={`px-3 py-1 bg-red-500 text-white rounded-full text-xs font-medium ${getCategoryColor(
                       latestRoom.category
                     )}`}
                   >
@@ -413,68 +519,6 @@ const Home = () => {
                 </Link>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Welcome Message for New Users */}
-        {userStats?.completedQuestions === 0 && (
-          <div className="mt-8 bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <div className="max-w-2xl mx-auto">
-              <div className="flex justify-center mb-4">
-                <div className="p-3 bg-red-100 rounded-full">
-                  <Shield className="h-8 w-8 text-[#EF4444]" />
-                </div>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Welcome to the Forge!
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Ready to test your cybersecurity skills? Practice with realistic
-                scenarios and showcase your abilities in our gamified
-                environment.
-              </p>
-              <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-500 mb-6">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-[#EF4444] rounded-full"></div>
-                  Web
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  Crypto
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  Forensics
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  Reverse
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                  PWN
-                </div>
-              </div>
-              <button className="bg-[#EF4444] hover:bg-red-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
-                Start Your First Challenge
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Platform Stats */}
-        <div className="mt-8 grid grid-cols-3 gap-4">
-          <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#EF4444] mb-1">500+</div>
-            <div className="text-sm text-gray-600">Active Users</div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#EF4444] mb-1">150+</div>
-            <div className="text-sm text-gray-600">Challenges</div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#EF4444] mb-1">2500+</div>
-            <div className="text-sm text-gray-600">Flags Captured</div>
           </div>
         </div>
       </div>

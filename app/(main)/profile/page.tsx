@@ -320,7 +320,7 @@ const ProfilePage = () => {
           alt={`${displayName} Profile Picture`}
           width={120}
           height={120}
-          className="w-30 h-30 rounded-full object-cover ring-4 ring-white/30 shadow-xl"
+          className="w-30 h-30 rounded-full object-cover ring-4 ring-red-500 shadow-xl"
           unoptimized
           priority
           onError={() => setHasError(true)}
@@ -334,7 +334,7 @@ const ProfilePage = () => {
         alt={`${displayName} Profile Picture`}
         width={120}
         height={120}
-        className="w-30 h-30 rounded-full object-cover ring-4 ring-white/30 shadow-xl"
+        className="w-30 h-30 rounded-full object-cover ring-4 ring-red-500 shadow-xl"
         unoptimized
         priority
       />
@@ -345,8 +345,8 @@ const ProfilePage = () => {
     if (!showBadgeTooltip) return null;
     
     return (
-      <div className="absolute top-full mt-2 right-0 bg-white border border-red-200 shadow-xl rounded-xl p-6 z-10 w-80">
-        <h4 className="text-lg font-semibold text-red-600 mb-4 text-center">Badge Progress</h4>
+      <div className="absolute top-full mt-2 right-0 bg-white border border-gray-200 shadow-xl rounded-xl p-6 z-10 w-80">
+        <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">Badge Progress</h4>
         <div className="grid grid-cols-2 gap-3">
           {BADGE_CONFIG.map((badge) => {
             const earned = (profileData?.totalScore || 0) >= badge.threshold;
@@ -356,15 +356,15 @@ const ProfilePage = () => {
               <div key={badge.name} className={`text-center p-3 rounded-lg border transition-all ${
                 earned 
                   ? current 
-                    ? 'border-slate-300 bg-slate-50 shadow-sm ring-2 ring-slate-200' 
-                    : 'border-emerald-200 bg-emerald-50'
-                  : 'border-slate-200 bg-slate-100 opacity-60'
+                    ? 'border-red-300 bg-red-50 shadow-sm ring-2 ring-red-200' 
+                    : 'border-green-200 bg-green-50'
+                  : 'border-gray-200 bg-gray-100 opacity-60'
               }`}>
                 <div className="flex justify-center mb-2">
                   {getBadgeComponent(badge.threshold, 24)}
                 </div>
-                <p className="text-xs font-medium text-slate-900">{badge.name}</p>
-                <p className="text-xs text-slate-600">({badge.threshold}+)</p>
+                <p className="text-xs font-medium text-gray-900">{badge.name}</p>
+                <p className="text-xs text-gray-600">({badge.threshold}+)</p>
               </div>
             );
           })}
@@ -376,14 +376,14 @@ const ProfilePage = () => {
   const HeroStats = () => (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mt-8">
       {[
-        { icon: Trophy, label: "Rank", value: `#${profileData?.rank || 'N/A'}`, color: "text-white", bg: "bg-white/10", border: "border-white/20" },
-        { icon: Award, label: "Badges", value: profileData?.badges || 0, color: "text-white", bg: "bg-white/10", border: "border-white/20" },
-        { icon: Flame, label: "Streak", value: profileData?.streak || 0, color: "text-white", bg: "bg-white/10", border: "border-white/20" },
-        { icon: CheckCircle, label: "Completed", value: profileData?.completedQuestions || profileData?.roomsCompleted || 0, color: "text-white", bg: "bg-white/10", border: "border-white/20" }
+        { icon: Trophy, label: "Rank", value: `#${profileData?.rank || 'N/A'}`, color: "text-red-500", bg: "bg-white/95", border: "border-gray-200" },
+        { icon: Award, label: "Badges", value: profileData?.badges || 0, color: "text-red-500", bg: "bg-white/95", border: "border-gray-200" },
+        { icon: Flame, label: "Streak", value: profileData?.streak || 0, color: "text-red-500", bg: "bg-white/95", border: "border-gray-200" },
+        { icon: CheckCircle, label: "Completed", value: profileData?.completedQuestions || profileData?.roomsCompleted || 0, color: "text-red-500", bg: "bg-white/95", border: "border-gray-200" }
       ].map((stat, index) => (
-        <div key={index} className={`${stat.bg} ${stat.border} backdrop-blur-sm border rounded-xl p-4 lg:p-6 text-center transition-all hover:bg-white/20 hover:scale-105`}>
+        <div key={index} className={`${stat.bg} ${stat.border} backdrop-blur-sm border rounded-xl p-4 lg:p-6 text-center transition-all hover:bg-white hover:scale-105 shadow-lg`}>
           <stat.icon className={`w-6 h-6 lg:w-8 lg:h-8 ${stat.color} mx-auto mb-2 lg:mb-3`} />
-          <p className="text-xs lg:text-sm font-medium text-white/80 mb-1">{stat.label}</p>
+          <p className="text-xs lg:text-sm font-medium text-gray-600 mb-1">{stat.label}</p>
           <p className={`text-lg lg:text-2xl font-bold ${stat.color}`}>{stat.value}</p>
         </div>
       ))}
@@ -391,7 +391,7 @@ const ProfilePage = () => {
   );
 
   const TabNavigation = () => (
-    <div className="border-b border-red-200">
+    <div className="border-b border-gray-200">
       <nav className="flex space-x-8">
         {[
           { id: 'completed', label: 'Completed Problems', icon: CheckCircle, count: totalCompletedProblems },
@@ -403,8 +403,8 @@ const ProfilePage = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center transition-all ${
               activeTab === tab.id
-                ? 'border-red-500 text-red-600' 
-                : 'border-transparent text-gray-500 hover:text-red-500 hover:border-red-300'
+                ? 'border-red-600 text-gray-900' 
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
             <tab.icon className="w-4 h-4 mr-2" />
@@ -421,16 +421,16 @@ const ProfilePage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white shadow-lg rounded-2xl p-8 text-center border border-red-200">
-          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <User className="w-8 h-8 text-red-600" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white shadow-lg rounded-2xl p-8 text-center border border-gray-200">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="w-8 h-8 text-gray-600" />
           </div>
-          <h1 className="text-xl font-semibold text-red-900 mb-2">Unable to Load Profile</h1>
-          <p className="text-red-600 mb-6">{error}</p>
+          <h1 className="text-xl font-semibold text-gray-900 mb-2">Unable to Load Profile</h1>
+          <p className="text-gray-600 mb-6">{error}</p>
           <button 
             onClick={fetchProfileData}
-            className="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
           >
             Try Again
           </button>
@@ -443,37 +443,39 @@ const ProfilePage = () => {
   const memberSince = profileData?.createdAt ? new Date(profileData.createdAt).getFullYear() : new Date().getFullYear();
 
   return (
-    <div className="min-h-screen bg-red-50">
-     {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-500 to-rose-600 dark:bg-[#1b212a]">
-        <div className="absolute inset-0 opacity-30">
-          <div 
-            className="absolute inset-0" 
-            style={{ 
-              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)`, 
-              backgroundSize: "20px 20px" 
-            }}
-          ></div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Hero Section with Flagforge Background */}
+      <div className="relative overflow-hidden">
+        {/* Background with overlay */}
+        <div className="absolute inset-0 w-full h-full z-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/30"></div>
+          <Image
+            src={Flagforge}
+            alt="Background"
+            fill
+            className="object-cover blur-lg "
+            priority
+          />
         </div>
         
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 animate-bounce">
-          <div className="w-3 h-3 bg-white/20 rounded-full"></div>
+        {/* Animated elements */}
+        <div className="absolute top-20 left-10 animate-bounce z-10">
+          <div className="w-3 h-3 bg-red-500/70 rounded-full"></div>
         </div>
-        <div className="absolute top-32 right-20 animate-pulse">
-          <div className="w-2 h-2 bg-white/30 rounded-full"></div>
+        <div className="absolute top-32 right-20 animate-pulse z-10">
+          <div className="w-2 h-2 bg-red-400/70 rounded-full"></div>
         </div>
-        <div className="absolute bottom-20 left-1/4 animate-bounce delay-300">
-          <div className="w-4 h-4 bg-white/15 rounded-full"></div>
+        <div className="absolute bottom-20 left-1/4 animate-bounce delay-300 z-10">
+          <div className="w-4 h-4 bg-red-500/50 rounded-full"></div>
         </div>
-        <div className="absolute top-40 right-1/3 animate-pulse delay-500">
-          <div className="w-3 h-3 bg-white/25 rounded-full"></div>
+        <div className="absolute top-40 right-1/3 animate-pulse delay-500 z-10">
+          <div className="w-3 h-3 bg-red-400/60 rounded-full"></div>
         </div>
-        <div className="absolute bottom-32 right-10 animate-bounce delay-700">
-          <div className="w-2 h-2 bg-white/20 rounded-full"></div>
+        <div className="absolute bottom-32 right-10 animate-bounce delay-700 z-10">
+          <div className="w-2 h-2 bg-red-500/60 rounded-full"></div>
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 z-20">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
             {/* Profile Image */}
             <div className="flex-shrink-0">
@@ -481,17 +483,17 @@ const ProfilePage = () => {
             </div>
 
             {/* Profile Info */}
-            <div className="flex-grow text-center lg:text-left text-white">
+            <div className="flex-grow text-center lg:text-left">
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
                 <div className="mb-6 lg:mb-0">
-                  <h1 className="text-4xl lg:text-5xl font-bold mb-3">
+                  <h1 className="text-4xl lg:text-5xl font-bold mb-3 text-white">
                     {profileData?.name || session?.user?.name || "User"}
                   </h1>
-                  <p className="text-xl text-red-200 mb-4">
+                  <p className="text-xl text-red-200 mb-4 font-medium">
                     {profileData?.level || "[0x1][NEWBIE]"}
                   </p>
                   
-                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-red-200">
+                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-gray-300">
                     <div className="flex items-center">
                       <User className="w-4 h-4 mr-2" />
                       <span className="text-sm">{profileData?.email || session?.user?.email}</span>
@@ -510,7 +512,7 @@ const ProfilePage = () => {
                     onMouseEnter={() => setShowBadgeTooltip(true)}
                     onMouseLeave={() => setShowBadgeTooltip(false)}
                   >
-                    <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-lg">
                       {getBadgeComponent(profileData?.totalScore || 0, 80)}
                     </div>
                   </div>
@@ -519,29 +521,29 @@ const ProfilePage = () => {
               </div>
 
               {/* Score and Progress */}
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 mt-8">
+              <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-2xl p-6 mt-8 shadow-lg">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="text-center md:text-left">
-                    <h3 className="text-2xl font-bold text-white mb-2">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
                       {getCurrentBadgeName(profileData?.totalScore || 0)}
                     </h3>
-                    <p className="text-3xl font-bold text-white">
+                    <p className="text-3xl font-bold text-gray-900">
                       {profileData?.totalScore?.toLocaleString() || 0} points
                     </p>
                   </div>
                   
                   {nextBadge && (
                     <div className="text-center md:text-right flex-shrink-0">
-                      <p className="text-sm  mb-3">
+                      <p className="text-sm text-gray-600 mb-3">
                         Next: {nextBadge.nextBadgeName} ({nextBadge.pointsNeeded} points needed)
                       </p>
-                      <div className="w-48 bg-white/20 rounded-full h-3 overflow-hidden">
+                      <div className="w-48 bg-gray-200 rounded-full h-3 overflow-hidden">
                         <div 
-                          className="bg-gradient-to-r  from-red-400 to-red-500 h-3 rounded-full transition-all duration-700 ease-out"
+                          className="bg-gradient-to-r from-red-500 to-red-600 h-3 rounded-full transition-all duration-700 ease-out"
                           style={{ width: `${nextBadge.progress}%` }}
                         ></div>
                       </div>
-                      <p className="text-xs  mt-2">
+                      <p className="text-xs text-gray-600 mt-2">
                         {nextBadge.progress.toFixed(1)}% complete
                       </p>
                     </div>
@@ -557,9 +559,9 @@ const ProfilePage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 z-20">
         {/* Tabs */}
-        <div className="bg-white rounded-2xl shadow-sm border border-red-200">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
           <div className="p-6 pb-0">
             <TabNavigation />
           </div>
@@ -570,7 +572,7 @@ const ProfilePage = () => {
               <div>
                 {problemsLoading && (
                   <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
                   </div>
                 )}
 
@@ -582,16 +584,16 @@ const ProfilePage = () => {
                         return (
                           <div 
                             key={problem._id} 
-                            className="bg-white border border-red-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-red-300"
+                            className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300"
                           >
                             <div className="flex items-start justify-between mb-4">
-                              <h3 className="font-semibold text-lg text-slate-900 leading-tight">{problem.title}</h3>
-                              <span className="font-bold text-slate-900 bg-slate-50 px-3 py-1 rounded-full text-sm ml-3 flex-shrink-0">
+                              <h3 className="font-semibold text-lg text-gray-900 leading-tight">{problem.title}</h3>
+                              <span className="font-bold text-white bg-red-500 bg-gray-50 px-3 py-1 rounded-full text-sm ml-3 flex-shrink-0">
                                 +{problem.points}
                               </span>
                             </div>
                             
-                            <p className="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
                               {problem.description}
                             </p>
                             
@@ -604,7 +606,7 @@ const ProfilePage = () => {
                                   <CheckCircle className="w-3 h-3 inline mr-1" />
                                   Completed
                                 </span>
-                                <span className="px-3 py-1 bg-red-50 text-red-700 text-xs rounded-full border border-red-200">
+                                <span className="px-3 py-1 bg-gray-50 text-gray-700 text-xs rounded-full border border-gray-200">
                                   {problem.category}
                                 </span>
                               </div>
@@ -616,7 +618,7 @@ const ProfilePage = () => {
 
                     {/* Pagination */}
                     {(completedProblems.length > 0 || problemsCurrentPage > 1) && (
-                      <div className="flex justify-between items-center pt-6 border-t border-red-200">
+                      <div className="flex justify-between items-center pt-6 border-t border-gray-200">
                         <div className="text-sm text-gray-600">
                           Page {problemsCurrentPage} {totalCompletedProblems > 0 && `• ${totalCompletedProblems} problems total`}
                         </div>
@@ -627,7 +629,7 @@ const ProfilePage = () => {
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                               problemsCurrentPage === 1 || problemsLoading
                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                : 'bg-red-500 text-white hover:bg-red-600'
+                                : 'bg-red-600 text-white hover:bg-red-700'
                             }`}
                           >
                             Previous
@@ -638,7 +640,7 @@ const ProfilePage = () => {
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                               !problemsHasNextPage || problemsLoading
                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                : 'bg-red-500 text-white hover:bg-red-600'
+                                : 'bg-red-600 text-white hover:bg-red-700'
                             }`}
                           >
                             Next
@@ -649,13 +651,13 @@ const ProfilePage = () => {
                   </div>
                 ) : !problemsLoading && completedProblems.length === 0 ? (
                   <div className="text-center py-16">
-                    <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <CheckCircle className="w-8 h-8 text-red-400" />
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle className="w-8 h-8 text-gray-400" />
                     </div>
-                    <h3 className="text-xl font-semibold text-red-900 mb-2">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
                       {problemsCurrentPage === 1 ? "No Problems Completed Yet" : "No More Problems"}
                     </h3>
-                    <p className="text-red-600 max-w-md mx-auto">
+                    <p className="text-gray-600 max-w-md mx-auto">
                       {problemsCurrentPage === 1 
                         ? "Start solving challenges to build your portfolio and earn badges!" 
                         : "You've reached the end of your completed problems."}
@@ -668,8 +670,8 @@ const ProfilePage = () => {
             {activeTab === 'badges' && (
               <div>
                 <div className="text-center mb-10">
-                  <h3 className="text-2xl font-bold text-red-900 mb-3">Badge Collection</h3>
-                  <p className="text-red-600 max-w-2xl mx-auto">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Badge Collection</h3>
+                  <p className="text-gray-600 max-w-2xl mx-auto">
                     Unlock prestigious badges by accumulating points through completed challenges. Each badge represents your growing expertise in cybersecurity.
                   </p>
                 </div>
@@ -683,13 +685,13 @@ const ProfilePage = () => {
                       <div key={badge.name} className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
                         earned 
                           ? current 
-                            ? `border-slate-300 bg-gradient-to-br ${badge.color} shadow-lg ring-2 ring-slate-200 text-white` 
-                            : 'border-emerald-300 bg-emerald-50 hover:shadow-md hover:border-emerald-400'
-                          : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                            ? `border-red-500 bg-gradient-to-br ${badge.color} shadow-lg ring-2 ring-red-300 text-white` 
+                            : 'border-green-300 bg-green-50 hover:shadow-md hover:border-green-400'
+                          : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
                       }`}>
                         {current && (
                           <div className="absolute -top-2 -right-2">
-                            <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                            <div className="bg-red-600 text-white text-xs px-2 py-1 rounded-full font-medium">
                               Current
                             </div>
                           </div>
@@ -700,20 +702,20 @@ const ProfilePage = () => {
                         </div>
                         
                         <h4 className={`font-bold text-center mb-2 text-lg ${
-                          earned ? current ? 'text-white' : 'text-emerald-800' : 'text-slate-500'
+                          earned ? current ? 'text-white' : 'text-green-800' : 'text-gray-500'
                         }`}>
                           {badge.name}
                         </h4>
                         
                         <p className={`text-sm text-center ${
-                          earned ? current ? 'text-white/80' : 'text-emerald-600' : 'text-slate-400'
+                          earned ? current ? 'text-red-100' : 'text-green-600' : 'text-gray-400'
                         }`}>
                           {badge.threshold}+ points required
                         </p>
                         
                         {earned && !current && (
                           <div className="mt-3 text-center">
-                            <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs rounded-full font-medium border border-emerald-200">
+                            <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium border border-green-200">
                               <CheckCircle className="w-3 h-3 inline mr-1" />
                               Earned
                             </span>
@@ -730,7 +732,7 @@ const ProfilePage = () => {
               <div>
                 {roomsLoading && (
                   <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
                   </div>
                 )}
 
@@ -740,16 +742,16 @@ const ProfilePage = () => {
                       {createdRooms.map((room) => {
                         const diffStyle = getDifficultyStyle(room.difficulty);
                         return (
-                          <div key={room._id} className="bg-white border border-slate-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-slate-300">
+                          <div key={room._id} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300">
                             <div className="flex items-start mb-6">
-                              <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mr-4 border border-slate-200">
-                                <span className="text-slate-600 text-xl">
+                              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mr-4 border border-gray-200">
+                                <span className="text-gray-600 text-xl">
                                   {getCategoryIcon(room.category)}
                                 </span>
                               </div>
                               <div className="flex-grow">
-                                <h3 className="font-semibold text-lg text-slate-900 mb-1">{room.title}</h3>
-                                <div className="flex items-center text-sm text-slate-500">
+                                <h3 className="font-semibold text-lg text-gray-900 mb-1">{room.title}</h3>
+                                <div className="flex items-center text-sm text-gray-500">
                                   <Calendar className="w-4 h-4 mr-1" />
                                   Created {new Date(room.createdAt).toLocaleDateString()}
                                 </div>
@@ -757,7 +759,7 @@ const ProfilePage = () => {
                               <div>
                                 <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
                                   room.isPublished 
-                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                                    ? 'bg-green-50 text-green-700 border-green-200' 
                                     : 'bg-amber-50 text-amber-700 border-amber-200'
                                 }`}>
                                   {room.isPublished ? 'Published' : 'Draft'}
@@ -765,7 +767,7 @@ const ProfilePage = () => {
                               </div>
                             </div>
                             
-                            <p className="text-slate-600 text-sm mb-6 line-clamp-2 leading-relaxed">
+                            <p className="text-gray-600 text-sm mb-6 line-clamp-2 leading-relaxed">
                               {room.description}
                             </p>
                             
@@ -773,7 +775,7 @@ const ProfilePage = () => {
                               <span className={`text-sm font-medium px-3 py-1 rounded-full ${diffStyle.color} ${diffStyle.bg} border ${diffStyle.border}`}>
                                 {room.difficulty}
                               </span>
-                              <span className="px-3 py-1 bg-slate-50 text-slate-700 text-xs rounded-full border border-slate-200">
+                              <span className="px-3 py-1 bg-gray-50 text-gray-700 text-xs rounded-full border border-gray-200">
                                 {room.category}
                               </span>
                             </div>
@@ -784,8 +786,8 @@ const ProfilePage = () => {
 
                     {/* Pagination */}
                     {(createdRooms.length > 0 || roomsCurrentPage > 1) && (
-                      <div className="flex justify-between items-center pt-6 border-t border-slate-200">
-                        <div className="text-sm text-slate-600">
+                      <div className="flex justify-between items-center pt-6 border-t border-gray-200">
+                        <div className="text-sm text-gray-600">
                           Page {roomsCurrentPage} {totalCreatedRooms > 0 && `• ${totalCreatedRooms} rooms total`}
                         </div>
                         <div className="flex gap-3">
@@ -794,8 +796,8 @@ const ProfilePage = () => {
                             disabled={roomsCurrentPage === 1 || roomsLoading}
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                               roomsCurrentPage === 1 || roomsLoading
-                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                : 'bg-red-600 text-white hover:bg-red-700'
                             }`}
                           >
                             Previous
@@ -805,8 +807,8 @@ const ProfilePage = () => {
                             disabled={!roomsHasNextPage || roomsLoading}
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                               !roomsHasNextPage || roomsLoading
-                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                                : 'bg-slate-900 text-white hover:bg-slate-800'
+                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                : 'bg-red-600 text-white hover:bg-red-700'
                             }`}
                           >
                             Next
@@ -817,19 +819,19 @@ const ProfilePage = () => {
                   </div>
                 ) : !roomsLoading && createdRooms.length === 0 ? (
                   <div className="text-center py-16">
-                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Star className="w-8 h-8 text-slate-400" />
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Star className="w-8 h-8 text-gray-400" />
                     </div>
-                    <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
                       {roomsCurrentPage === 1 ? "No Rooms Created Yet" : "No More Rooms"}
                     </h3>
-                    <p className="text-slate-600 mb-8 max-w-md mx-auto">
+                    <p className="text-gray-600 mb-8 max-w-md mx-auto">
                       {roomsCurrentPage === 1 
                         ? "Share your knowledge by creating cybersecurity challenges for the community!" 
                         : "You've reached the end of your created rooms."}
                     </p>
                     {roomsCurrentPage === 1 && (
-                      <button className="px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium inline-flex items-center">
+                      <button className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium inline-flex items-center">
                         <Star className="w-4 h-4 mr-2" />
                         Create Your First Room
                       </button>

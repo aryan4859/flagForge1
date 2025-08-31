@@ -1,4 +1,3 @@
-// /api/problems/completed/route.ts
 import connect from "@/utlis/db";
 import { NextRequest, NextResponse } from "next/server";
 import QuestionModel from "@/models/qustionsSchema";
@@ -7,6 +6,7 @@ import userSchema from "@/models/userSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
+
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
@@ -22,6 +22,12 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
+    // Get pagination parameters from URL
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = 8; // Fixed to 8 items per page
+    const skip = (page - 1) * limit;
+
     // Find the user
     const user = await userSchema.findOne({ email: session?.user?.email });
     if (!user) {
@@ -31,10 +37,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get all completed questions by this user
+    // Get total count of completed questions for pagination info
+    const totalCompletedCount = await UserQuestionModel.countDocuments({ 
+      userId: user._id 
+    });
+
+    // Get paginated completed questions by this user, sorted by completion date (newest first)
     const completedUserQuestions = await UserQuestionModel.find({ 
       userId: user._id 
-    }).populate({
+    })
+    .sort({ createdAt: -1 }) // Sort by completion date, newest first
+    .skip(skip)
+    .limit(limit)
+    .populate({
       path: 'questionId',
       select: '-flag', // Exclude the flag field for security
       model: QuestionModel
@@ -47,13 +62,22 @@ export async function GET(request: NextRequest) {
         ...userQuestion.questionId.toObject(),
         completedAt: userQuestion.createdAt, // When they completed it
         pointsEarned: userQuestion.questionId.points // Points they earned
-      }))
-      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()); // Sort by completion date, newest first
+      }));
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalCompletedCount / limit);
+    const hasMore = page < totalPages;
+    const hasPrevious = page > 1;
 
     return NextResponse.json({
       success: true,
       completedProblems,
-      totalCompleted: completedProblems.length
+      totalProblems: totalCompletedCount,
+      currentPage: page,
+      totalPages,
+      hasMore,
+      hasPrevious,
+      itemsPerPage: limit
     });
 
   } catch (error: any) {
