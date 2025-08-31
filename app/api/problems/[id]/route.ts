@@ -1,10 +1,9 @@
-// File: app/api/problems/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import connect from "@/utlis/db";
 import QuestionModel from "@/models/qustionsSchema";
 import { HttpStatusCode } from "axios";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; 
+import { authOptions } from "@/lib/authOptions";
 
 export const runtime = "nodejs";
 
@@ -17,7 +16,6 @@ export async function GET(
     
     const { id } = await params;
     
-    // Validate ID format (assuming MongoDB ObjectId)
     if (!id || id.length !== 24) {
       return NextResponse.json(
         { message: "Invalid problem ID" },
