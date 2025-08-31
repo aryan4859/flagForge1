@@ -3,36 +3,35 @@ import { IoFilter } from "react-icons/io5";
 
 export default function FilterSidebar() {
   return (
-    <div>
-      <div className="shadow-xl p-6 rounded-xl sm:flex flex-col gap-[36px] hidden">
-        <div className="text-2xl font-bold flex gap-2 items-center text-center ml-12">
-          <IoFilter />
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors duration-300">
+      <div className="text-2xl font-bold flex gap-2 items-center text-center mb-4">
+        <IoFilter className="text-gray-900 dark:text-gray-100 transition-colors duration-300" />
+        <span className="text-gray-900 dark:text-gray-100 transition-colors duration-300">
           Filters
-        </div>
+        </span>
+      </div>
+      <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-          <h1 className="font-bold text-lg">Topics</h1>
+          <h1 className="font-bold text-lg text-gray-900 dark:text-gray-100 transition-colors duration-300">
+            Topics
+          </h1>
           <ul className="flex flex-col gap-2 font-base">
-            <li className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 cursor-pointer">
-              All
-            </li>
-            <li className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 cursor-pointer">
-              Web Exploitation
-            </li>
-            <li className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 cursor-pointer">
-              Cryptography
-            </li>
-            <li className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 cursor-pointer">
-              Reverse Engineering
-            </li>
-            <li className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 cursor-pointer">
-              Forensics
-            </li>
-            <li className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 cursor-pointer">
-              General Skills
-            </li>
-            <li className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 cursor-pointer">
-              Binary Exploitation
-            </li>
+            {[
+              "All",
+              "Web Exploitation",
+              "Cryptography",
+              "Reverse Engineering",
+              "Forensics",
+              "General Skills",
+              "Binary Exploitation",
+            ].map((topic) => (
+              <li
+                key={topic}
+                className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 text-gray-900 dark:text-gray-100"
+              >
+                {topic}
+              </li>
+            ))}
           </ul>
         </div>
       </div>
