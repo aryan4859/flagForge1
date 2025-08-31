@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary_large-image",
+    card: "summary_large_image",
     site: "@Aryanstha",
     title: "FlagForge - The Ultimate CTF Platform",
     description:
