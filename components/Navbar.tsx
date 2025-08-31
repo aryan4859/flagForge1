@@ -23,7 +23,7 @@ import { useTheme } from "@/context/ThemeContext";
 const NavItem = ({ href, tags, onClick, style }: NavbarItems) => (
   <li
     className={cn(
-      "hover:text-red-700 hover:bg-gray-100/70 rounded-md transition-all duration-300 ease-in-out",
+      "rounded-md transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-400",
       style
     )}
     onClick={onClick}
@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
         <Link href="/">
           <div className="flex items-center text-xl font-bold transition-opacity hover:opacity-80 duration-300">
             <Image src={logo} alt="logo" height={70} width={70} />
-            <span className="ml-2 text-gray-900 dark:text-gray-100">
+            <span className="ml-2 text-2xl text-gray-900 dark:text-gray-100">
               FlagForge
             </span>
           </div>
@@ -115,7 +115,7 @@ const Navbar: React.FC = () => {
             {session.status === "authenticated" && (
               <DropdownMenu>
                 <DropdownMenuTrigger>
-                  <div className="flex gap-2 font-bold text-red-500 items-center justify-center cursor-pointer transition-all duration-300 hover:text-red-700">
+                  <div className="flex gap-2 font-bold text-red-500 items-center justify-center cursor-pointer transition-all duration-300 hover:text-red-700 dark:hover:text-red-400">
                     <Image
                       src={session.data?.user?.image ?? logo}
                       alt="Logo"
@@ -143,7 +143,7 @@ const Navbar: React.FC = () => {
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <button
-                      className="w-full text-left text-sm text-red-500 hover:text-red-700"
+                      className="w-full text-left text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400"
                       onClick={() => signOut()}
                     >
                       Sign Out

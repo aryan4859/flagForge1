@@ -47,7 +47,7 @@ export default function Footer() {
         <span className="block text-sm text-gray-500 dark:text-gray-400 sm:text-center transition-colors duration-300">
           © Maintained By{" "}
           <Link
-            href="https://flagforge.aryan4.com.np"
+            href="https://flagforge.xyz"
             className="hover:underline"
           >
             FlagForge
