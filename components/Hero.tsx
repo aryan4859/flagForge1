@@ -19,11 +19,11 @@ const Hero: React.FC = () => {
           playground!🏆
         </h2>
         <h2 className="w-[98%] sm:w-[75%] mx-auto my-0 text-center text-base sm:text-lg text-gray-700 dark:text-gray-300 transition-colors duration-300">
-          <span className="text-red-500 dark:text-red-400 font-extrabold">
+          <span className="text-red-500 dark:text-red-500 font-extrabold">
             FlagForge
           </span>{" "}
           is a dynamic and engaging CTF platform dedicated to promoting
-          <span className="text-red-500 dark:text-red-400 font-extrabold">
+          <span className="text-red-500 dark:text-red-500 font-extrabold">
             {" "}
             Cybersecurity{" "}
           </span>
@@ -48,7 +48,7 @@ const Hero: React.FC = () => {
             Innovative Challenges 🧿
           </h1>
           <p className="text-gray-700 dark:text-gray-300 transition-colors duration-300">
-            <span className="text-red-500 dark:text-red-400 font-bold">
+            <span className="text-red-500 dark:text-red-500 font-bold">
               FlagForge
             </span>{" "}
             offers a variety of innovative challenges that test participants'
@@ -61,7 +61,7 @@ const Hero: React.FC = () => {
             Beginner-Friendly 🌐
           </h1>
           <p className="text-gray-700 dark:text-gray-300 transition-colors duration-300">
-            <span className="text-red-500 dark:text-red-400 font-extrabold">
+            <span className="text-red-500 dark:text-red-500 font-extrabold">
               FlagForge{" "}
             </span>
             welcomes participants of all skill levels, including beginners. The
@@ -74,7 +74,7 @@ const Hero: React.FC = () => {
             Improvement 🎁
           </h1>
           <p className="text-gray-700 dark:text-gray-300 transition-colors duration-300">
-            <span className="text-red-500 dark:text-red-400 font-extrabold">
+            <span className="text-red-500 dark:text-red-500 font-extrabold">
               FlagForge
             </span>{" "}
             regularly updates its challenges and platform based on feedback from
