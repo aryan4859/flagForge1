@@ -7,8 +7,8 @@ const Hero: React.FC = () => {
   const { status } = useSession();
 
   return (
-    <div className="pt-[5rem] px-[3rem] flex flex-col gap-[5rem] bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-      <div className="flex flex-col gap-[50px]">
+    <div className="pt-[5rem] px-[3rem] flex flex-col gap-[5rem]  dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      <div className="flex flex-col gap-[50px] ">
         <h2 className="sm:w-[80%] mx-auto text-[2.6rem] sm:text-6xl text-center text-gray-600 dark:text-gray-100 leading-[180%] sm:leading-2 tracking-tight transition-colors duration-300">
           Welcome to
           <span className="text-rose-500 dark:text-red-500 font-extrabold">
