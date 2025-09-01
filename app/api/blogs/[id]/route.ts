@@ -51,16 +51,46 @@ export async function GET(
         .join('\n\n');
     };
 
+    // Helper function to extract image/file URL from Notion property
+    const getImageUrl = (property: any) => {
+      if (!property) return null;
+      
+      // Handle different Notion file property formats
+      if (property.files && property.files.length > 0) {
+        const file = property.files[0];
+        return file.external?.url || file.file?.url || null;
+      }
+      
+      // Handle direct URL properties
+      if (property.url) {
+        return property.url;
+      }
+      
+      // Handle rich text with URLs
+      if (property.rich_text && property.rich_text.length > 0) {
+        return property.rich_text[0].href || property.rich_text[0].plain_text;
+      }
+      
+      return null;
+    };
+
     // Get block content (preferred) or fall back to Content property
     const extractedContent = extractContentText(blocks.results);
     const fallbackContent = properties.Content?.rich_text
       ?.map((t: any) => t.plain_text)
       .join('') || '';
 
+    // Extract thumbnail URL
+    const thumbnailUrl = getImageUrl(properties.Thumbnail);
+    
+    // Extract image URL (separate from thumbnail)
+    const imageUrl = getImageUrl(properties.Images);
+
     const post = {
       id: pageData.id,
       title: properties.Title?.title?.[0]?.plain_text || 'Untitled',
-      thumbnail: properties.Thumbnail,
+      thumbnail: thumbnailUrl,
+      image: imageUrl,
       slug: properties.Slug?.rich_text?.[0]?.plain_text || pageData.id,
       excerpt: extractExcerpt(blocks.results) || fallbackContent.substring(0, 150),
       tags: properties.Tags?.multi_select?.map((tag: any) => tag.name) || [],
@@ -72,6 +102,8 @@ export async function GET(
              properties['Files & media']?.files?.[0]?.file?.url ||
              pageData.cover?.external?.url ||
              pageData.cover?.file?.url ||
+             thumbnailUrl || 
+             imageUrl ||
              null,
       blocks: blocks.results,
     };

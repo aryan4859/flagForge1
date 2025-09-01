@@ -48,13 +48,39 @@ export async function GET() {
 
     console.log(`Found ${response.results.length} pages`);
 
+     const getImageUrl = (property: any) => {
+      if (!property) return null;
+      
+      // Handle different Notion file property formats
+      if (property.files && property.files.length > 0) {
+        const file = property.files[0];
+        return file.external?.url || file.file?.url || null;
+      }
+      
+      // Handle direct URL properties
+      if (property.url) {
+        return property.url;
+      }
+      
+      // Handle rich text with URLs
+      if (property.rich_text && property.rich_text.length > 0) {
+        return property.rich_text[0].href || property.rich_text[0].plain_text;
+      }
+      
+      return null;
+    };
+
+    
+ 
     const posts = response.results.map((page: any) => {
       const properties = page.properties;
       console.log('Available properties:', Object.keys(properties));
-      
+     const thumbnailUrl = getImageUrl(properties.Thumbnail);
+
       return {
         id: page.id,
         title: properties.Title?.title?.[0]?.plain_text || 'Untitled',
+        thumbnail: thumbnailUrl,
         slug: properties.Slug?.rich_text?.[0]?.plain_text || page.id,
         excerpt: '', // You don't have an excerpt field, we'll use first paragraph from content
         tags: [], // You don't have tags, we'll leave empty

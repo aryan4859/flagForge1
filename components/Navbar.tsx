@@ -83,6 +83,7 @@ const Navbar: React.FC = () => {
                   </Link>
                     </>
                 )}
+                
                 {session.status === "authenticated" && (
                   <div className="flex gap-2 px-6 py-4 font-bold text-red-500 items-center">
                     <Image
@@ -158,7 +159,6 @@ const Navbar: React.FC = () => {
               </DropdownMenu>
             )}
           </ul>
-          <Link href='/blogs'>Blogs</Link>
 
           {/* Theme toggle */}
           <button

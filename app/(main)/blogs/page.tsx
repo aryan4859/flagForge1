@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Loading from '@/components/loading';
 
 interface BlogPost {
   id: string;
@@ -13,7 +14,7 @@ interface BlogPost {
   status: string;
   created: string;
   updated: string;
-  cover: string | null;
+  thumbnail: string | null;
 }
 
 export default function BlogsPage() {
@@ -49,28 +50,7 @@ export default function BlogsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-12">
-          <div className="animate-pulse">
-            <div className="h-12 bg-gray-200 rounded mb-8 w-1/3"></div>
-            <div className="space-y-8">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="border border-gray-200 rounded-lg p-6">
-                  <div className="h-6 bg-gray-200 rounded mb-4 w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2 w-full"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-4 w-2/3"></div>
-                  <div className="flex space-x-2">
-                    <div className="h-6 bg-gray-200 rounded w-16"></div>
-                    <div className="h-6 bg-gray-200 rounded w-20"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
@@ -116,10 +96,11 @@ export default function BlogsPage() {
                 key={post.id}
                 className="group border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-red-200"
               >
-                {post.cover && (
+                {/* Thumbnail Image */}
+                {post.thumbnail && (
                   <div className="relative h-48 overflow-hidden">
                     <Image
-                      src={post.cover}
+                      src={post.thumbnail}
                       alt={post.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
