@@ -8,10 +8,12 @@ const notion = new Client({
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const pageId = params.id;
+    // Await the params since they're now a Promise
+    const { id } = await params;
+    const pageId = id;
 
     // Get page properties
     const page = await notion.pages.retrieve({ page_id: pageId });
@@ -58,7 +60,7 @@ export async function GET(
     const post = {
       id: pageData.id,
       title: properties.Title?.title?.[0]?.plain_text || 'Untitled',
-      thumbnail:properties.Thumbnail,
+      thumbnail: properties.Thumbnail,
       slug: properties.Slug?.rich_text?.[0]?.plain_text || pageData.id,
       excerpt: extractExcerpt(blocks.results) || fallbackContent.substring(0, 150),
       tags: properties.Tags?.multi_select?.map((tag: any) => tag.name) || [],
