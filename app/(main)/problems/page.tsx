@@ -5,7 +5,6 @@ import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { IoFilter } from "react-icons/io5";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { Questions } from "@/interfaces";
 
 const page = () => {
@@ -47,8 +46,8 @@ const page = () => {
         data,
         totalScore,
         questionDone,
-        hasMore, // Assume your API returns this
-        totalPages, // If your API provides total pages
+        hasMore, 
+        totalPages,
       }: { 
         data: Problem[]; 
         totalScore: number; 
@@ -57,29 +56,22 @@ const page = () => {
         totalPages?: number;
       } = await response.json();
 
-      // Remove the `flag` field from each problem
       const sanitizedData = data.map(({ flag, ...rest }) => rest);
       setScore(totalScore);
       setProblems(sanitizedData);
       setQuestionDone(questionDone);
       
-      // Determine if there are more pages - multiple fallback strategies
       if (hasMore !== undefined) {
-        // Option 1: API explicitly tells us if there are more pages
         setHasNextPage(hasMore);
       } else if (totalPages !== undefined) {
-        // Option 2: API provides total pages
         setHasNextPage(currentPage < totalPages);
       } else if (data.length === 0) {
-        // Option 3: No data returned - definitely no more pages
         setHasNextPage(false);
-        // Go back to previous page if we went too far
         if (currentPage > 1) {
           setCurrentPage(prev => prev - 1);
         }
       } else {
-        // Option 4: Assume there might be more if we got data
-        // We'll only know for sure when we try the next page and get empty results
+       
         setHasNextPage(true);
       }
 
@@ -90,7 +82,7 @@ const page = () => {
         console.error("An unknown error occurred:", error);
       }
     } finally {
-      setLoading(false); // Stop loading state
+      setLoading(false);
     }
   };
 
@@ -99,13 +91,13 @@ const page = () => {
   }, [currentPage]);
 
   const handleNextPage = () => {
-    if (hasNextPage) { // Only proceed if there's a next page
+    if (hasNextPage) { 
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
   const handlePrevPage = () => {
-    if (currentPage > 1) { // Additional safety check
+    if (currentPage > 1) { 
       setCurrentPage((prevPage) => prevPage - 1);
     }
   };
@@ -190,7 +182,7 @@ const page = () => {
           </button>
           <button
             onClick={handleNextPage}
-            disabled={!hasNextPage} // Disable when no next page
+            disabled={!hasNextPage}
             className={`font-medium text-base rounded-lg px-4 py-2 text-white ${
               !hasNextPage 
                 ? 'bg-gray-400 cursor-not-allowed' 

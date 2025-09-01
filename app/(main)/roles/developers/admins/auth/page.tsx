@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Admin credentials (in production, store these securely)
-const ADMIN_EMAIL = 'admin@flagforge.com';
-const ADMIN_PASSWORD = 'Flagforge@321#@!';
+const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
 
-const AuthPage = () => {
+
+const AuthPage = () => {  
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -67,13 +67,13 @@ const AuthPage = () => {
                 placeholder="example@example.com"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
+                className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-gray-700 font-semibold mb-2" htmlFor="password">
+              <label className="block text-gray-700 text-black font-semibold mb-2" htmlFor="password">
                  Password
               </label>
               <input
@@ -83,7 +83,7 @@ const AuthPage = () => {
                 placeholder="Enter admin password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
+                className="w-full px-4 text-black py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
                 required
               />
             </div>
