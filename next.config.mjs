@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+       {
+        protocol: "https",
+        hostname: "prod-files-secure.s3.us-west-2.amazonaws.com",
+      },
     ],
   },
   async headers() {
@@ -15,7 +19,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://flagforge.aryan4.com.np",  
+            value: "https://flagforge.xyz",  
           },
           {
             key: "X-Frame-Options",
