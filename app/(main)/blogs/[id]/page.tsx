@@ -19,6 +19,30 @@ interface BlogPost {
   blocks: any[];
 }
 
+interface RichText {
+  plain_text: string;
+  annotations?: {
+    bold?: boolean;
+    italic?: boolean;
+    strikethrough?: boolean;
+    underline?: boolean;
+    color?: string;
+  };
+}
+
+interface Block {
+  id: string;
+  type: string;
+  [key: string]: any;
+}
+
+interface ListGroup {
+  type: 'list_group';
+  listType: string;
+  items: Block[];
+  id: string;
+}
+
 export default function BlogPostPage() {
   const params = useParams();
   const router = useRouter();
@@ -55,7 +79,7 @@ export default function BlogPostPage() {
     });
   };
 
-  const getTextStyles = (annotations: any) => {
+  const getTextStyles = (annotations: RichText['annotations']) => {
     let styles = '';
     if (annotations?.bold) styles += ' font-bold';
     if (annotations?.italic) styles += ' italic';
@@ -69,17 +93,17 @@ export default function BlogPostPage() {
     return styles;
   };
 
-  const renderRichText = (richText: any[]) => {
+  const renderRichText = (richText: RichText[]) => {
     if (!richText || !Array.isArray(richText)) return '';
     
-    return richText.map((text: any, index: number) => (
+    return richText.map((text: RichText, index: number) => (
       <span key={index} className={getTextStyles(text.annotations)}>
         {text.plain_text}
       </span>
     ));
   };
 
-  const renderBlock = (block: any) => {
+  const renderBlock = (block: Block) => {
     const { type, id } = block;
     const value = block[type];
     if (!value) return null;
@@ -88,42 +112,42 @@ export default function BlogPostPage() {
       case 'paragraph':
         return (
           <p key={id} className="mb-6 text-gray-800 leading-relaxed text-lg">
-            {renderRichText(value.rich_text)}
+            {renderRichText(value.rich_text || [])}
           </p>
         );
       
       case 'heading_1':
         return (
           <h1 key={id} className="text-4xl font-bold text-black mb-6 mt-12 first:mt-0">
-            {value.rich_text?.map((text: any) => text.plain_text).join('')}
+            {value.rich_text?.map((text: RichText) => text.plain_text).join('') || ''}
           </h1>
         );
       
       case 'heading_2':
         return (
           <h2 key={id} className="text-3xl font-bold text-black mb-5 mt-10">
-            {value.rich_text?.map((text: any) => text.plain_text).join('')}
+            {value.rich_text?.map((text: RichText) => text.plain_text).join('') || ''}
           </h2>
         );
       
       case 'heading_3':
         return (
           <h3 key={id} className="text-2xl font-semibold text-black mb-4 mt-8">
-            {value.rich_text?.map((text: any) => text.plain_text).join('')}
+            {value.rich_text?.map((text: RichText) => text.plain_text).join('') || ''}
           </h3>
         );
       
       case 'bulleted_list_item':
         return (
           <li key={id} className="mb-2 text-gray-800 text-lg leading-relaxed">
-            {renderRichText(value.rich_text)}
+            {renderRichText(value.rich_text || [])}
           </li>
         );
       
       case 'numbered_list_item':
         return (
           <li key={id} className="mb-2 text-gray-800 text-lg leading-relaxed">
-            {renderRichText(value.rich_text)}
+            {renderRichText(value.rich_text || [])}
           </li>
         );
       
@@ -131,7 +155,7 @@ export default function BlogPostPage() {
         return (
           <pre key={id} className="bg-gray-100 p-4 rounded-lg mb-6 overflow-x-auto border">
             <code className="text-sm text-gray-800 font-mono">
-              {value.rich_text?.map((text: any) => text.plain_text).join('')}
+              {value.rich_text?.map((text: RichText) => text.plain_text).join('') || ''}
             </code>
           </pre>
         );
@@ -139,7 +163,7 @@ export default function BlogPostPage() {
       case 'quote':
         return (
           <blockquote key={id} className="border-l-4 border-red-500 pl-6 my-8 italic text-gray-700 text-lg bg-gray-50 py-4 rounded-r-lg">
-            {renderRichText(value.rich_text)}
+            {renderRichText(value.rich_text || [])}
           </blockquote>
         );
       
@@ -153,7 +177,7 @@ export default function BlogPostPage() {
             {src && (
               <Image
                 src={src}
-                alt={value.caption?.[0]?.plain_text || ''}
+                alt={value.caption?.[0]?.plain_text || 'Blog image'}
                 width={800}
                 height={400}
                 className="rounded-lg w-full h-auto shadow-lg"
@@ -173,8 +197,8 @@ export default function BlogPostPage() {
     }
   };
 
-  const groupConsecutiveListItems = (blocks: any[]) => {
-    const result = [];
+  const groupConsecutiveListItems = (blocks: Block[]): (Block | ListGroup)[] => {
+    const result: (Block | ListGroup)[] = [];
     let i = 0;
 
     while (i < blocks.length) {
@@ -182,7 +206,7 @@ export default function BlogPostPage() {
       
       if (block.type === 'bulleted_list_item' || block.type === 'numbered_list_item') {
         const listType = block.type;
-        const listItems = [];
+        const listItems: Block[] = [];
         
         // Collect consecutive list items of the same type
         while (i < blocks.length && blocks[i].type === listType) {
@@ -207,27 +231,28 @@ export default function BlogPostPage() {
   };
 
   const renderContent = () => {
-    if (!post.blocks || post.blocks.length === 0) {
-      return <p className="italic text-gray-600">{post.content || 'No content available'}</p>;
+    if (!post?.blocks || post.blocks.length === 0) {
+      return <p className="italic text-gray-600">{post?.content || 'No content available'}</p>;
     }
 
     const groupedBlocks = groupConsecutiveListItems(post.blocks);
     
     return groupedBlocks.map((item, index) => {
       if (item.type === 'list_group') {
-        const ListTag = item.listType === 'numbered_list_item' ? 'ol' : 'ul';
-        const listClasses = item.listType === 'numbered_list_item' 
+        const listGroup = item as ListGroup;
+        const ListTag = listGroup.listType === 'numbered_list_item' ? 'ol' : 'ul';
+        const listClasses = listGroup.listType === 'numbered_list_item' 
           ? "list-decimal list-inside mb-6 space-y-2 pl-4" 
           : "list-disc list-inside mb-6 space-y-2 pl-4";
         
         return (
-          <ListTag key={item.id} className={listClasses}>
-            {item.items.map((listItem: any) => renderBlock(listItem))}
+          <ListTag key={listGroup.id} className={listClasses}>
+            {listGroup.items.map((listItem: Block) => renderBlock(listItem))}
           </ListTag>
         );
       }
       
-      return renderBlock(item);
+      return renderBlock(item as Block);
     });
   };
 

@@ -72,13 +72,16 @@ const Navbar: React.FC = () => {
                     />
                   ))
                 ) : (
+                  <>  
+                  <Link href='/blogs'>Blogs</Link>
                   <Link
                     onClick={handleMenuClick}
                     href="/authentication"
                     className="bg-red-500 hover:bg-red-700 rounded-lg px-5 py-3 text-white transition-all duration-300 ease-in-out transform hover:scale-105"
-                  >
+                    >
                     Sign in / Sign up
                   </Link>
+                    </>
                 )}
                 {session.status === "authenticated" && (
                   <div className="flex gap-2 px-6 py-4 font-bold text-red-500 items-center">
@@ -105,12 +108,14 @@ const Navbar: React.FC = () => {
                 <NavItem key={href} href={href} tags={tags} style="px-2" />
               ))
             ) : (
+              <>
               <Link
                 href="/authentication"
                 className="bg-red-500 hover:bg-red-700 rounded-lg px-5 py-3 text-white transition-all duration-300 ease-in-out transform hover:scale-105"
-              >
+                >
                 Sign in / Sign up
               </Link>
+                </>
             )}
             {session.status === "authenticated" && (
               <DropdownMenu>
@@ -153,6 +158,7 @@ const Navbar: React.FC = () => {
               </DropdownMenu>
             )}
           </ul>
+          <Link href='/blogs'>Blogs</Link>
 
           {/* Theme toggle */}
           <button
