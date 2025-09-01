@@ -200,12 +200,12 @@ const LeaderboardPage = () => {
   if (error) {
     return (
       <div className="flex flex-col justify-center items-center mt-[20vh] dark:bg-gray-900 min-h-screen px-4 transition-colors duration-300">
-        <h1 className="text-xl sm:text-2xl text-center text-rose-500 dark:text-red-400 font-bold mb-4 transition-colors duration-300">
+        <h1 className="text-xl sm:text-2xl text-center text-red-500 dark:text-red-500 font-bold mb-4 transition-colors duration-300">
           Error: {error}
         </h1>
         <button
           onClick={fetchLeaderboard}
-          className="px-4 py-2 bg-rose-500 dark:bg-red-500 text-white rounded hover:bg-rose-600 dark:hover:bg-red-600 transition-colors duration-300"
+          className="px-4 py-2 bg-red-500 dark:bg-red-500 text-white rounded hover:bg-red-600 dark:hover:bg-red-600 transition-colors duration-300"
         >
           Retry
         </button>
@@ -216,7 +216,7 @@ const LeaderboardPage = () => {
   return (
     <div className="flex flex-col justify-center items-center py-8 px-4 sm:px-6 lg:px-8  dark:bg-gray-900 min-h-screen transition-colors duration-300">
       <div className="flex flex-col items-center mb-6">
-        <h1 className="text-xl sm:text-3xl lg:text-4xl tracking-tight text-center text-rose-500 dark:text-red-400 font-bold mb-2 transition-colors duration-300">
+        <h1 className="text-xl sm:text-3xl lg:text-5xl tracking-tight text-center text-red-500 dark:text-red-500 font-bold mb-2 transition-colors duration-300">
           Leaderboard
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-300 text-center transition-colors duration-300">
@@ -266,7 +266,7 @@ const LeaderboardPage = () => {
                       <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 transition-colors duration-300">
                         {leaderboard[0].name}
                       </h2>
-                      <span className="font-medium text-rose-500 dark:text-red-400 text-sm">
+                      <span className="font-medium text-red-500 dark:text-red-500 text-sm">
                         {getLevel(leaderboard[0].totalScore)}
                       </span>
                       <div className="flex items-center space-x-3 mt-1 text-gray-600 dark:text-gray-300 transition-colors duration-300">
@@ -319,7 +319,7 @@ const LeaderboardPage = () => {
                                 ? "text-gray-500"
                                 : actualIndex === 2
                                 ? "text-orange-500"
-                                : "text-rose-500 dark:text-red-400"
+                                : "text-red-500 dark:text-red-400"
                             }`}
                           >
                             #{user.rank}
@@ -343,7 +343,7 @@ const LeaderboardPage = () => {
                             {getBadgeComponent(user.totalScore, "small")}
                           </div>
 
-                          <span className="font-medium text-xs text-rose-500 dark:text-red-400 text-center">
+                          <span className="font-medium text-xs text-red-500 dark:text-red-500 text-center">
                             {getLevel(user.totalScore)}
                           </span>
                           <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate text-center transition-colors duration-300">
@@ -381,7 +381,7 @@ const LeaderboardPage = () => {
             {leaderboard.length > 5 && (
               <div className="dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-colors duration-300">
                 {/* Table Header */}
-                <div className="grid grid-cols-5 gap-3 p-3 bg-rose-500 dark:bg-red-500 text-xs font-medium text-white border-b border-rose-600 dark:border-red-600 transition-colors duration-300">
+                <div className="grid grid-cols-5 gap-3 p-3 bg-red-500 dark:bg-red-500 text-xs font-medium text-white border-b border-red-600 dark:border-red-600 transition-colors duration-300">
                   <div>Rank</div>
                   <div>Username</div>
                   <div>Points</div>
@@ -417,7 +417,7 @@ const LeaderboardPage = () => {
                             />
                           </div>
                           <div>
-                            <div className="text-rose-500 dark:text-red-400 font-medium truncate">
+                            <div className="text-red-500 dark:text-red-500 font-medium truncate">
                               {user.name}
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">

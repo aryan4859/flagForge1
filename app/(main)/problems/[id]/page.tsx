@@ -186,7 +186,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
               Doubting your skills? Let's return to{" "}
               <Link
                 href="/problems"
-                className="text-rose-500 dark:text-red-400 hover:underline transition-colors duration-300"
+                className="text-red-500 dark:text-red-500 hover:underline transition-colors duration-300"
               >
                 problems
               </Link>
@@ -199,13 +199,13 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
             <div className="flex justify-between items-center">
               <h1 className="text-2xl sm:text-3xl flex items-center justify-center gap-4 text-black dark:text-white font-bold transition-colors duration-300">
                 {problems.title}
-                <span className="text-sm hidden sm:block px-2 py-1 shadow-lg text-center bg-rose-500 dark:bg-red-600 rounded-full tracking-tight font-semibold text-white hover:bg-rose-700 dark:hover:bg-red-700 transition-colors duration-300">
+                <span className="text-sm hidden sm:block px-2 py-1 shadow-lg text-center bg-red-400 dark:bg-red-500 rounded-full tracking-tight font-semibold text-white hover:bg-red-700 dark:hover:bg-red-700 transition-colors duration-300">
                   {problems.category}
                 </span>
               </h1>
               <h2 className="text-xl hidden sm:block text-gray-800 dark:text-gray-300 transition-colors duration-300">
                 Points: &nbsp;
-                <span className="text-rose-500 dark:text-red-400 font-extrabold transition-colors duration-300">
+                <span className="text-red-500 dark:text-red-500 font-extrabold transition-colors duration-300">
                   {problems.points}
                 </span>
               </h2>
@@ -228,7 +228,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
                   Given Resources
                 </p>
-                <p className="font-bold text-sm sm:text-md text-rose-500 dark:text-red-400 transition-colors duration-300">
+                <p className="font-bold text-sm sm:text-md text-red-500 dark:text-red-500 transition-colors duration-300">
                   <a
                     href={problems.link}
                     target="_blank"
@@ -242,7 +242,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
                   Hints
                 </p>
-                <p className="text-sm sm:text-md px-3 py-1 shadow-lg text-center bg-rose-500 dark:bg-red-600 rounded-lg text-white font-bold hover:bg-rose-700 dark:hover:bg-red-700 transition-colors duration-300">
+                <p className="text-sm sm:text-md px-3 py-1 shadow-lg text-center bg-red-400 dark:bg-red-500 rounded-lg text-white font-bold hover:bg-red-700 dark:hover:bg-red-700 transition-colors duration-300">
                   1
                 </p>
               </div>
@@ -251,7 +251,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
             <div className="mt-3 border border-gray-200 dark:border-gray-700 rounded-lg p-6 flex flex-col justify-start gap-4 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300">
               <input
                 type="text"
-                className="py-2 px-4 block w-full border border-gray-300 dark:border-gray-600 rounded-lg text-base sm:text-lg bg-white dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500 dark:focus:ring-red-400 transition-colors duration-300"
+                className="py-2 px-4 block w-full border border-gray-300 dark:border-gray-600 rounded-lg text-base sm:text-lg bg-white dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-colors duration-300"
                 placeholder="Flag here!"
                 value={flag}
                 onChange={(e) => setFlag(e.target.value)}
@@ -263,7 +263,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 className={`w-full sm:w-[180px] border rounded-lg px-4 py-2 text-white transition-colors duration-300 ${
                   submitting || isCorrect
                     ? "bg-gray-400 border-gray-400 cursor-not-allowed"
-                    : "bg-rose-500 dark:bg-red-600 border-rose-500 dark:border-red-600 hover:bg-rose-700 dark:hover:bg-red-700"
+                    : "bg-red-400 dark:bg-red-500 border-red-500 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
                 }`}
                 onClick={handleSubmit}
                 disabled={submitting || isCorrect}
@@ -279,7 +279,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   className={`text-center text-lg font-bold mt-4 transition-colors duration-300 ${
                     message.includes("Right")
                       ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
+                      : "text-red-600 dark:text-red-500"
                   }`}
                 >
                   {message}

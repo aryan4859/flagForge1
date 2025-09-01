@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
       <div className="flex flex-col gap-[50px] ">
         <h2 className="sm:w-[80%] mx-auto text-[2.6rem] sm:text-6xl text-center text-gray-600 dark:text-gray-100 leading-[180%] sm:leading-2 tracking-tight transition-colors duration-300">
           Welcome to
-          <span className="text-rose-500 dark:text-red-500 font-extrabold">
+          <span className="text-red-500 dark:text-red-500 font-extrabold">
             {" "}
             FlagForge{" "}
           </span>

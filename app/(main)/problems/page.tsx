@@ -119,18 +119,18 @@ const page = () => {
 
   return (
     <div className="flex flex-col justify-center items-center gap-8 mx-8">
-      <h1 className="text-4xl sm:text-5xl tracking-tight text-center text-red-500 font-bold">
+      <h1 className="text-4xl sm:text-5xl tracking-tight text-center text-red-400 font-bold">
         Challenges
       </h1>
       <div className="flex justify-between w-full" onClick={handleMenuClick}>
         <div className="flex justify-between w-full">
           <h2 className="text-center text-xl sm:text-xl font-medium text-gray-600">
             Score: &nbsp;
-            <span className="text-red-500 font-extrabold">{score}</span>
+            <span className="text-red-400 font-extrabold">{score}</span>
           </h2>
           <p className="text-center text-xl sm:text-xl font-medium text-gray-600">
             Total Question Solved:&nbsp;
-            <span className="text-red-500 font-extrabold">
+            <span className="text-red-400 font-extrabold">
               {questionDone?.length}
             </span>
           </p>
@@ -175,7 +175,7 @@ const page = () => {
             className={`font-medium text-base rounded-lg px-4 py-2 text-white ${
               currentPage === 1 
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-rose-500 hover:bg-rose-800'
+                : 'bg-red-400 hover:bg-red-800'
             }`}
           >
             Previous
@@ -186,7 +186,7 @@ const page = () => {
             className={`font-medium text-base rounded-lg px-4 py-2 text-white ${
               !hasNextPage 
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-rose-500 hover:bg-rose-800'
+                : 'bg-red-400 hover:bg-red-800'
             }`}
           >
             Next
