@@ -152,25 +152,37 @@ export async function POST(
     if (trimmedSubmittedFlag === correctFlag) {
       // Flag is correct - save the solution
       try {
+        // Ensure points is a number
+        const pointsToAdd = Number(question.points) || 0;
+        
         const newSolution = new UserQuestionModel({
           userId: user._id,
           questionId: id,
           solvedAt: new Date(),
-          pointsEarned: question.points
+          pointsEarned: pointsToAdd
         });
 
         await newSolution.save();
 
-        // Optionally update user's total points
-        await userSchema.findByIdAndUpdate(
+        const updateResult = await userSchema.findByIdAndUpdate(
           user._id,
-          { $inc: { totalPoints: question.points } }
+          { $inc: { totalScore: pointsToAdd } },
+          { 
+            new: true,
+            upsert: false 
+          }
         );
+
+        if (!updateResult) {
+          console.error("Failed to update user score");
+        } else {
+          console.log(`User ${user._id} score updated. Added: ${pointsToAdd}, New total: ${updateResult.totalScore}`);
+        }
 
         return NextResponse.json(
           { 
             message: "Right! Congratulations on solving the challenge!",
-            points: question.points,
+            points: pointsToAdd,
             success: true
           },
           { status: HttpStatusCode.Ok }
