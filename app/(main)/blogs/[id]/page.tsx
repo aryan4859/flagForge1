@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import Loading from '@/components/loading';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import Loading from "@/components/loading";
 
 // Types
 interface BlogPost {
@@ -54,11 +54,11 @@ export default function BlogPostPage() {
     const fetchPost = async () => {
       try {
         const response = await fetch(`/api/blogs/${params.id}`);
-        if (!response.ok) throw new Error('Failed to fetch post');
+        if (!response.ok) throw new Error("Failed to fetch post");
         const data = await response.json();
         setPost(data.post);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -69,32 +69,34 @@ export default function BlogPostPage() {
 
   // Utility functions
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
-  const getTextStyles = (annotations?: RichText['annotations']) => {
-    if (!annotations) return '';
-    
+  const getTextStyles = (annotations?: RichText["annotations"]) => {
+    if (!annotations) return "";
+
     const styles = [
-      annotations.bold && 'font-bold',
-      annotations.italic && 'italic',
-      annotations.strikethrough && 'line-through',
-      annotations.underline && 'underline',
-      annotations.color === 'red' && 'text-red-600',
-      annotations.color === 'blue' && 'text-blue-600',
-      annotations.color === 'green' && 'text-green-600',
-    ].filter(Boolean).join(' ');
-    
+      annotations.bold && "font-bold",
+      annotations.italic && "italic",
+      annotations.strikethrough && "line-through",
+      annotations.underline && "underline",
+      annotations.color === "red" && "text-red-600 dark:text-red-500",
+      annotations.color === "blue" && "text-blue-600 dark:text-blue-400",
+      annotations.color === "green" && "text-green-600 dark:text-green-400",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
     return styles;
   };
 
   const renderRichText = (richText: RichText[]) => {
-    if (!richText?.length) return '';
-    
+    if (!richText?.length) return "";
+
     return richText.map((text, index) => (
       <span key={index} className={getTextStyles(text.annotations)}>
         {text.plain_text}
@@ -106,19 +108,27 @@ export default function BlogPostPage() {
     // Handle bold text (**text**)
     const boldRegex = /\*\*(.*?)\*\*/g;
     const parts = text.split(boldRegex);
-    
+
     return parts.map((part, index) => {
       if (index % 2 === 1) {
-        return <strong key={index} className="font-bold">{part}</strong>;
+        return (
+          <strong key={index} className="font-bold">
+            {part}
+          </strong>
+        );
       }
-      
+
       // Handle italic text (*text*)
       const italicRegex = /\*(.*?)\*/g;
       const italicParts = part.split(italicRegex);
-      
+
       return italicParts.map((italicPart, italicIndex) => {
         if (italicIndex % 2 === 1) {
-          return <em key={`${index}-${italicIndex}`} className="italic">{italicPart}</em>;
+          return (
+            <em key={`${index}-${italicIndex}`} className="italic">
+              {italicPart}
+            </em>
+          );
         }
         return italicPart;
       });
@@ -133,61 +143,68 @@ export default function BlogPostPage() {
 
     const blockComponents = {
       paragraph: (
-        <p className="mb-6 text-gray-800 leading-relaxed text-lg">
+        <p className="mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-lg transition-colors duration-300">
           {renderRichText(value.rich_text || [])}
         </p>
       ),
       heading_1: (
-        <h1 className="text-4xl font-extrabold text-black mb-6 mt-12 first:mt-0">
-          {value.rich_text?.map((text: RichText) => text.plain_text).join('') || ''}
+        <h1 className="text-4xl font-extrabold text-black dark:text-white mb-6 mt-12 first:mt-0 transition-colors duration-300">
+          {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
+            ""}
         </h1>
       ),
       heading_2: (
-        <h2 className="text-3xl font-extrabold text-black mb-5 mt-10">
-          {value.rich_text?.map((text: RichText) => text.plain_text).join('') || ''}
+        <h2 className="text-3xl font-extrabold text-black dark:text-white mb-5 mt-10 transition-colors duration-300">
+          {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
+            ""}
         </h2>
       ),
       heading_3: (
-        <h3 className="text-2xl font-extrabold text-black mb-4 mt-8">
-          {value.rich_text?.map((text: RichText) => text.plain_text).join('') || ''}
+        <h3 className="text-2xl font-extrabold text-black dark:text-white mb-4 mt-8 transition-colors duration-300">
+          {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
+            ""}
         </h3>
       ),
       bulleted_list_item: (
-        <li className="mb-2 text-gray-800 text-lg leading-relaxed">
+        <li className="mb-2 text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300">
           {renderRichText(value.rich_text || [])}
         </li>
       ),
       numbered_list_item: (
-        <li className="mb-2 text-gray-800 text-lg leading-relaxed">
+        <li className="mb-2 text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300">
           {renderRichText(value.rich_text || [])}
         </li>
       ),
       code: (
-        <pre className="bg-gray-100 p-4 rounded-lg mb-6 overflow-x-auto border">
-          <code className="text-sm text-gray-800 font-mono">
-            {value.rich_text?.map((text: RichText) => text.plain_text).join('') || ''}
+        <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6 overflow-x-auto border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+          <code className="text-sm text-gray-800 dark:text-gray-300 font-mono transition-colors duration-300">
+            {value.rich_text
+              ?.map((text: RichText) => text.plain_text)
+              .join("") || ""}
           </code>
         </pre>
       ),
       quote: (
-        <blockquote className="border-l-4 border-red-500 pl-6 my-8 italic text-gray-700 text-lg bg-gray-50 py-4 rounded-r-lg">
+        <blockquote className="border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-lg bg-gray-50 dark:bg-gray-800/50 py-4 rounded-r-lg transition-colors duration-300">
           {renderRichText(value.rich_text || [])}
         </blockquote>
       ),
-      divider: <hr className="my-12 border-gray-300" />,
+      divider: (
+        <hr className="my-12 border-gray-300 dark:border-gray-700 transition-colors duration-300" />
+      ),
       image: (
         <div className="my-8">
           {(value.external?.url || value.file?.url) && (
             <Image
               src={value.external?.url || value.file?.url}
-              alt={value.caption?.[0]?.plain_text || 'Blog image'}
+              alt={value.caption?.[0]?.plain_text || "Blog image"}
               width={800}
               height={400}
               className="rounded-lg w-full h-auto shadow-lg"
             />
           )}
           {value.caption?.length > 0 && (
-            <p className="text-sm text-gray-600 mt-3 text-center italic">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 text-center italic transition-colors duration-300">
               {value.caption[0].plain_text}
             </p>
           )}
@@ -195,24 +212,29 @@ export default function BlogPostPage() {
       ),
     };
 
-    return <div key={id}>{blockComponents[type as keyof typeof blockComponents] || null}</div>;
+    return (
+      <div key={id}>
+        {blockComponents[type as keyof typeof blockComponents] || null}
+      </div>
+    );
   };
 
   const renderStringContent = (content: string) => {
     if (!content) return null;
 
-    const lines = content.split('\n').filter(line => line.trim());
+    const lines = content.split("\n").filter((line) => line.trim());
     const elements: JSX.Element[] = [];
     let currentList: JSX.Element[] = [];
-    let listType: 'bullet' | 'numbered' | null = null;
+    let listType: "bullet" | "numbered" | null = null;
 
     const flushList = () => {
       if (currentList.length > 0) {
-        const ListTag = listType === 'numbered' ? 'ol' : 'ul';
-        const listClasses = listType === 'numbered' 
-          ? "list-decimal list-inside mb-6 space-y-2 pl-4" 
-          : "list-disc list-inside mb-6 space-y-2 pl-4";
-        
+        const ListTag = listType === "numbered" ? "ol" : "ul";
+        const listClasses =
+          listType === "numbered"
+            ? "list-decimal list-inside mb-6 space-y-2 pl-4"
+            : "list-disc list-inside mb-6 space-y-2 pl-4";
+
         elements.push(
           <ListTag key={`list-${elements.length}`} className={listClasses}>
             {currentList}
@@ -232,7 +254,10 @@ export default function BlogPostPage() {
         flushList();
         const headerText = trimmed.slice(2, -2);
         elements.push(
-          <h3 key={i} className="text-2xl font-extrabold text-black mb-4 mt-8 first:mt-0">
+          <h3
+            key={i}
+            className="text-2xl font-extrabold text-black dark:text-white mb-4 mt-8 first:mt-0 transition-colors duration-300"
+          >
             {headerText}
           </h3>
         );
@@ -240,11 +265,18 @@ export default function BlogPostPage() {
       }
 
       // Regular bold text (**text** not at start/end)
-      if (trimmed.startsWith('**') && trimmed.endsWith('**') && trimmed.length > 4) {
+      if (
+        trimmed.startsWith("**") &&
+        trimmed.endsWith("**") &&
+        trimmed.length > 4
+      ) {
         flushList();
         const headerText = trimmed.slice(2, -2);
         elements.push(
-          <h2 key={i} className="text-3xl font-extrabold text-black mb-6 mt-10 first:mt-0">
+          <h2
+            key={i}
+            className="text-3xl font-extrabold text-black dark:text-white mb-6 mt-10 first:mt-0 transition-colors duration-300"
+          >
             {headerText}
           </h2>
         );
@@ -252,13 +284,16 @@ export default function BlogPostPage() {
       }
 
       // Bullet points (• text)
-      if (trimmed.startsWith('•')) {
-        if (listType !== 'bullet') {
+      if (trimmed.startsWith("•")) {
+        if (listType !== "bullet") {
           flushList();
-          listType = 'bullet';
+          listType = "bullet";
         }
         currentList.push(
-          <li key={i} className="text-gray-800 text-lg leading-relaxed">
+          <li
+            key={i}
+            className="text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300"
+          >
             {renderInlineFormatting(trimmed.slice(1).trim())}
           </li>
         );
@@ -267,13 +302,16 @@ export default function BlogPostPage() {
 
       // Numbered lists (1. text)
       if (/^\d+\./.test(trimmed)) {
-        if (listType !== 'numbered') {
+        if (listType !== "numbered") {
           flushList();
-          listType = 'numbered';
+          listType = "numbered";
         }
         currentList.push(
-          <li key={i} className="text-gray-800 text-lg leading-relaxed">
-            {renderInlineFormatting(trimmed.replace(/^\d+\.\s*/, ''))}
+          <li
+            key={i}
+            className="text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300"
+          >
+            {renderInlineFormatting(trimmed.replace(/^\d+\.\s*/, ""))}
           </li>
         );
         return;
@@ -282,7 +320,10 @@ export default function BlogPostPage() {
       // Regular paragraph
       flushList();
       elements.push(
-        <p key={i} className="mb-6 text-gray-800 leading-relaxed text-lg">
+        <p
+          key={i}
+          className="mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-lg transition-colors duration-300"
+        >
           {renderInlineFormatting(trimmed)}
         </p>
       );
@@ -290,31 +331,37 @@ export default function BlogPostPage() {
 
     // Flush any remaining list
     flushList();
-    
+
     return elements;
   };
 
   const groupListItems = (blocks: Block[]) => {
-    const result: (Block | { type: 'list_group'; listType: string; items: Block[]; id: string })[] = [];
+    const result: (
+      | Block
+      | { type: "list_group"; listType: string; items: Block[]; id: string }
+    )[] = [];
     let i = 0;
 
     while (i < blocks.length) {
       const block = blocks[i];
-      
-      if (block.type === 'bulleted_list_item' || block.type === 'numbered_list_item') {
+
+      if (
+        block.type === "bulleted_list_item" ||
+        block.type === "numbered_list_item"
+      ) {
         const listType = block.type;
         const listItems: Block[] = [];
-        
+
         while (i < blocks.length && blocks[i].type === listType) {
           listItems.push(blocks[i]);
           i++;
         }
-        
+
         result.push({
-          type: 'list_group',
+          type: "list_group",
           listType,
           items: listItems,
-          id: `list_${listItems[0].id}`
+          id: `list_${listItems[0].id}`,
         });
       } else {
         result.push(block);
@@ -329,28 +376,33 @@ export default function BlogPostPage() {
     // Render Notion blocks if available
     if (post?.blocks?.length) {
       const groupedBlocks = groupListItems(post.blocks);
-      
+
       return groupedBlocks.map((item) => {
-        if (item.type === 'list_group') {
-          const ListTag = item.listType === 'numbered_list_item' ? 'ol' : 'ul';
-          const listClasses = item.listType === 'numbered_list_item' 
-            ? "list-decimal list-inside mb-6 space-y-2 pl-4" 
-            : "list-disc list-inside mb-6 space-y-2 pl-4";
-          
+        if (item.type === "list_group") {
+          const ListTag = item.listType === "numbered_list_item" ? "ol" : "ul";
+          const listClasses =
+            item.listType === "numbered_list_item"
+              ? "list-decimal list-inside mb-6 space-y-2 pl-4"
+              : "list-disc list-inside mb-6 space-y-2 pl-4";
+
           return (
             <ListTag key={item.id} className={listClasses}>
               {item.items.map(renderBlock)}
             </ListTag>
           );
         }
-        
+
         return renderBlock(item as Block);
       });
     }
-    
+
     // Fallback to string content
-    return post?.content ? renderStringContent(post.content) : (
-      <p className="italic text-gray-600">No content available</p>
+    return post?.content ? (
+      renderStringContent(post.content)
+    ) : (
+      <p className="italic text-gray-600 dark:text-gray-400 transition-colors duration-300">
+        No content available
+      </p>
     );
   };
 
@@ -360,12 +412,14 @@ export default function BlogPostPage() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
         <div className="text-center">
-          <p className="text-red-600 text-lg mb-4">Error: {error}</p>
-          <button 
-            onClick={() => router.push('/blogs')} 
-            className="text-red-600 underline hover:text-red-800 transition-colors"
+          <p className="text-red-400 dark:text-red-500 text-lg mb-4 transition-colors duration-300">
+            Error: {error}
+          </p>
+          <button
+            onClick={() => router.push("/blogs")}
+            className="text-red-400 dark:text-red-500 underline hover:text-red-800 dark:hover:text-red-600 transition-colors duration-300"
           >
             Back to Blogs
           </button>
@@ -377,34 +431,39 @@ export default function BlogPostPage() {
   // Not found state
   if (!post) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-600 text-lg">Post not found.</div>
+      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
+        <div className="text-gray-600 dark:text-gray-400 text-lg transition-colors duration-300">
+          Post not found.
+        </div>
       </div>
     );
   }
 
   // Main render
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Navigation */}
-        <Link href="/blogs" className="inline-flex items-center text-red-600 mb-8 hover:text-red-800 transition-colors">
+        <Link
+          href="/blogs"
+          className="inline-flex items-center text-red-600 dark:text-red-500 mb-8 hover:text-red-800 dark:hover:text-red-600 transition-colors duration-300"
+        >
           ← Back to blogs
         </Link>
 
         {/* Header */}
         <header className="mb-12">
-          <h1 className="text-5xl font-bold text-black mb-6 leading-tight">
+          <h1 className="text-5xl font-bold text-black dark:text-white mb-6 leading-tight transition-colors duration-300">
             {post.title}
           </h1>
-          
+
           {/* Meta info */}
           <div className="flex items-center gap-4 text-sm mb-8">
-            <time className="text-red-600 font-medium">
+            <time className="text-red-600 dark:text-red-500 font-medium transition-colors duration-300">
               {formatDate(post.created)}
             </time>
             {post.updated !== post.created && (
-              <span className="text-gray-600">
+              <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">
                 Updated: {formatDate(post.updated)}
               </span>
             )}
@@ -425,22 +484,20 @@ export default function BlogPostPage() {
 
           {/* Excerpt */}
           {post.excerpt && (
-            <p className="mt-6 text-xl text-gray-700 leading-relaxed font-light">
+            <p className="mt-6 text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-light transition-colors duration-300">
               {post.excerpt}
             </p>
           )}
         </header>
-
-
 
         {/* Tags */}
         {post.tags?.length > 0 && (
           <div className="mb-8">
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag, index) => (
-                <span 
-                  key={index} 
-                  className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium"
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-500 rounded-full text-sm font-medium transition-colors duration-300"
                 >
                   {tag}
                 </span>
@@ -450,7 +507,7 @@ export default function BlogPostPage() {
         )}
 
         {/* Content */}
-        <article className="prose prose-lg max-w-none">
+        <article className="prose prose-lg max-w-none dark:prose-invert">
           {renderContent()}
         </article>
 

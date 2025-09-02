@@ -6,7 +6,7 @@ export default function Contact() {
       {/* Header Section */}
       <div className="flex flex-col items-center gap-8">
         <h1 className="text-4xl font-bold text-gray-700 dark:text-gray-100 transition-colors duration-300">
-          Contact <span className="text-rose-500 dark:text-rose-500">Us</span>
+          Contact <span className="text-red-400 dark:text-red-500">Us</span>
         </h1>
         <p className="text-lg text-center text-gray-600 dark:text-gray-300 max-w-3xl transition-colors duration-300">
           Get in touch with us. We'd love to hear from you!
@@ -23,8 +23,8 @@ export default function Contact() {
             </h2>
 
             <div className="flex items-start gap-4">
-              <div className="bg-rose-100 dark:bg-rose-700 p-3 rounded-lg transition-colors duration-300">
-                <span className="text-rose-500 dark:text-rose-500 text-xl">
+              <div className="bg-rose-100 dark:bg-rose-600 p-3 rounded-lg transition-colors duration-300">
+                <span className="text-red-400 dark:text-red-500 text-xl">
                   📧
                 </span>
               </div>
@@ -39,8 +39,8 @@ export default function Contact() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-rose-100 dark:bg-rose-700 p-3 rounded-lg transition-colors duration-300">
-                <span className="text-rose-500 dark:text-rose-500 text-xl">
+              <div className="bg-rose-100 dark:bg-rose-600 p-3 rounded-lg transition-colors duration-300">
+                <span className="text-red-400 dark:text-red-500 text-xl">
                   📞
                 </span>
               </div>
@@ -55,8 +55,8 @@ export default function Contact() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-rose-100 dark:bg-rose-700 p-3 rounded-lg transition-colors duration-300">
-                <span className="text-rose-500 dark:text-rose-500 text-xl">
+              <div className="bg-rose-100 dark:bg-rose-600 p-3 rounded-lg transition-colors duration-300">
+                <span className="text-red-400 dark:text-red-500 text-xl">
                   📍
                 </span>
               </div>
@@ -88,7 +88,7 @@ export default function Contact() {
                 <input
                   type="text"
                   id="name"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
                   placeholder="Your name"
                 />
               </div>
@@ -103,7 +103,7 @@ export default function Contact() {
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
                   placeholder="your@email.com"
                 />
               </div>
@@ -118,14 +118,14 @@ export default function Contact() {
                 <textarea
                   id="message"
                   rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-300"
                   placeholder="Your message here..."
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-rose-500 hover:bg-rose-600 dark:bg-rose-500 dark:hover:bg-rose-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300"
+                className="w-full bg-red-500 hover:bg-red-500 dark:bg-red-500 dark:hover:bg-red-500 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300"
               >
                 Send Message
               </button>
@@ -138,7 +138,7 @@ export default function Contact() {
       <div className="text-center">
         <Link
           href="/"
-          className="inline-block bg-rose-500 hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-700 rounded-lg px-8 py-4 text-white text-center font-bold text-lg transition-colors duration-300"
+          className="inline-block bg-red-500 hover:bg-red-500 dark:bg-red-500 dark:hover:bg-red-500 rounded-lg px-8 py-4 text-white text-center font-bold text-lg transition-colors duration-300"
         >
           Back to Home
         </Link>

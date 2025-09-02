@@ -7,7 +7,7 @@ export default function About() {
       <div className="flex flex-col items-center gap-8 py-8">
         <h1 className="text-4xl font-bold text-gray-700 dark:text-gray-100 transition-colors duration-300">
           About{" "}
-          <span className="text-rose-500 dark:text-rose-500 font-bold">
+          <span className="text-red-400 dark:text-red-500 font-bold">
             FlagForge
           </span>
         </h1>
@@ -15,7 +15,7 @@ export default function About() {
         <p className="text-lg text-center text-gray-600 dark:text-gray-300 max-w-3xl transition-colors duration-300">
           FlagForge is a dynamic and engaging CTF platform dedicated to
           promoting
-          <span className="text-rose-500 dark:text-rose-500 font-bold">
+          <span className="text-red-400 dark:text-red-500 font-bold">
             {" "}
             Cybersecurity{" "}
           </span>
@@ -28,7 +28,7 @@ export default function About() {
         {/* Our Platform Section */}
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <h3 className="text-xl font-bold text-rose-500 dark:text-rose-500 mb-4 transition-colors duration-300">
+            <h3 className="text-xl font-bold text-red-400 dark:text-red-500 mb-4 transition-colors duration-300">
               Our Platform 🚀
             </h3>
             <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
@@ -45,7 +45,7 @@ export default function About() {
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl p-4 text-center transition-colors duration-300">
               <div className="text-2xl mb-2">🔒</div>
-              <h4 className="font-bold text-rose-500 dark:text-rose-500 text-sm mb-1">
+              <h4 className="font-bold text-red-400 dark:text-red-500 text-sm mb-1">
                 Secure
               </h4>
               <p className="text-gray-600 dark:text-gray-300 text-xs transition-colors duration-300">
@@ -55,7 +55,7 @@ export default function About() {
 
             <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl p-4 text-center transition-colors duration-300">
               <div className="text-2xl mb-2">👥</div>
-              <h4 className="font-bold text-rose-500 dark:text-rose-500 text-sm mb-1">
+              <h4 className="font-bold text-red-400 dark:text-red-500 text-sm mb-1">
                 Collaborative
               </h4>
               <p className="text-gray-600 dark:text-gray-300 text-xs transition-colors duration-300">
@@ -65,7 +65,7 @@ export default function About() {
 
             <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl p-4 text-center transition-colors duration-300">
               <div className="text-2xl mb-2">🌐</div>
-              <h4 className="font-bold text-rose-500 dark:text-rose-500 text-sm mb-1">
+              <h4 className="font-bold text-red-400 dark:text-red-500 text-sm mb-1">
                 Global
               </h4>
               <p className="text-gray-600 dark:text-gray-300 text-xs transition-colors duration-300">
@@ -75,7 +75,7 @@ export default function About() {
 
             <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl p-4 text-center transition-colors duration-300">
               <div className="text-2xl mb-2">🔐</div>
-              <h4 className="font-bold text-rose-500 dark:text-rose-500 text-sm mb-1">
+              <h4 className="font-bold text-red-400 dark:text-red-500 text-sm mb-1">
                 Private
               </h4>
               <p className="text-gray-600 dark:text-gray-300 text-xs transition-colors duration-300">
@@ -90,7 +90,7 @@ export default function About() {
       <div className="text-center py-8">
         <Link
           href="/problems"
-          className="inline-block bg-rose-500 hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-700 rounded-lg px-8 py-4 text-white text-center font-bold text-lg transition-colors duration-300"
+          className="inline-block bg-red-500 hover:bg-rose-700 dark:bg-red-500 dark:hover:bg-rose-700 rounded-lg px-8 py-4 text-white text-center font-bold text-lg transition-colors duration-300"
         >
           Start Solving Challenges 🚀
         </Link>

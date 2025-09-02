@@ -8,7 +8,7 @@ export default function Licensing() {
       <div className="flex flex-col items-center gap-8">
         <h1 className="text-4xl font-bold text-gray-700 dark:text-gray-100 transition-colors duration-300">
           Licensing{" "}
-          <span className="text-rose-500 dark:text-rose-500 transition-colors duration-300">
+          <span className="text-red-400 dark:text-red-500 transition-colors duration-300">
             Information
           </span>
         </h1>
@@ -31,7 +31,7 @@ export default function Licensing() {
           </p>
           <ul className="space-y-2 text-gray-600 dark:text-gray-300 transition-colors duration-300">
             <li className="flex items-start">
-              <span className="text-rose-500 dark:text-rose-500 mr-2 transition-colors duration-300">
+              <span className="text-red-400 dark:text-red-500 mr-2 transition-colors duration-300">
                 •
               </span>
               <span>
@@ -39,7 +39,7 @@ export default function Licensing() {
               </span>
             </li>
             <li className="flex items-start">
-              <span className="text-rose-500 dark:text-rose-500 mr-2 transition-colors duration-300">
+              <span className="text-red-400 dark:text-red-500 mr-2 transition-colors duration-300">
                 •
               </span>
               <span>
@@ -47,13 +47,13 @@ export default function Licensing() {
               </span>
             </li>
             <li className="flex items-start">
-              <span className="text-rose-500 dark:text-rose-500 mr-2 transition-colors duration-300">
+              <span className="text-red-400 dark:text-red-500 mr-2 transition-colors duration-300">
                 •
               </span>
               <span>Include copyright notices and license text</span>
             </li>
             <li className="flex items-start">
-              <span className="text-rose-500 dark:text-rose-500 mr-2 transition-colors duration-300">
+              <span className="text-red-400 dark:text-red-500 mr-2 transition-colors duration-300">
                 •
               </span>
               <span>State significant changes made to the original code</span>
@@ -70,7 +70,7 @@ export default function Licensing() {
           </p>
           <ul className="space-y-2 text-gray-600 dark:text-gray-300 transition-colors duration-300">
             <li className="flex items-start">
-              <span className="text-rose-500 dark:text-rose-500 mr-2 transition-colors duration-300">
+              <span className="text-red-400 dark:text-red-500 mr-2 transition-colors duration-300">
                 •
               </span>
               <span>
@@ -78,19 +78,19 @@ export default function Licensing() {
               </span>
             </li>
             <li className="flex items-start">
-              <span className="text-rose-500 dark:text-rose-500 mr-2 transition-colors duration-300">
+              <span className="text-red-400 dark:text-red-500 mr-2 transition-colors duration-300">
                 •
               </span>
               <span>Study how the program works and modify it</span>
             </li>
             <li className="flex items-start">
-              <span className="text-rose-500 dark:text-rose-500 mr-2 transition-colors duration-300">
+              <span className="text-red-400 dark:text-red-500 mr-2 transition-colors duration-300">
                 •
               </span>
               <span>Distribute original or modified versions</span>
             </li>
             <li className="flex items-start">
-              <span className="text-rose-500 dark:text-rose-500 mr-2 transition-colors duration-300">
+              <span className="text-red-400 dark:text-red-500 mr-2 transition-colors duration-300">
                 •
               </span>
               <span>Contribute back to the original project</span>
@@ -131,7 +131,7 @@ export default function Licensing() {
         </Link>
         <Link
           href="/"
-          className="inline-block bg-rose-500 hover:bg-rose-700 dark:bg-rose-500 dark:hover:bg-rose-700 rounded-lg px-6 py-3 text-white text-center font-bold transition-colors duration-300"
+          className="inline-block bg-red-500 hover:bg-rose-700 dark:bg-red-500 dark:hover:bg-rose-700 rounded-lg px-6 py-3 text-white text-center font-bold transition-colors duration-300"
         >
           Back to Home
         </Link>

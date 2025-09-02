@@ -116,7 +116,7 @@ const DIFFICULTY_CONFIG: {
     color: "text-red-700",
     bg: "bg-red-50",
     border: "border-red-200",
-    darkColor: "dark:text-red-400",
+    darkColor: "dark:text-red-500",
     darkBg: "dark:bg-red-900/30",
     darkBorder: "dark:border-red-700",
   },
@@ -636,7 +636,7 @@ const ProfilePage = () => {
                   <h1 className="text-4xl lg:text-5xl font-bold mb-3 text-gray-900 dark:text-white">
                     {profileData?.name || session?.user?.name || "User"}
                   </h1>
-                  <p className="text-xl text-red-600 dark:text-red-400 mb-4 font-medium">
+                  <p className="text-xl text-red-600 dark:text-red-500 mb-4 font-medium">
                     {profileData?.level || "[0x1][NEWBIE]"}
                   </p>
                   <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-gray-600 dark:text-gray-300">

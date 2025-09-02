@@ -7,7 +7,7 @@ export default function PrivacyPolicy() {
       <div className="flex flex-col items-center gap-8">
         <h1 className="text-4xl font-bold text-gray-700 dark:text-gray-100">
           Privacy{" "}
-          <span className="text-rose-600 dark:text-rose-500">Policy</span>
+          <span className="text-red-400 dark:text-red-500">Policy</span>
         </h1>
         <p className="text-lg text-center text-gray-600 dark:text-gray-300 max-w-3xl">
           Last updated: August 28, 2025
@@ -78,7 +78,7 @@ export default function PrivacyPolicy() {
           </h2>
           <p className="text-gray-600 dark:text-gray-300">
             We may update this policy periodically. For questions, contact us at{" "}
-            <span className="text-rose-600 dark:text-rose-500 font-medium">
+            <span className="text-red-400 dark:text-red-500 font-medium">
               info@flagforge.xyz
             </span>
           </p>
@@ -89,7 +89,7 @@ export default function PrivacyPolicy() {
       <div className="text-center">
         <Link
           href="/"
-          className="inline-block bg-rose-600 dark:bg-rose-500 hover:bg-rose-700 dark:hover:bg-rose-600 rounded-lg px-8 py-4 text-white text-center font-bold text-lg transition-colors duration-300"
+          className="inline-block bg-red-500 dark:bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 rounded-lg px-8 py-4 text-white text-center font-bold text-lg transition-colors duration-300"
         >
           Back to Home
         </Link>

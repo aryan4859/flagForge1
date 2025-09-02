@@ -27,7 +27,7 @@ export default function FilterSidebar() {
             ].map((topic) => (
               <li
                 key={topic}
-                className="shadow p-3 rounded-md hover:text-rose-500 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 text-gray-900 dark:text-gray-100"
+                className="shadow p-3 rounded-md hover:text-red-500 hover:font-bold hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-300 text-gray-900 dark:text-gray-100"
               >
                 {topic}
               </li>
