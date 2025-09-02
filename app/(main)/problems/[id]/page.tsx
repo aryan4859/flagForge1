@@ -1,10 +1,8 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import Loading from "@/components/loading";
-import { Questions } from "@/interfaces";
 import { useSession } from "next-auth/react";
 import AuthError from "@/components/authError";
-import { initialQuestion } from "@/utlis/data";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,9 +11,49 @@ import ConfettiBoom from "react-confetti-boom";
 
 export const runtime = "edge";
 
+// Fixed interface definitions
+interface Hint {
+  id?: number;
+  text: string;
+  pointsDeduction: number | string;
+}
+
+interface Questions {
+  _id?: string;
+  title: string;
+  flag: string;
+  description: string;
+  points: number | string;
+  category: string;
+  link: string;
+  isTimeLimited: boolean;
+  timeLimit: number | string;
+  timeLimitUnit: 'hours' | 'days' | 'weeks';
+  expiryDate: string | Date | null;
+  hints: Hint[];
+  uploadedBy: string;
+  createdAt?: string;
+}
+
 interface PageParams {
   id: string;
 }
+
+// Initial question with proper structure
+const initialQuestion: Questions = {
+  title: "",
+  flag: "",
+  description: "",
+  points: "",
+  category: "All",
+  link: "",
+  isTimeLimited: false,
+  timeLimit: "",
+  timeLimitUnit: "days",
+  expiryDate: null,
+  hints: [],
+  uploadedBy: "",
+};
 
 const Page = ({ params }: { params: Promise<PageParams> }) => {
   const unwrappedParams = React.use(params);
@@ -29,6 +67,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const [isDone, setIsDone] = useState<boolean>(false);
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [isExpired, setIsExpired] = useState<boolean>(false);
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [showHint, setShowHint] = useState<boolean>(false);
 
   // Duplicate prevention refs
   const lastSubmissionTime = useRef<number>(0);
@@ -38,30 +79,115 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
 
   const MIN_SUBMISSION_INTERVAL = 1000;
 
+  // Format time remaining
+  const formatTimeRemaining = (milliseconds: number) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const days = Math.floor(totalSeconds / (24 * 3600));
+    const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (days > 0) {
+      return `${days}d ${hours}h ${minutes}m`;
+    } else if (hours > 0) {
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${seconds}s`;
+    }
+  };
+
+  // Format expiry date
+  const formatExpiryDate = (expiryDate: string | Date) => {
+    const date = new Date(expiryDate);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short'
+    });
+  };
+
   const fetchProblems = async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/problems/${unwrappedParams.id}`);
+      
+      if (response.status === 410) { // HTTP Gone - expired
+        const data = await response.json();
+        setIsExpired(true);
+        setMessage(data.message);
+        setLoading(false);
+        return;
+      }
+
       if (!response.ok) {
         throw new Error("Failed to fetch problems");
       }
+
       const data = await response.json();
+      console.log("API Response:", data);
+      
+      // Handle the data structure properly
       setIsDone(data.isDone);
       setIsCorrect(data.isDone);
-      setProblems(data.question);
+      
+      // Ensure we have proper hints array
+      const questionData = data.question || {};
+      const hints = Array.isArray(questionData.hints) ? questionData.hints : [];
+      
+      setProblems({
+        ...initialQuestion,
+        ...questionData,
+        hints: hints
+      });
+      
+      // Calculate time remaining
+      let calculatedTimeRemaining = data.timeRemaining;
+      if (!calculatedTimeRemaining && questionData.expiryDate) {
+        const expiryTime = new Date(questionData.expiryDate).getTime();
+        const currentTime = Date.now();
+        calculatedTimeRemaining = Math.max(0, expiryTime - currentTime);
+      }
+      
+      setTimeRemaining(calculatedTimeRemaining);
+      setIsExpired(data.expired || (calculatedTimeRemaining !== null && calculatedTimeRemaining <= 0));
+      
       setLoading(false);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching problem:", error);
       setLoading(false);
     }
   };
+
+  // Update time remaining every second for time-limited challenges
+  useEffect(() => {
+    if (timeRemaining && timeRemaining > 0 && !isExpired && !isDone) {
+      const interval = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev && prev > 1000) {
+            return prev - 1000;
+          } else {
+            setIsExpired(true);
+            setMessage("This challenge has expired");
+            return 0;
+          }
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [timeRemaining, isExpired, isDone]);
 
   const canSubmit = () => {
     const now = Date.now();
     const timeSinceLastSubmission = now - lastSubmissionTime.current;
     const flagTrimmed = flag.trim();
 
-    if (submitting || submissionInProgress.current || isCorrect) {
+    if (submitting || submissionInProgress.current || isCorrect || isExpired) {
       return false;
     }
 
@@ -176,6 +302,43 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   if (loading || sessionStatus === "loading") return <Loading />;
   if (sessionStatus === "unauthenticated") return <AuthError />;
 
+  // Show expired challenge page
+  if (isExpired) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
+        <div className="max-w-screen-2xl mx-auto py-8">
+          <div className="flex flex-col gap-8 justify-center items-center">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-red-600 dark:text-red-400 mb-4">
+                Challenge Expired
+              </h1>
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 mb-6">
+                <p className="text-lg text-red-800 dark:text-red-200 mb-2">
+                  This time-limited challenge has expired and is no longer available.
+                </p>
+                {problems.expiryDate && (
+                  <p className="text-sm text-red-600 dark:text-red-400">
+                    Expired on: {formatExpiryDate(problems.expiryDate)}
+                  </p>
+                )}
+              </div>
+            </div>
+            <Image src={doubt} alt="Challenge expired" className="w-72" />
+            <p className="w-full mx-auto text-center text-lg text-gray-800 dark:text-gray-300 transition-colors duration-300">
+              Don't worry! Check out other available{" "}
+              <Link
+                href="/problems"
+                className="text-rose-500 dark:text-red-400 hover:underline transition-colors duration-300"
+              >
+                challenges
+              </Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
       {isDone ? (
@@ -203,15 +366,37 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   {problems.category}
                 </span>
               </h1>
-              <h2 className="text-xl hidden sm:block text-gray-800 dark:text-gray-300 transition-colors duration-300">
-                Points: &nbsp;
-                <span className="text-rose-500 dark:text-red-400 font-extrabold transition-colors duration-300">
-                  {problems.points}
-                </span>
-              </h2>
+              <div className="flex flex-col items-end gap-2">
+                <h2 className="text-xl hidden sm:block text-gray-800 dark:text-gray-300 transition-colors duration-300">
+                  Points: &nbsp;
+                  <span className="text-rose-500 dark:text-red-400 font-extrabold transition-colors duration-300">
+                    {problems.points}
+                  </span>
+                </h2>
+                {timeRemaining && timeRemaining > 0 && (
+                  <div className="text-sm bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-full border border-orange-200 dark:border-orange-800">
+                    Time left: {formatTimeRemaining(timeRemaining)}
+                  </div>
+                )}
+              </div>
             </div>
             <div className="w-full border-b border-gray-300 dark:border-gray-700 transition-colors duration-300"></div>
           </div>
+
+          {/* Challenge expiry info */}
+          {problems.expiryDate && (
+            <div className="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                  Time-Limited Challenge
+                </p>
+              </div>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                Expires on: {formatExpiryDate(problems.expiryDate)}
+              </p>
+            </div>
+          )}
 
           <div className="mt-8 text-lg flex flex-col gap-2">
             <p className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -242,49 +427,111 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
                   Hints
                 </p>
-                <p className="text-sm sm:text-md px-3 py-1 shadow-lg text-center bg-rose-500 dark:bg-red-600 rounded-lg text-white font-bold hover:bg-rose-700 dark:hover:bg-red-700 transition-colors duration-300">
-                  1
-                </p>
+                <button
+                  onClick={() => setShowHint(!showHint)}
+                  className="text-sm sm:text-md px-3 py-1 shadow-lg text-center bg-rose-500 dark:bg-red-600 rounded-lg text-white font-bold hover:bg-rose-700 dark:hover:bg-red-700 transition-colors duration-300 cursor-pointer"
+                >
+                  {problems.hints?.length || 0}
+                </button>
               </div>
             </div>
+
+            {/* Hints section */}
+            {showHint && (
+              <div className="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">
+                  💡 Hints ({problems.hints?.length || 0})
+                </h3>
+                {problems.hints && problems.hints.length > 0 ? (
+                  <div className="space-y-3">
+                    {problems.hints.map((hint: Hint, index: number) => (
+                      <div key={index} className="bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+                        <div className="flex justify-between items-start gap-3">
+                          <div className="flex-1">
+                            <span className="font-medium text-blue-800 dark:text-blue-200">Hint {index + 1}:</span>
+                            <p className="text-blue-700 dark:text-blue-300 mt-1">
+                              {hint.text}
+                            </p>
+                          </div>
+                          {hint.pointsDeduction && Number(hint.pointsDeduction)> 0 && (
+                            <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-2 py-1 rounded text-xs font-medium">
+                              -{hint.pointsDeduction} pts
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-blue-700 dark:text-blue-300">
+                    Look carefully at the given resources and try different approaches!
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="mt-3 border border-gray-200 dark:border-gray-700 rounded-lg p-6 flex flex-col justify-start gap-4 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300">
               <input
                 type="text"
-                className="py-2 px-4 block w-full border border-gray-300 dark:border-gray-600 rounded-lg text-base sm:text-lg bg-white dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500 dark:focus:ring-red-400 transition-colors duration-300"
-                placeholder="Flag here!"
+                className={`py-2 px-4 block w-full border rounded-lg text-base sm:text-lg bg-white dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 transition-colors duration-300 ${
+                  isExpired 
+                    ? "border-red-300 dark:border-red-600 cursor-not-allowed bg-red-50 dark:bg-red-900/20"
+                    : "border-gray-300 dark:border-gray-600 focus:ring-rose-500 dark:focus:ring-red-400"
+                }`}
+                placeholder={isExpired ? "Challenge expired" : "Flag here!"}
                 value={flag}
                 onChange={(e) => setFlag(e.target.value)}
                 onKeyPress={handleKeyPress}
-                disabled={submitting || isCorrect}
+                disabled={submitting || isCorrect || isExpired}
                 maxLength={100}
               />
               <button
                 className={`w-full sm:w-[180px] border rounded-lg px-4 py-2 text-white transition-colors duration-300 ${
-                  submitting || isCorrect
+                  submitting || isCorrect || isExpired
                     ? "bg-gray-400 border-gray-400 cursor-not-allowed"
                     : "bg-rose-500 dark:bg-red-600 border-rose-500 dark:border-red-600 hover:bg-rose-700 dark:hover:bg-red-700"
                 }`}
                 onClick={handleSubmit}
-                disabled={submitting || isCorrect}
+                disabled={submitting || isCorrect || isExpired}
               >
                 {submitting
                   ? "Submitting..."
                   : isCorrect
                   ? "Solved!"
+                  : isExpired
+                  ? "Expired"
                   : "Submit"}
               </button>
+              
               {message && (
                 <div
                   className={`text-center text-lg font-bold mt-4 transition-colors duration-300 ${
                     message.includes("Right")
                       ? "text-green-600 dark:text-green-400"
+                      : message.includes("expired")
+                      ? "text-red-600 dark:text-red-400"
                       : "text-red-600 dark:text-red-400"
                   }`}
                 >
                   {message}
                 </div>
               )}
+
+              {/* Time remaining display */}
+              {timeRemaining && timeRemaining > 0 && !isExpired && (
+                <div className="text-center">
+                  <div className={`inline-block px-4 py-2 rounded-lg font-semibold ${
+                    timeRemaining < 3600000 // Less than 1 hour
+                      ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
+                      : timeRemaining < 86400000 // Less than 1 day
+                      ? "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800"
+                      : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800"
+                  }`}>
+                    ⏰ Time Remaining: {formatTimeRemaining(timeRemaining)}
+                  </div>
+                </div>
+              )}
+
               {showConfetti && (
                 <ConfettiBoom
                   colors={[
@@ -311,6 +558,6 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       )}
     </div>
   );
-};
+};  
 
 export default Page;

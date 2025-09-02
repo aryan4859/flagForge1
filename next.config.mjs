@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+  domains: ['writeup.flagforge.xyz'],
     remotePatterns: [
       {
         protocol: "https",
@@ -15,7 +16,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)", // Apply headers to all routes
+        source: "/(.*)", 
         headers: [
           {
             key: "Access-Control-Allow-Origin",

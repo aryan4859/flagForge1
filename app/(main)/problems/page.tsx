@@ -28,11 +28,11 @@ const page = () => {
     createdAt: string;
     updatedAt: string;
     __v: number;
-    flag?: string; // Optional because we'll omit it
+    flag?: string;
   };
 
   const fetchProblems = async () => {
-    setLoading(true); // Start loading state
+    setLoading(true); 
 
     try {
       const response = await fetch(`/api/problems?page=${currentPage}`);
