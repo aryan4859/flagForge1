@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset
       xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -10,48 +11,59 @@
 <url>
   <loc>https://flagforge.xyz/</loc>
   <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
   <priority>1.00</priority>
 </url>
 <url>
   <loc>https://flagforge.xyz/authentication</loc>
-  <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
+  <lastmod>2025-09-02T11:23:26+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://flagforge.xyz/about</loc>
-  <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
+  <lastmod>2025-09-02T11:23:26+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://flagforge.xyz/blogs</loc>
-  <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
+  <lastmod>2025-09-02T11:23:26+00:00</lastmod>
+
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://flagforge.xyz/contact</loc>
-  <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
+  <lastmod>2025-09-02T11:23:26+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://flagforge.xyz/socials</loc>
-  <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
+  <lastmod>2025-09-02T11:23:26+00:00</lastmod>
+
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://flagforge.xyz/privacy-policy</loc>
-  <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
+  <lastmod>2025-09-02T11:23:26+00:00</lastmod>
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://flagforge.xyz/licensing</loc>
-  <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
+  <lastmod>2025-09-02T11:23:26+00:00</lastmod>
+
   <priority>0.80</priority>
 </url>
 <url>
   <loc>https://flagforge.xyz/problems</loc>
-  <lastmod>2025-09-02T09:28:38+00:00</lastmod>
+
+  <lastmod>2025-09-02T11:23:26+00:00</lastmod>
   <priority>0.64</priority>
 </url>
-
 
 </urlset>
