@@ -6,8 +6,22 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
+import mongoose from "mongoose";
 
 export const runtime = "nodejs";
+
+// Schema for user hints tracking (same as in hints route)
+const userHintSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question", required: true },
+  usedHints: [{ type: Number }], // Array of hint indices
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+userHintSchema.index({ userId: 1, questionId: 1 }, { unique: true });
+
+const UserHintModel = mongoose.models.UserHint || mongoose.model("UserHint", userHintSchema);
 
 export async function GET(
   _: NextRequest,
@@ -57,13 +71,24 @@ export async function GET(
     });
 
     const isDone = !!userQuestion;
+    
+    // Get used hints for this user and question
+    let usedHints = [];
+    if (user) {
+      const userHint = await UserHintModel.findOne({
+        userId: user._id,
+        questionId: id
+      });
+      usedHints = userHint ? userHint.usedHints : [];
+    }
 
     return NextResponse.json({ 
       question: questionData,
       isDone,
       expired,
       timeRemaining,
-      expiryDate: question.expiryDate
+      expiryDate: question.expiryDate,
+      usedHints: usedHints
     });
 
   } catch (error) {
@@ -152,21 +177,42 @@ export async function POST(
     if (trimmedSubmittedFlag === correctFlag) {
       // Flag is correct - save the solution
       try {
-        // Ensure points is a number
-        const pointsToAdd = Number(question.points) || 0;
+        // Calculate final points considering hint penalties
+        let finalPoints = Number(question.points) || 0;
+        
+        // Get used hints to calculate penalty
+        const userHint = await UserHintModel.findOne({
+          userId: user._id,
+          questionId: id
+        });
+
+        if (userHint && userHint.usedHints.length > 0) {
+          let totalPenalty = 0;
+          const hints = question.hints || [];
+          
+          userHint.usedHints.forEach((hintIndex: number) => {
+            if (hintIndex < hints.length && hints[hintIndex].pointsDeduction) {
+              totalPenalty += Number(hints[hintIndex].pointsDeduction) || 0;
+            }
+          });
+          
+          // Note: Penalty was already deducted when hints were used
+          // So we don't deduct again, but we can show the effective points earned
+          console.log(`User ${user._id} solved with ${totalPenalty} points already deducted from hints`);
+        }
         
         const newSolution = new UserQuestionModel({
           userId: user._id,
           questionId: id,
           solvedAt: new Date(),
-          pointsEarned: pointsToAdd
+          pointsEarned: finalPoints
         });
 
         await newSolution.save();
 
         const updateResult = await userSchema.findByIdAndUpdate(
           user._id,
-          { $inc: { totalScore: pointsToAdd } },
+          { $inc: { totalScore: finalPoints } },
           { 
             new: true,
             upsert: false 
@@ -176,13 +222,13 @@ export async function POST(
         if (!updateResult) {
           console.error("Failed to update user score");
         } else {
-          console.log(`User ${user._id} score updated. Added: ${pointsToAdd}, New total: ${updateResult.totalScore}`);
+          console.log(`User ${user._id} score updated. Added: ${finalPoints}, New total: ${updateResult.totalScore}`);
         }
 
         return NextResponse.json(
           { 
             message: "Right! Congratulations on solving the challenge!",
-            points: pointsToAdd,
+            points: finalPoints,
             success: true
           },
           { status: HttpStatusCode.Ok }

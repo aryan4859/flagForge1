@@ -70,6 +70,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [showHint, setShowHint] = useState<boolean>(false);
+  const [availableHints, setAvailableHints] = useState<Hint[]>([]);
+  const [hintLoading, setHintLoading] = useState<boolean>(false);
+  const [usedHints, setUsedHints] = useState<number[]>([]);
 
   // Duplicate prevention refs
   const lastSubmissionTime = useRef<number>(0);
@@ -134,6 +137,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       // Handle the data structure properly
       setIsDone(data.isDone);
       setIsCorrect(data.isDone);
+      setUsedHints(data.usedHints || []);
       
       // Ensure we have proper hints array
       const questionData = data.question || {};
@@ -161,6 +165,76 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       console.error("Error fetching problem:", error);
       setLoading(false);
     }
+  };
+
+  // Fetch hints from backend
+  const fetchHints = async () => {
+    if (hintLoading || availableHints.length > 0) return;
+    
+    try {
+      setHintLoading(true);
+      const response = await fetch(`/api/problems/${unwrappedParams.id}/hints`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch hints");
+      }
+      
+      const data = await response.json();
+      setAvailableHints(data.hints || []);
+      setUsedHints(data.usedHints || []);
+    } catch (error) {
+      console.error("Error fetching hints:", error);
+      setMessage("Failed to load hints. Please try again.");
+      setTimeout(() => setMessage(null), 3000);
+    } finally {
+      setHintLoading(false);
+    }
+  };
+
+  // Request a specific hint
+  const requestHint = async (hintIndex: number) => {
+    if (usedHints.includes(hintIndex)) return;
+    
+    try {
+      setHintLoading(true);
+      const response = await fetch(`/api/problems/${unwrappedParams.id}/hints`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hintIndex }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to request hint");
+      }
+      
+      const data = await response.json();
+      setUsedHints(prev => [...prev, hintIndex]);
+      setMessage(data.message);
+      
+      // Update user's total score if points were deducted
+      if (data.pointsDeducted > 0) {
+        setTimeout(() => setMessage(null), 5000);
+      } else {
+        setTimeout(() => setMessage(null), 3000);
+      }
+    } catch (error) {
+      console.error("Error requesting hint:", error);
+      setMessage(error instanceof Error ? error.message : "Failed to request hint");
+      setTimeout(() => setMessage(null), 3000);
+    } finally {
+      setHintLoading(false);
+    }
+  };
+
+  // Toggle hints display and fetch if needed
+  const toggleHints = async () => {
+    if (!showHint) {
+      await fetchHints();
+    }
+    setShowHint(!showHint);
   };
 
   // Update time remaining every second for time-limited challenges
@@ -420,41 +494,74 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
                   Hints
                 </p>
-                <p className="text-sm sm:text-md px-3 py-1 shadow-lg text-center bg-red-400 dark:bg-red-500 rounded-lg text-white font-bold hover:bg-red-700 dark:hover:bg-red-700 transition-colors duration-300">
-                  1
-                </p>
+                <button
+                  onClick={toggleHints}
+                  disabled={hintLoading}
+                  className="text-sm sm:text-md px-3 py-1 shadow-lg text-center bg-red-400 dark:bg-red-500 rounded-lg text-white font-bold hover:bg-red-700 dark:hover:bg-red-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {hintLoading ? "Loading..." : problems.hints?.length || 0}
+                </button>
               </div>
             </div>
 
             {/* Hints section */}
             {showHint && (
-              <div className="mt-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">
-                  💡 Hints ({problems.hints?.length || 0})
+              <div className="mt-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-rose-800 dark:text-rose-200 mb-3">
+                  💡 Available Hints ({availableHints.length})
                 </h3>
-                {problems.hints && problems.hints.length > 0 ? (
+                {availableHints.length > 0 ? (
                   <div className="space-y-3">
-                    {problems.hints.map((hint: Hint, index: number) => (
-                      <div key={index} className="bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
-                        <div className="flex justify-between items-start gap-3">
-                          <div className="flex-1">
-                            <span className="font-medium text-blue-800 dark:text-blue-200">Hint {index + 1}:</span>
-                            <p className="text-blue-700 dark:text-blue-300 mt-1">
-                              {hint.text}
-                            </p>
-                          </div>
-                          {hint.pointsDeduction && Number(hint.pointsDeduction)> 0 && (
-                            <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-2 py-1 rounded text-xs font-medium">
-                              -{hint.pointsDeduction} pts
+                    {availableHints.map((hint: Hint, index: number) => {
+                      const isUsed = usedHints.includes(index);
+                      return (
+                        <div key={index} className="bg-white dark:bg-gray-800 border border-rose-200 dark:border-rose-700 rounded-lg p-3">
+                          <div className="flex justify-between items-start gap-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="font-medium text-rose-800 dark:text-rose-200">
+                                  Hint {index + 1}
+                                </span>
+                                {hint.pointsDeduction && Number(hint.pointsDeduction) > 0 && (
+                                  <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-2 py-1 rounded text-xs font-medium">
+                                    -{hint.pointsDeduction} pts
+                                  </div>
+                                )}
+                              </div>
+                              {isUsed ? (
+                                <p className="text-rose-700 dark:text-rose-300">
+                                  {hint.text}
+                                </p>
+                              ) : (
+                                <p className="text-gray-600 dark:text-gray-400 italic">
+                                  Click "Use Hint" to reveal this hint
+                                </p>
+                              )}
                             </div>
-                          )}
+                            <div>
+                              {!isUsed && (
+                                <button
+                                  onClick={() => requestHint(index)}
+                                  disabled={hintLoading}
+                                  className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {hintLoading ? "..." : "Use Hint"}
+                                </button>
+                              )}
+                              {isUsed && (
+                                <span className="text-green-600 dark:text-green-400 text-sm font-medium">
+                                  ✓ Used
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
-                  <p className="text-blue-700 dark:text-blue-300">
-                    Look carefully at the given resources and try different approaches!
+                  <p className="text-rose-700 dark:text-rose-300">
+                    {hintLoading ? "Loading hints..." : "No hints available for this challenge."}
                   </p>
                 )}
               </div>
@@ -494,6 +601,8 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   className={`text-center text-lg font-bold mt-4 transition-colors duration-300 ${
                     message.includes("Right")
                       ? "text-green-600 dark:text-green-400"
+                      : message.includes("points deducted") || message.includes("Hint revealed")
+                      ? "text-orange-600 dark:text-orange-400"
                       : "text-red-600 dark:text-red-500"
                   }`}
                 >
