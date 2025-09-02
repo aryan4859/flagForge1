@@ -23,7 +23,7 @@ export default function Contact() {
             </h2>
 
             <div className="flex items-start gap-4">
-              <div className="bg-rose-100 dark:bg-rose-700 p-3 rounded-lg transition-colors duration-300">
+              <div className="bg-rose-100 dark:bg-rose-600 p-3 rounded-lg transition-colors duration-300">
                 <span className="text-red-400 dark:text-red-500 text-xl">
                   📧
                 </span>
@@ -39,7 +39,7 @@ export default function Contact() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-rose-100 dark:bg-rose-700 p-3 rounded-lg transition-colors duration-300">
+              <div className="bg-rose-100 dark:bg-rose-600 p-3 rounded-lg transition-colors duration-300">
                 <span className="text-red-400 dark:text-red-500 text-xl">
                   📞
                 </span>
@@ -55,7 +55,7 @@ export default function Contact() {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="bg-rose-100 dark:bg-rose-700 p-3 rounded-lg transition-colors duration-300">
+              <div className="bg-rose-100 dark:bg-rose-600 p-3 rounded-lg transition-colors duration-300">
                 <span className="text-red-400 dark:text-red-500 text-xl">
                   📍
                 </span>
@@ -125,7 +125,7 @@ export default function Contact() {
 
               <button
                 type="submit"
-                className="w-full bg-red-500 hover:bg-rose-600 dark:bg-red-500 dark:hover:bg-rose-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300"
+                className="w-full bg-red-500 hover:bg-red-500 dark:bg-red-500 dark:hover:bg-red-500 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300"
               >
                 Send Message
               </button>
@@ -138,7 +138,7 @@ export default function Contact() {
       <div className="text-center">
         <Link
           href="/"
-          className="inline-block bg-red-500 hover:bg-rose-700 dark:bg-red-500 dark:hover:bg-rose-700 rounded-lg px-8 py-4 text-white text-center font-bold text-lg transition-colors duration-300"
+          className="inline-block bg-red-500 hover:bg-red-500 dark:bg-red-500 dark:hover:bg-red-500 rounded-lg px-8 py-4 text-white text-center font-bold text-lg transition-colors duration-300"
         >
           Back to Home
         </Link>

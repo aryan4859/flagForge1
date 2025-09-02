@@ -24,6 +24,21 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/blogs" className="hover:underline me-4 md:me-6">
+                Blogs
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:underline me-4 md:me-6">
+                Contact
+              </Link>
+            </li>
+            <li>
+              <Link href="/socials" className="hover:underline me-4 md:me-6">
+                Socials
+              </Link>
+            </li>
+            <li>
               <Link
                 href="/privacy-policy"
                 className="hover:underline me-4 md:me-6"
@@ -32,13 +47,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/licensing" className="hover:underline me-4 md:me-6">
+              <Link href="/licensing" className="hover:underline">
                 Licensing
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:underline">
-                Contact
               </Link>
             </li>
           </ul>
@@ -46,10 +56,7 @@ export default function Footer() {
         <hr className="my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-3 transition-colors duration-300" />
         <span className="block text-sm text-gray-500 dark:text-gray-400 sm:text-center transition-colors duration-300">
           © Maintained By{" "}
-          <Link
-            href="https://flagforge.xyz"
-            className="hover:underline"
-          >
+          <Link href="https://flagforge.xyz" className="hover:underline">
             FlagForge
           </Link>
         </span>

@@ -8,7 +8,7 @@ const Loading = () => {
       <Triangle
         height="125"   // Increased height
         width="125"    // Increased width
-        color="#EB5286"
+        color="#ef4444"
         ariaLabel="triangle-loading"
         wrapperStyle={{}}
         wrapperClass="triangle-wrapper"

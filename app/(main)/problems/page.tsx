@@ -46,11 +46,11 @@ const page = () => {
         data,
         totalScore,
         questionDone,
-        hasMore, 
+        hasMore,
         totalPages,
-      }: { 
-        data: Problem[]; 
-        totalScore: number; 
+      }: {
+        data: Problem[];
+        totalScore: number;
         questionDone: any;
         hasMore?: boolean;
         totalPages?: number;
@@ -60,7 +60,7 @@ const page = () => {
       setScore(totalScore);
       setProblems(sanitizedData);
       setQuestionDone(questionDone);
-      
+
       if (hasMore !== undefined) {
         setHasNextPage(hasMore);
       } else if (totalPages !== undefined) {
@@ -68,13 +68,11 @@ const page = () => {
       } else if (data.length === 0) {
         setHasNextPage(false);
         if (currentPage > 1) {
-          setCurrentPage(prev => prev - 1);
+          setCurrentPage((prev) => prev - 1);
         }
       } else {
-       
         setHasNextPage(true);
       }
-
     } catch (error: unknown) {
       if (error instanceof Error) {
         alert("Unable to fetch problems. Please try again later.");
@@ -91,13 +89,13 @@ const page = () => {
   }, [currentPage]);
 
   const handleNextPage = () => {
-    if (hasNextPage) { 
+    if (hasNextPage) {
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
   const handlePrevPage = () => {
-    if (currentPage > 1) { 
+    if (currentPage > 1) {
       setCurrentPage((prevPage) => prevPage - 1);
     }
   };
@@ -112,25 +110,27 @@ const page = () => {
   if (sessionStatus === "unauthenticated") {
     return <AuthError />;
   }
-  
+
   const handleMenuClick: () => void = () => {
     setOpen(!open);
   };
 
   return (
     <div className="flex flex-col justify-center items-center gap-8 mx-8">
-      <h1 className="text-4xl sm:text-5xl tracking-tight text-center text-red-400 font-bold">
+      <h1 className="text-4xl sm:text-5xl tracking-tight text-center text-red-500 font-bold">
         Challenges
       </h1>
       <div className="flex justify-between w-full" onClick={handleMenuClick}>
         <div className="flex justify-between w-full">
-          <h2 className="text-center text-xl sm:text-xl font-medium text-gray-600">
+          <h2 className="text-center text-xl sm:text-xl font-medium text-gray-600 dark:text-white transition-colors duration-300">
             Score: &nbsp;
-            <span className="text-red-400 font-extrabold">{score}</span>
+            <span className="text-red-400 dark:text-red-500 font-extrabold transition-colors duration-300">
+              {score}
+            </span>
           </h2>
-          <p className="text-center text-xl sm:text-xl font-medium text-gray-600">
+          <p className="text-center text-xl sm:text-xl font-medium text-gray-600 dark:text-gray-300 transition-colors duration-300">
             Total Question Solved:&nbsp;
-            <span className="text-red-400 font-extrabold">
+            <span className="text-red-400 dark:text-red-500 font-extrabold transition-colors duration-300">
               {questionDone?.length}
             </span>
           </p>
@@ -173,9 +173,9 @@ const page = () => {
             onClick={handlePrevPage}
             disabled={currentPage === 1}
             className={`font-medium text-base rounded-lg px-4 py-2 text-white ${
-              currentPage === 1 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-red-400 hover:bg-red-800'
+              currentPage === 1
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-red-400 hover:bg-red-800"
             }`}
           >
             Previous
@@ -183,10 +183,10 @@ const page = () => {
           <button
             onClick={handleNextPage}
             disabled={!hasNextPage}
-            className={`font-medium text-base rounded-lg px-4 py-2 text-white ${
-              !hasNextPage 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-red-400 hover:bg-red-800'
+            className={`font-medium text-base rounded-lg px-4 py-2 text-white transition-colors duration-300 ${
+              !hasNextPage
+                ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+                : "bg-red-400 dark:bg-red-500 hover:bg-red-800 dark:hover:bg-red-600"
             }`}
           >
             Next

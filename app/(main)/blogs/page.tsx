@@ -76,10 +76,10 @@ export default function BlogsPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-4 py-5">
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-red-400 dark:text-red-500 mb-4 transition-colors duration-300">
+          <h1 className="text-4xl md:text-5xl font-bold text-red-400 dark:text-red-500 mb-2 transition-colors duration-300">
             Blog Posts
           </h1>
           <p className="text-lg text-gray-700 dark:text-gray-300 transition-colors duration-300">
