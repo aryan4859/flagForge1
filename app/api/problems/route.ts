@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
     
-    // Build the query
+    // Build the query - include expiryDate but exclude flag
     let query = QuestionModel.find().select('-flag');
     
     // Add sorting - newest first by default
@@ -78,8 +78,26 @@ export async function GET(request: NextRequest) {
     // Get total count for pagination info
     const totalQuestions = await QuestionModel.countDocuments();
 
+    // Process questions to add expiry information
+    const now = new Date();
+    const processedQuestions = questions.map(question => {
+      const questionObj = question.toObject();
+      
+      // Check if question has expired
+      if (questionObj.expiryDate) {
+        const expiryDate = new Date(questionObj.expiryDate);
+        questionObj.expired = expiryDate < now;
+        questionObj.timeRemaining = Math.max(0, expiryDate.getTime() - now.getTime());
+      } else {
+        questionObj.expired = false;
+        questionObj.timeRemaining = null;
+      }
+      
+      return questionObj;
+    });
+
     return NextResponse.json({ 
-      data: questions, 
+      data: processedQuestions, 
       totalScore: user.totalScore, 
       questionDone: userQuestion,
       pagination: {

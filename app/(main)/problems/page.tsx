@@ -7,15 +7,22 @@ import { IoFilter } from "react-icons/io5";
 import { useSession } from "next-auth/react";
 import { Questions } from "@/interfaces";
 
+// Extended interface to include expiry information
+interface QuestionWithExpiry extends Questions {
+  expired?: boolean;
+  timeRemaining?: number;
+  expiryDate?: string;
+}
+
 const page = () => {
   const { status: sessionStatus, data } = useSession();
   const [open, setOpen] = useState<boolean>(false);
-  const [problems, setProblems] = useState<Questions[]>([]);
+  const [problems, setProblems] = useState<QuestionWithExpiry[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [score, setScore] = useState<number>(0);
   const [questionDone, setQuestionDone] = useState<any>();
-  const [hasNextPage, setHasNextPage] = useState<boolean>(true); // Add this state
+  const [hasNextPage, setHasNextPage] = useState<boolean>(true);
 
   type Problem = {
     _id: string;
@@ -29,6 +36,26 @@ const page = () => {
     updatedAt: string;
     __v: number;
     flag?: string;
+    expired?: boolean;
+    timeRemaining?: number;
+    expiryDate?: string;
+  };
+
+  // Helper function to format time remaining
+  const formatTimeRemaining = (timeMs: number): string => {
+    if (timeMs <= 0) return "Expired";
+    
+    const days = Math.floor(timeMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (days > 0) {
+      return `${days}d ${hours}h left`;
+    } else if (hours > 0) {
+      return `${hours}h ${minutes}m left`;
+    } else {
+      return `${minutes}m left`;
+    }
   };
 
   const fetchProblems = async () => {
@@ -46,33 +73,23 @@ const page = () => {
         data,
         totalScore,
         questionDone,
-        hasMore,
-        totalPages,
+        pagination,
       }: {
         data: Problem[];
         totalScore: number;
         questionDone: any;
-        hasMore?: boolean;
-        totalPages?: number;
+        pagination: {
+          hasNext: boolean;
+          totalPages: number;
+        };
       } = await response.json();
 
       const sanitizedData = data.map(({ flag, ...rest }) => rest);
       setScore(totalScore);
       setProblems(sanitizedData);
       setQuestionDone(questionDone);
-
-      if (hasMore !== undefined) {
-        setHasNextPage(hasMore);
-      } else if (totalPages !== undefined) {
-        setHasNextPage(currentPage < totalPages);
-      } else if (data.length === 0) {
-        setHasNextPage(false);
-        if (currentPage > 1) {
-          setCurrentPage((prev) => prev - 1);
-        }
-      } else {
-        setHasNextPage(true);
-      }
+      setHasNextPage(pagination.hasNext);
+      
     } catch (error: unknown) {
       if (error instanceof Error) {
         alert("Unable to fetch problems. Please try again later.");
@@ -87,6 +104,29 @@ const page = () => {
   useEffect(() => {
     fetchProblems();
   }, [currentPage]);
+
+  // Update time remaining every minute for active challenges
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProblems(prevProblems => 
+        prevProblems.map(problem => {
+          if (problem.expiryDate && !problem.expired) {
+            const now = new Date();
+            const expiryDate = new Date(problem.expiryDate);
+            const timeRemaining = Math.max(0, expiryDate.getTime() - now.getTime());
+            return {
+              ...problem,
+              expired: timeRemaining <= 0,
+              timeRemaining
+            };
+          }
+          return problem;
+        })
+      );
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleNextPage = () => {
     if (hasNextPage) {
@@ -151,16 +191,42 @@ const page = () => {
               description,
               _id,
               done,
-            }: Questions) => (
-              <QustionCards
-                key={title}
-                title={title}
-                category={category}
-                points={points}
-                description={description.substring(0, 95)}
-                done={questionDone}
-                _id={_id}
-              />
+              expired,
+              timeRemaining,
+              expiryDate,
+            }: QuestionWithExpiry) => (
+              <div key={_id} className="relative">
+                <QustionCards
+                  key={title}
+                  title={title}
+                  category={category}
+                  points={points}
+                  description={description.substring(0, 95)}
+                  done={questionDone}
+                  _id={_id}
+                />
+                
+                {/* Expiry Status Overlay */}
+                {expiryDate && (
+                  <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium ${
+                    expired 
+                      ? 'bg-red-500 text-white' 
+                      : 'bg-yellow-500 text-black'
+                  }`}>
+                    {expired 
+                      ? 'EXPIRED' 
+                      : timeRemaining ? formatTimeRemaining(timeRemaining) : 'Limited Time'
+                    }
+                  </div>
+                )}
+                
+                {/* Expired Overlay */}
+                {expired && (
+                  <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-lg">
+                    <span className="text-white font-bold text-lg">EXPIRED</span>
+                  </div>
+                )}
+              </div>
             )
           )}
         </div>
