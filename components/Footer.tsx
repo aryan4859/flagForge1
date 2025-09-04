@@ -59,9 +59,10 @@ export default function Footer() {
                 About
               </Link>
             </li>
+            
             <li>
-              <Link href="/blogs" className="hover:underline me-4 md:me-6">
-                Blogs
+              <Link href="/resources" className="hover:underline me-4 md:me-6">
+                Resources
               </Link>
             </li>
             <li>
@@ -82,6 +83,7 @@ export default function Footer() {
                 Licensing
               </Link>
             </li>
+            
           </ul>
         </div>
         <hr className="my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-3 transition-colors duration-300" />

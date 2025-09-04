@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, Plus, X, User, Lightbulb } from 'lucide-react';
+import { Clock, Plus, X, User, Lightbulb, AlertCircle, CheckCircle } from 'lucide-react';
 
 // Type definitions
 interface FormData {
@@ -51,6 +51,8 @@ const UploadPage: React.FC = () => {
   const [success, setSuccess] = useState<string>("");
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -120,7 +122,7 @@ const UploadPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>): Promise<void> => {
+  const handleInitialSubmit = (e: React.FormEvent<HTMLButtonElement>): void => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -134,7 +136,18 @@ const UploadPage: React.FC = () => {
       }
     }
 
+    // Show confirmation popup
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmedSubmit = async (): Promise<void> => {
+    setIsSubmitting(true);
+    setError("");
+    setSuccess("");
+
     try {
+      const validHints = hints.filter(hint => hint.text.trim() !== "");
+      
       const submissionData: SubmissionData = {
         ...formData,
         hints: validHints,
@@ -150,6 +163,7 @@ const UploadPage: React.FC = () => {
 
       if (response.ok) {
         setSuccess("CTF challenge uploaded successfully!");
+        setShowConfirmation(false);
         setFormData({
           title: "",
           flag: "",
@@ -170,9 +184,13 @@ const UploadPage: React.FC = () => {
       } else {
         const data = await response.json();
         setError(data.message || "An error occurred.");
+        setShowConfirmation(false);
       }
     } catch (err) {
       setError("An unexpected error occurred.");
+      setShowConfirmation(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -183,6 +201,130 @@ const UploadPage: React.FC = () => {
       sessionStorage.removeItem('adminUsername');
     }
     router.push('/roles/developers/admins/auth');
+  };
+
+  const ConfirmationPopup = () => {
+    if (!showConfirmation) return null;
+
+    const validHints = hints.filter(hint => hint.text.trim() !== "");
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <AlertCircle className="w-8 h-8 text-amber-500" />
+              <h2 className="text-2xl font-bold text-gray-800">Confirm Submission</h2>
+            </div>
+            
+            <div className="space-y-4 mb-6">
+              <p className="text-gray-600">Please review your CTF challenge details before submitting:</p>
+              
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <span className="font-semibold text-gray-700">Title:</span>
+                    <p className="text-gray-600 break-words">{formData.title || "Not specified"}</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">Category:</span>
+                    <p className="text-gray-600">{formData.category}</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">Points:</span>
+                    <p className="text-gray-600">{formData.points || "Not specified"}</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700">Uploaded by:</span>
+                    <p className="text-gray-600">{formData.uploadedBy}</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <span className="font-semibold text-gray-700">Flag:</span>
+                  <p className="text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded break-all">
+                    {formData.flag || "Not specified"}
+                  </p>
+                </div>
+                
+                {formData.description && (
+                  <div>
+                    <span className="font-semibold text-gray-700">Description:</span>
+                    <p className="text-gray-600 break-words">{formData.description}</p>
+                  </div>
+                )}
+                
+                {formData.link && (
+                  <div>
+                    <span className="font-semibold text-gray-700">Resource Link:</span>
+                    <p className="text-gray-600 break-all">{formData.link}</p>
+                  </div>
+                )}
+                
+                {formData.isTimeLimited && (
+                  <div>
+                    <span className="font-semibold text-gray-700">Time Limit:</span>
+                    <p className="text-gray-600">
+                      {formData.timeLimit} {formData.timeLimitUnit}
+                      {calculateExpiryDate() && (
+                        <span className="block text-sm text-amber-600">
+                          Expires: {calculateExpiryDate()?.toLocaleString()}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                )}
+                
+                {validHints.length > 0 && (
+                  <div>
+                    <span className="font-semibold text-gray-700">Hints ({validHints.length}):</span>
+                    <div className="space-y-2 mt-2">
+                      {validHints.map((hint, index) => (
+                        <div key={hint.id} className="bg-white border border-gray-200 rounded p-2">
+                          <div className="flex justify-between items-start gap-2">
+                            <p className="text-sm text-gray-600 flex-1">{hint.text}</p>
+                            <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+                              -{hint.pointsDeduction} pts
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex gap-4 justify-end">
+              <button
+                onClick={() => setShowConfirmation(false)}
+                disabled={isSubmitting}
+                className="px-6 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmedSubmit}
+                disabled={isSubmitting}
+                className="px-6 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-lg font-medium transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    Confirm & Submit
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -297,7 +439,11 @@ const UploadPage: React.FC = () => {
                   <option>Forensics</option>
                   <option>General Skills</option>
                   <option>Binary Exploitation</option>
+                  <option>Privilege Escalation</option>
                   <option>IOT</option>
+                  <option>OSINT</option>
+                  <option>Miscellaneous</option>
+                  <option>Steganography</option>
                 </select>
               </div>
               
@@ -473,8 +619,9 @@ const UploadPage: React.FC = () => {
             <div className="flex justify-center pt-6">
               <button
                 type="submit"
-                onClick={handleSubmit}
-                className="bg-rose-500 hover:bg-rose-600 rounded-xl px-8 py-3 text-white font-bold text-lg transition duration-200 focus:outline-none focus:ring-4 focus:ring-rose-200 flex items-center gap-2"
+                onClick={handleInitialSubmit}
+                disabled={isSubmitting}
+                className="bg-rose-500 hover:bg-rose-600 rounded-xl px-8 py-3 text-white font-bold text-lg transition duration-200 focus:outline-none focus:ring-4 focus:ring-rose-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Upload Challenge 🚀
               </button>
@@ -482,6 +629,8 @@ const UploadPage: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      <ConfirmationPopup />
     </div>
   );
 };
