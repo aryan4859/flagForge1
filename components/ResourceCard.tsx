@@ -12,7 +12,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onView }) => {
     if (onView) {
       onView(resource);
     } else {
-      window.open(resource.resourceLink, '_blank', 'noopener,noreferrer');
+      window.open(resource.resourceLink, '_blank', 'noopener,noreferrer,nofollow');
     }
   };
 
@@ -78,8 +78,8 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onView }) => {
             <span>{formatDate(resource.createdAt as any)}</span>
           </div>
           <div className="flex items-center gap-1">
-            <User className="w-3 h-3" />
-            <span>Flagforge</span>
+            {/* <User className="w-3 h-3" />
+            <span>Flagforge</span> */}
           </div>
         </div>
       </div>
