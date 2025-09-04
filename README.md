@@ -19,9 +19,12 @@ Flag Forge is a simple Capture The Flag (CTF) platform designed to host, manage,
 
 ## Features
 
-- **User-Friendly Interface**: A clean and responsive UI for participants and admins. 
+- **User-Friendly Interface**: A clean and responsive UI for participants and admins.
+- **Profile Page**: Deeper progress tracking, achievements, and history.
 - **Flag Submission**: Secure and efficient flag validation system.
-- **Leaderboard**: Real-time leaderboard to track participant scores. 
+- **Leaderboard**: Real-time leaderboard to track participant scores.
+- **Badges**: Earn recognition as you solve challenges and level up your skills.
+
 
 ---
 
