@@ -6,7 +6,7 @@ As **Flag Forge** is in its initial release stage, only the latest version is su
 
 | Version | Supported          |  
 | ------- | ------------------ |  
-| 1.0.0   | :white_check_mark: |  
+| 2.0.0   | :white_check_mark: |  
 
 ---
 
