@@ -6,107 +6,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
-import mongoose from "mongoose";
 
 export const runtime = "nodejs";
 
-// Schema for user hints tracking (same as in hints route)
-const userHintSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question", required: true },
-  usedHints: [{ type: Number }], // Array of hint indices
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
-
-userHintSchema.index({ userId: 1, questionId: 1 }, { unique: true });
-
-const UserHintModel = mongoose.models.UserHint || mongoose.model("UserHint", userHintSchema);
-
-export async function GET(
-  _: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest) {
   try {
     await connect();
-    const { id } = await params;
-    const session = await getServerSession(authOptions);
-    
-    const question = await QuestionModel.findById(id);
-    
-    if (!question) {
-      return NextResponse.json(
-        { message: `Question ${id} not found` },
-        { status: HttpStatusCode.NotFound }
-      );
-    }
-
-    const now = new Date();
-    let expired = false;
-    let timeRemaining = null;
-
-    if (question.expiryDate) {
-      const expiryDate = new Date(question.expiryDate);
-      expired = expiryDate < now;
-      timeRemaining = Math.max(0, expiryDate.getTime() - now.getTime());
-    }
-
-    if (expired) {
-      return NextResponse.json(
-        { 
-          message: "This time-limited challenge has expired",
-          expired: true 
-        },
-        { status: 410 }
-      );
-    }
-
-    const questionData = question.toObject();
-    delete questionData.flag;
-
-    const user = await userSchema.findOne({ email: session?.user.email });
-    const userQuestion = await UserQuestionModel.findOne({ 
-      userId: user?.id, 
-      questionId: id 
-    });
-
-    const isDone = !!userQuestion;
-    
-    // Get used hints for this user and question
-    let usedHints = [];
-    if (user) {
-      const userHint = await UserHintModel.findOne({
-        userId: user._id,
-        questionId: id
-      });
-      usedHints = userHint ? userHint.usedHints : [];
-    }
-
-    return NextResponse.json({ 
-      question: questionData,
-      isDone,
-      expired,
-      timeRemaining,
-      expiryDate: question.expiryDate,
-      usedHints: usedHints
-    });
-
-  } catch (error) {
-    console.error("Error fetching question:", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: HttpStatusCode.InternalServerError }
-    );
-  }
-}
-
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await connect();
-    const { id } = await params;
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -116,39 +21,62 @@ export async function POST(
       );
     }
 
-    // Get the submitted flag from request body
-    const body = await request.json();
-    const { flag: submittedFlag } = body;
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "20", 10);
+    const category = searchParams.get("category");
 
-    if (!submittedFlag || typeof submittedFlag !== 'string') {
-      return NextResponse.json(
-        { message: "Flag is required" },
-        { status: HttpStatusCode.BadRequest }
-      );
+    // Build filter object
+    const filter: any = {};
+    if (category && category !== "All") {
+      filter.category = category;
     }
 
-    // Find the question
-    const question = await QuestionModel.findById(id);
-    if (!question) {
-      return NextResponse.json(
-        { message: "Question not found" },
-        { status: HttpStatusCode.NotFound }
-      );
-    }
+    // Calculate pagination based on filtered results
+    const skip = (page - 1) * limit;
+    
+    // Get total count for current filter
+    const totalQuestions = await QuestionModel.countDocuments(filter);
+    const totalPages = Math.ceil(totalQuestions / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
 
-    // Check if question has expired
-    if (question.expiryDate) {
-      const now = new Date();
-      const expiryDate = new Date(question.expiryDate);
-      if (expiryDate < now) {
-        return NextResponse.json(
-          { message: "This challenge has expired" },
-          { status: HttpStatusCode.Gone }
-        );
+    console.log('API Debug - Query results:', {
+      totalQuestions,
+      totalPages,
+      hasNext,
+      hasPrev,
+      currentPage: page
+    });
+
+    // Fetch questions with filter applied on database level
+    const questions = await QuestionModel.find(filter)
+      .select('-flag')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Add expiry information
+    const now = new Date();
+    const questionsWithExpiry = questions.map(question => {
+      let expired = false;
+      let timeRemaining = null;
+
+      if (question.expiryDate) {
+        const expiryDate = new Date(question.expiryDate);
+        expired = expiryDate < now;
+        timeRemaining = Math.max(0, expiryDate.getTime() - now.getTime());
       }
-    }
 
-    // Find the user
+      return {
+        ...question,
+        expired,
+        timeRemaining,
+      };
+    });
+
+    // Get user information
     const user = await userSchema.findOne({ email: session.user.email });
     if (!user) {
       return NextResponse.json(
@@ -157,103 +85,32 @@ export async function POST(
       );
     }
 
-    // Check if user has already solved this question
-    const existingSolution = await UserQuestionModel.findOne({
-      userId: user._id,
-      questionId: id
+    // Get user's solved questions
+    const solvedQuestions = await UserQuestionModel.find({ userId: user._id })
+      .select('questionId')
+      .lean();
+
+    const solvedQuestionIds = solvedQuestions.map(sq => sq.questionId.toString());
+
+    return NextResponse.json({
+      data: questionsWithExpiry,
+      totalScore: user.totalScore || 0,
+      questionDone: solvedQuestionIds,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        hasNext,
+        hasPrev,
+        total: totalQuestions,
+        limit
+      },
+      filter: {
+        category: category || "All"
+      }
     });
 
-    if (existingSolution) {
-      return NextResponse.json(
-        { message: "You have already solved this challenge!" },
-        { status: HttpStatusCode.Ok }
-      );
-    }
-
-    // Check if the submitted flag is correct
-    const trimmedSubmittedFlag = submittedFlag.trim();
-    const correctFlag = question.flag.trim();
-
-    if (trimmedSubmittedFlag === correctFlag) {
-      // Flag is correct - save the solution
-      try {
-        // Calculate final points considering hint penalties
-        let finalPoints = Number(question.points) || 0;
-        
-        // Get used hints to calculate penalty
-        const userHint = await UserHintModel.findOne({
-          userId: user._id,
-          questionId: id
-        });
-
-        if (userHint && userHint.usedHints.length > 0) {
-          let totalPenalty = 0;
-          const hints = question.hints || [];
-          
-          userHint.usedHints.forEach((hintIndex: number) => {
-            if (hintIndex < hints.length && hints[hintIndex].pointsDeduction) {
-              totalPenalty += Number(hints[hintIndex].pointsDeduction) || 0;
-            }
-          });
-          
-          // Note: Penalty was already deducted when hints were used
-          // So we don't deduct again, but we can show the effective points earned
-          console.log(`User ${user._id} solved with ${totalPenalty} points already deducted from hints`);
-        }
-        
-        const newSolution = new UserQuestionModel({
-          userId: user._id,
-          questionId: id,
-          solvedAt: new Date(),
-          pointsEarned: finalPoints
-        });
-
-        await newSolution.save();
-
-        const updateResult = await userSchema.findByIdAndUpdate(
-          user._id,
-          { $inc: { totalScore: finalPoints } },
-          { 
-            new: true,
-            upsert: false 
-          }
-        );
-
-        if (!updateResult) {
-          console.error("Failed to update user score");
-        } else {
-          console.log(`User ${user._id} score updated. Added: ${finalPoints}, New total: ${updateResult.totalScore}`);
-        }
-
-        return NextResponse.json(
-          { 
-            message: "Right! Congratulations on solving the challenge!",
-            points: finalPoints,
-            success: true
-          },
-          { status: HttpStatusCode.Ok }
-        );
-
-      } catch (saveError) {
-        console.error("Error saving solution:", saveError);
-        return NextResponse.json(
-          { message: "Error saving your solution. Please try again." },
-          { status: HttpStatusCode.InternalServerError }
-        );
-      }
-    } else {
-      // Flag is incorrect
-      return NextResponse.json(
-        { 
-          message: "Incorrect flag. Try again!",
-          success: false
-        },
-        { status: HttpStatusCode.Ok }
-      );
-    }
-
   } catch (error) {
-    console.error("Error in POST handler:", error);
+    console.error("Error fetching problems:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: HttpStatusCode.InternalServerError }
