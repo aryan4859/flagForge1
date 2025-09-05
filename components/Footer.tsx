@@ -89,8 +89,8 @@ export default function Footer() {
         <hr className="my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-3 transition-colors duration-300" />
         <span className="block text-sm text-gray-500 dark:text-gray-400 sm:text-center transition-colors duration-300">
           © Maintained By{" "}
-          <Link href="https://flagforge.xyz" className="hover:underline">
-            FlagForge
+          <Link href="https://www.linkedin.com/company/shyenasec/" className="hover:underline">
+            Shyena Inc.
           </Link>
         </span>
       </div>
