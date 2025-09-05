@@ -18,12 +18,12 @@ const page = () => {
   const { status: sessionStatus, data } = useSession();
   const [open, setOpen] = useState<boolean>(false);
   const [problems, setProblems] = useState<QuestionWithExpiry[]>([]);
-  const [filteredProblems, setFilteredProblems] = useState<QuestionWithExpiry[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [score, setScore] = useState<number>(0);
   const [questionDone, setQuestionDone] = useState<any>();
   const [hasNextPage, setHasNextPage] = useState<boolean>(true);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [showFilterDropdown, setShowFilterDropdown] = useState<boolean>(false);
   
@@ -104,30 +104,24 @@ const page = () => {
     }
   };
 
-  // Filter problems based on selected category
-  const filterProblems = (problemsList: QuestionWithExpiry[], category: string) => {
-    if (category === "All") {
-      return problemsList;
-    }
-    return problemsList.filter(problem => problem.category === category);
-  };
-
   // Handle category filter change
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     setCurrentPage(1); // Reset to first page when filtering
     setShowFilterDropdown(false);
-    
-    // Apply filter to current problems
-    const filtered = filterProblems(problems, category);
-    setFilteredProblems(filtered);
   };
 
   const fetchProblems = async () => {
     setLoading(true); 
 
     try {
-      const response = await fetch(`/api/problems?page=${currentPage}`);
+      // Build API URL with category filter
+      let apiUrl = `/api/problems?page=${currentPage}`;
+      if (selectedCategory && selectedCategory !== "All") {
+        apiUrl += `&category=${encodeURIComponent(selectedCategory)}`;
+      }
+
+      const response = await fetch(apiUrl);
 
       if (!response.ok) {
         const errorDetails = await response.json();
@@ -146,6 +140,7 @@ const page = () => {
         pagination: {
           hasNext: boolean;
           totalPages: number;
+          total: number;
         };
       } = await response.json();
 
@@ -154,10 +149,7 @@ const page = () => {
       setProblems(sanitizedData);
       setQuestionDone(questionDone);
       setHasNextPage(pagination.hasNext);
-      
-      // Apply current filter to new data
-      const filtered = filterProblems(sanitizedData, selectedCategory);
-      setFilteredProblems(filtered);
+      setTotalPages(pagination.totalPages);
       
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -175,15 +167,12 @@ const page = () => {
     fetchCategories();
   }, []);
 
+  // Fetch problems when page or category changes
   useEffect(() => {
-    fetchProblems();
-  }, [currentPage]);
-
-  // Apply filter when problems or selected category changes
-  useEffect(() => {
-    const filtered = filterProblems(problems, selectedCategory);
-    setFilteredProblems(filtered);
-  }, [problems, selectedCategory]);
+    if (!categoriesLoading) { // Wait for categories to load first
+      fetchProblems();
+    }
+  }, [currentPage, selectedCategory, categoriesLoading]);
 
   // Update time remaining every minute for active challenges
   useEffect(() => {
@@ -342,10 +331,10 @@ const page = () => {
         <div className="flex justify-between items-center mb-4">
           <div className="text-sm text-gray-600 dark:text-gray-400">
             {selectedCategory !== "All" && (
-              <span>Showing {filteredProblems.length} challenges in "{selectedCategory}"</span>
+              <span>Showing {problems.length} challenges in "{selectedCategory}" (Page {currentPage} of {totalPages})</span>
             )}
             {selectedCategory === "All" && (
-              <span>Showing all {filteredProblems.length} challenges</span>
+              <span>Showing all challenges (Page {currentPage} of {totalPages})</span>
             )}
           </div>
         </div>
@@ -354,8 +343,8 @@ const page = () => {
       {/* Problems Grid */}
       <div className="mx-auto my-0 flex justify-between">
         <div className="mx-auto my-0 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1 sm:grid-cols-2 items-center gap-4">
-          {filteredProblems.length > 0 ? (
-            filteredProblems.map(
+          {problems.length > 0 ? (
+            problems.map(
               ({
                 title,
                 category,

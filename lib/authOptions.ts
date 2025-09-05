@@ -11,7 +11,7 @@ export const authOptions: AuthOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             authorization: {
                 params: {
-                    scope: 'email profile',  // Ensure email and profile scopes are requested
+                    scope: 'email profile', 
                 },
             },
         } as GoogleProviderConfig),

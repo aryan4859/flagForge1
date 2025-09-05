@@ -82,6 +82,18 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
 
   const MIN_SUBMISSION_INTERVAL = 1000;
 
+  // URL validation function
+  const isValidUrl = (string: string): boolean => {
+    if (!string || string.trim() === "") return false;
+    
+    try {
+      const url = new URL(string);
+      return url.protocol === "http:" || url.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
+
   // Format time remaining
   const formatTimeRemaining = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -480,15 +492,28 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
                   Given Resources
                 </p>
-                <p className="font-bold text-sm sm:text-md text-red-500 dark:text-red-500 transition-colors duration-300">
-                  <a
-                    href={problems.link}
-                    target="_blank"
-                    className="hover:underline"
-                  >
-                    {problems.link}
-                  </a>
-                </p>
+                {problems.link ? (
+                  isValidUrl(problems.link) ? (
+                    <p className="font-bold text-sm sm:text-md text-red-500 dark:text-red-500 transition-colors duration-300">
+                      <a
+                        href={problems.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        {problems.link}
+                      </a>
+                    </p>
+                  ) : (
+                    <p className="font-bold text-sm sm:text-md text-red-500 dark:text-red-500 transition-colors duration-300">
+                      {problems.link}
+                    </p>
+                  )
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                    No resources provided
+                  </p>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">

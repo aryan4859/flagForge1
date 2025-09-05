@@ -42,6 +42,9 @@ export async function GET(request: NextRequest) {
   const requestedLimit = searchParams.get("limit");
   const limit = requestedLimit ? parseInt(requestedLimit, 10) : 8;
   
+  // Get category filter from query params
+  const category = searchParams.get("category");
+  
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
 
@@ -52,8 +55,16 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
     
-    // Build the query - include expiryDate but exclude flag
-    let query = QuestionModel.find().select('-flag');
+    // Build the base query - exclude flag
+    let baseQuery = {};
+    
+    // Add category filter if provided and not "All"
+    if (category && category !== "All") {
+      baseQuery = { category: category };
+    }
+    
+    // Build the query with category filter
+    let query = QuestionModel.find(baseQuery).select('-flag');
     
     // Add sorting - newest first by default
     query = query.sort({ createdAt: -1 });
@@ -75,8 +86,8 @@ export async function GET(request: NextRequest) {
 
     const userQuestion = await UserQuestionModel.find({ userId: user.id });
 
-    // Get total count for pagination info
-    const totalQuestions = await QuestionModel.countDocuments();
+    // Get total count for pagination info (with category filter applied)
+    const totalQuestions = await QuestionModel.countDocuments(baseQuery);
 
     // Process questions to add expiry information
     const now = new Date();
