@@ -1,7 +1,10 @@
 import React from "react";
-
+import { Analytics } from '@vercel/analytics/next';
 const layout = ({ children }: { children: React.ReactNode }) => {
-  return <div className="mt-8">{children}</div>;
+  return <div className="mt-8">
+  {children}    
+  <Analytics />
+</div>;
 };
 
 export default layout;
