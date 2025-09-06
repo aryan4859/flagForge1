@@ -217,7 +217,6 @@ export async function POST(
 
       if (updateResult) {
         message = `Hint revealed: ${requestedHint.text}. ${pointsDeducted} points deducted from your score.`;
-        console.log(`User ${user._id} hint penalty. Deducted: ${pointsDeducted}, New total: ${updateResult.totalScore}`);
       } else {
         console.error("Failed to update user score for hint penalty");
       }

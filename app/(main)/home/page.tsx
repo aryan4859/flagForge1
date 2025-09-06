@@ -81,7 +81,6 @@ const Home = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Latest room API response:", data);
 
         let rooms = [];
 
@@ -95,7 +94,6 @@ const Home = () => {
           rooms = data.questions;
         }
 
-        console.log(`Total rooms fetched: ${rooms.length} out of expected 36+`);
 
         if (rooms.length > 0) {
           setLatestRoom(rooms[0]);
@@ -122,18 +120,15 @@ const Home = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Last solved API response:", data);
 
         if (Array.isArray(data) && data.length > 0) {
           setLastSolved(data[0]);
-          console.log("Last solved set:", data[0]);
         } else if (
           data.data &&
           Array.isArray(data.data) &&
           data.data.length > 0
         ) {
           setLastSolved(data.data[0]);
-          console.log("Last solved set:", data.data[0]);
         } else {
           console.log("No solved problems found or empty response");
         }
