@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import rehypeSanitize from "rehype-sanitize";
 import Loading from "@/components/loading";
 
 // Types
@@ -104,37 +108,6 @@ export default function BlogPostPage() {
     ));
   };
 
-  const renderInlineFormatting = (text: string) => {
-    // Handle bold text (**text**)
-    const boldRegex = /\*\*(.*?)\*\*/g;
-    const parts = text.split(boldRegex);
-
-    return parts.map((part, index) => {
-      if (index % 2 === 1) {
-        return (
-          <strong key={index} className="font-bold">
-            {part}
-          </strong>
-        );
-      }
-
-      // Handle italic text (*text*)
-      const italicRegex = /\*(.*?)\*/g;
-      const italicParts = part.split(italicRegex);
-
-      return italicParts.map((italicPart, italicIndex) => {
-        if (italicIndex % 2 === 1) {
-          return (
-            <em key={`${index}-${italicIndex}`} className="italic">
-              {italicPart}
-            </em>
-          );
-        }
-        return italicPart;
-      });
-    });
-  };
-
   // Content rendering functions
   const renderBlock = (block: Block) => {
     const { type, id } = block;
@@ -219,120 +192,103 @@ export default function BlogPostPage() {
     );
   };
 
-  const renderStringContent = (content: string) => {
+  // Secure markdown rendering with react-markdown
+  const renderMarkdownContent = (content: string) => {
     if (!content) return null;
 
-    const lines = content.split("\n").filter((line) => line.trim());
-    const elements: JSX.Element[] = [];
-    let currentList: JSX.Element[] = [];
-    let listType: "bullet" | "numbered" | null = null;
+    // Limit content length as a security measure
+    const maxLength = 100000; // 100KB limit
+    const sanitizedContent = content.length > maxLength 
+      ? content.substring(0, maxLength) + '\n\n*[Content truncated for security]*'
+      : content;
 
-    const flushList = () => {
-      if (currentList.length > 0) {
-        const ListTag = listType === "numbered" ? "ol" : "ul";
-        const listClasses =
-          listType === "numbered"
-            ? "list-decimal list-inside mb-6 space-y-2 pl-4"
-            : "list-disc list-inside mb-6 space-y-2 pl-4";
-
-        elements.push(
-          <ListTag key={`list-${elements.length}`} className={listClasses}>
-            {currentList}
-          </ListTag>
-        );
-        currentList = [];
-        listType = null;
-      }
-    };
-
-    lines.forEach((line, i) => {
-      const trimmed = line.trim();
-      if (!trimmed) return;
-
-      // Bold sub-headings (**🔹 Text**)
-      if (trimmed.match(/^\*\*[🔹]?\s*.+\*\*$/)) {
-        flushList();
-        const headerText = trimmed.slice(2, -2);
-        elements.push(
-          <h3
-            key={i}
-            className="text-2xl font-extrabold text-black dark:text-white mb-4 mt-8 first:mt-0 transition-colors duration-300"
-          >
-            {headerText}
-          </h3>
-        );
-        return;
-      }
-
-      // Regular bold text (**text** not at start/end)
-      if (
-        trimmed.startsWith("**") &&
-        trimmed.endsWith("**") &&
-        trimmed.length > 4
-      ) {
-        flushList();
-        const headerText = trimmed.slice(2, -2);
-        elements.push(
-          <h2
-            key={i}
-            className="text-3xl font-extrabold text-black dark:text-white mb-6 mt-10 first:mt-0 transition-colors duration-300"
-          >
-            {headerText}
-          </h2>
-        );
-        return;
-      }
-
-      // Bullet points (• text)
-      if (trimmed.startsWith("•")) {
-        if (listType !== "bullet") {
-          flushList();
-          listType = "bullet";
-        }
-        currentList.push(
-          <li
-            key={i}
-            className="text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300"
-          >
-            {renderInlineFormatting(trimmed.slice(1).trim())}
-          </li>
-        );
-        return;
-      }
-
-      // Numbered lists (1. text)
-      if (/^\d+\./.test(trimmed)) {
-        if (listType !== "numbered") {
-          flushList();
-          listType = "numbered";
-        }
-        currentList.push(
-          <li
-            key={i}
-            className="text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300"
-          >
-            {renderInlineFormatting(trimmed.replace(/^\d+\.\s*/, ""))}
-          </li>
-        );
-        return;
-      }
-
-      // Regular paragraph
-      flushList();
-      elements.push(
-        <p
-          key={i}
-          className="mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-lg transition-colors duration-300"
-        >
-          {renderInlineFormatting(trimmed)}
-        </p>
-      );
-    });
-
-    // Flush any remaining list
-    flushList();
-
-    return elements;
+    return (
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[
+          rehypeSanitize, // Sanitizes HTML to prevent XSS
+          rehypeHighlight, // Syntax highlighting for code blocks
+        ]}
+        components={{
+          // Custom component styling
+          h1: ({ children }) => (
+            <h1 className="text-4xl font-extrabold text-black dark:text-white mb-6 mt-12 first:mt-0 transition-colors duration-300">
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-3xl font-extrabold text-black dark:text-white mb-5 mt-10 transition-colors duration-300">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-2xl font-extrabold text-black dark:text-white mb-4 mt-8 transition-colors duration-300">
+              {children}
+            </h3>
+          ),
+          p: ({ children }) => (
+            <p className="mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-lg transition-colors duration-300">
+              {children}
+            </p>
+          ),
+          ul: ({ children }) => (
+            <ul className="list-disc list-inside mb-6 space-y-2 pl-4">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="list-decimal list-inside mb-6 space-y-2 pl-4">
+              {children}
+            </ol>
+          ),
+          li: ({ children }) => (
+            <li className="text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300">
+              {children}
+            </li>
+          ),
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-lg bg-gray-50 dark:bg-gray-800/50 py-4 rounded-r-lg transition-colors duration-300">
+              {children}
+            </blockquote>
+          ),
+          code: ({ children, className }) => {
+            // Check if it's inline code (no language class) or block code
+            const isInline = !className || !className.startsWith('language-');
+            
+            return isInline ? (
+              <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-300">
+                {children}
+              </code>
+            ) : (
+              <code className={`block bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto border border-gray-200 dark:border-gray-700 transition-colors duration-300 text-sm font-mono text-gray-800 dark:text-gray-300 ${className}`}>
+                {children}
+              </code>
+            );
+          },
+          pre: ({ children }) => (
+            <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6 overflow-x-auto border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+              {children}
+            </pre>
+          ),
+          hr: () => (
+            <hr className="my-12 border-gray-300 dark:border-gray-700 transition-colors duration-300" />
+          ),
+          img: ({ src, alt }) => (
+            <div className="my-8">
+              <Image
+                src={src || ""}
+                alt={alt || "Blog image"}
+                width={800}
+                height={400}
+                className="rounded-lg w-full h-auto shadow-lg"
+              />
+            </div>
+          ),
+        }}
+      >
+        {sanitizedContent}
+      </ReactMarkdown>
+    );
   };
 
   const groupListItems = (blocks: Block[]) => {
@@ -396,9 +352,8 @@ export default function BlogPostPage() {
       });
     }
 
-    // Fallback to string content
     return post?.content ? (
-      renderStringContent(post.content)
+      renderMarkdownContent(post.content)
     ) : (
       <p className="italic text-gray-600 dark:text-gray-400 transition-colors duration-300">
         No content available
@@ -406,10 +361,8 @@ export default function BlogPostPage() {
     );
   };
 
-  // Loading state
   if (loading) return <Loading />;
 
-  // Error state
   if (error) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
@@ -428,7 +381,6 @@ export default function BlogPostPage() {
     );
   }
 
-  // Not found state
   if (!post) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
@@ -439,11 +391,9 @@ export default function BlogPostPage() {
     );
   }
 
-  // Main render
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Navigation */}
         <Link
           href="/blogs"
           className="inline-flex items-center text-red-600 dark:text-red-500 mb-8 hover:text-red-800 dark:hover:text-red-600 transition-colors duration-300"
@@ -451,7 +401,6 @@ export default function BlogPostPage() {
           ← Back to blogs
         </Link>
 
-        {/* Header */}
         <header className="mb-12">
           <h1 className="text-5xl font-bold text-black dark:text-white mb-6 leading-tight transition-colors duration-300">
             {post.title}

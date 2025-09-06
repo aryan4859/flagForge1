@@ -144,7 +144,6 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       }
 
       const data = await response.json();
-      console.log("API Response:", data);
       
       // Handle the data structure properly
       setIsDone(data.isDone);

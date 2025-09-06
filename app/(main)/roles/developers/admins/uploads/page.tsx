@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, Plus, X, User, Lightbulb, AlertCircle, CheckCircle } from 'lucide-react';
+import { Clock, Plus, X, Lightbulb, AlertCircle, CheckCircle } from 'lucide-react';
 
 // Type definitions
 interface FormData {
@@ -30,20 +30,33 @@ interface SubmissionData extends FormData {
   createdAt: string;
 }
 
-type TimeLimitUnit = 'hours' | 'days' | 'weeks';
+// Common styles
+const styles = {
+  input: "w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 transition duration-200",
+  label: "block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2",
+  button: "px-6 py-2 rounded-lg font-medium transition duration-200",
+  section: "border-2 border-gray-200 rounded-lg p-6 bg-gray-50",
+  alert: "p-4 border rounded-lg text-center"
+};
+
+// Categories array
+const CATEGORIES = [
+  'All', 'Web Exploitation', 'Cryptography', 'Reverse Engineering',
+  'Forensics', 'General Skills', 'Binary Exploitation', 'Privilege Escalation',
+  'IOT', 'OSINT', 'Miscellaneous', 'Steganography'
+];
+
+// Time units
+const TIME_UNITS = [
+  { value: 'hours', label: 'Hours' },
+  { value: 'days', label: 'Days' },
+  { value: 'weeks', label: 'Weeks' }
+];
 
 const UploadPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    title: "",
-    flag: "",
-    description: "",
-    points: "",
-    category: "All",
-    link: "",
-    isTimeLimited: false,
-    timeLimit: "",
-    timeLimitUnit: "days",
-    uploadedBy: "",
+    title: "", flag: "", description: "", points: "", category: "All",
+    link: "", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days", uploadedBy: ""
   });
   
   const [hints, setHints] = useState<Hint[]>([{ id: 1, text: "", pointsDeduction: "" }]);
@@ -56,7 +69,6 @@ const UploadPage: React.FC = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is authenticated and get username
     const checkAuth = (): void => {
       if (typeof window !== 'undefined') {
         const adminAuth = sessionStorage.getItem('adminAuth');
@@ -109,17 +121,18 @@ const UploadPage: React.FC = () => {
     
     const now = new Date();
     const amount = parseInt(formData.timeLimit);
+    const multiplier = { hours: 60 * 60 * 1000, days: 24 * 60 * 60 * 1000, weeks: 7 * 24 * 60 * 60 * 1000 };
     
-    switch (formData.timeLimitUnit) {
-      case 'hours':
-        return new Date(now.getTime() + amount * 60 * 60 * 1000);
-      case 'days':
-        return new Date(now.getTime() + amount * 24 * 60 * 60 * 1000);
-      case 'weeks':
-        return new Date(now.getTime() + amount * 7 * 24 * 60 * 60 * 1000);
-      default:
-        return null;
-    }
+    return new Date(now.getTime() + amount * multiplier[formData.timeLimitUnit]);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: "", flag: "", description: "", points: "", category: "All",
+      link: "", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days",
+      uploadedBy: formData.uploadedBy
+    });
+    setHints([{ id: 1, text: "", pointsDeduction: "" }]);
   };
 
   const handleInitialSubmit = (e: React.FormEvent<HTMLButtonElement>): void => {
@@ -127,7 +140,6 @@ const UploadPage: React.FC = () => {
     setError("");
     setSuccess("");
 
-    // Validate hints
     const validHints = hints.filter(hint => hint.text.trim() !== "");
     for (const hint of validHints) {
       if (!hint.pointsDeduction || parseInt(hint.pointsDeduction) < 0) {
@@ -136,7 +148,6 @@ const UploadPage: React.FC = () => {
       }
     }
 
-    // Show confirmation popup
     setShowConfirmation(true);
   };
 
@@ -164,19 +175,7 @@ const UploadPage: React.FC = () => {
       if (response.ok) {
         setSuccess("CTF challenge uploaded successfully!");
         setShowConfirmation(false);
-        setFormData({
-          title: "",
-          flag: "",
-          description: "",
-          points: "",
-          category: "All",
-          link: "",
-          isTimeLimited: false,
-          timeLimit: "",
-          timeLimitUnit: "days",
-          uploadedBy: formData.uploadedBy,
-        });
-        setHints([{ id: 1, text: "", pointsDeduction: "" }]);
+        resetForm();
         
         setTimeout(() => {
           router.push("/problems");
@@ -196,17 +195,56 @@ const UploadPage: React.FC = () => {
 
   const handleLogout = (): void => {
     if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('adminAuth');
-      sessionStorage.removeItem('adminEmail');
-      sessionStorage.removeItem('adminUsername');
+      ['adminAuth', 'adminEmail', 'adminUsername'].forEach(key => 
+        sessionStorage.removeItem(key)
+      );
     }
     router.push('/roles/developers/admins/auth');
   };
+
+  // Reusable components
+  const InputField = ({ id, type = "text", placeholder, required = false, children }: {
+    id: keyof FormData;
+    type?: string;
+    placeholder?: string;
+    required?: boolean;
+    children?: React.ReactNode;
+  }) => (
+    <div>
+      <label className={styles.label}>{children || id.charAt(0).toUpperCase() + id.slice(1)}</label>
+      <input
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        value={formData[id] as string}
+        onChange={handleChange}
+        className={styles.input}
+        required={required}
+        {...(type === "number" && { min: id === "points" ? "1" : "0" })}
+      />
+    </div>
+  );
+
+  const Alert = ({ type, message }: { type: 'error' | 'success'; message: string }) => (
+    <div className={`${styles.alert} ${type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
+      {message}
+    </div>
+  );
+
+  const DetailRow = ({ label, value, isMono = false }: { label: string; value: string; isMono?: boolean }) => (
+    <div>
+      <span className="font-semibold text-gray-700">{label}:</span>
+      <p className={`text-gray-600 break-words ${isMono ? 'font-mono bg-gray-100 px-2 py-1 rounded break-all' : ''}`}>
+        {value || "Not specified"}
+      </p>
+    </div>
+  );
 
   const ConfirmationPopup = () => {
     if (!showConfirmation) return null;
 
     const validHints = hints.filter(hint => hint.text.trim() !== "");
+    const expiryDate = calculateExpiryDate();
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -222,53 +260,25 @@ const UploadPage: React.FC = () => {
               
               <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <span className="font-semibold text-gray-700">Title:</span>
-                    <p className="text-gray-600 break-words">{formData.title || "Not specified"}</p>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-700">Category:</span>
-                    <p className="text-gray-600">{formData.category}</p>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-700">Points:</span>
-                    <p className="text-gray-600">{formData.points || "Not specified"}</p>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-700">Uploaded by:</span>
-                    <p className="text-gray-600">{formData.uploadedBy}</p>
-                  </div>
+                  <DetailRow label="Title" value={formData.title} />
+                  <DetailRow label="Category" value={formData.category} />
+                  <DetailRow label="Points" value={formData.points} />
+                  <DetailRow label="Uploaded by" value={formData.uploadedBy} />
                 </div>
                 
-                <div>
-                  <span className="font-semibold text-gray-700">Flag:</span>
-                  <p className="text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded break-all">
-                    {formData.flag || "Not specified"}
-                  </p>
-                </div>
+                <DetailRow label="Flag" value={formData.flag} isMono />
                 
-                {formData.description && (
-                  <div>
-                    <span className="font-semibold text-gray-700">Description:</span>
-                    <p className="text-gray-600 break-words">{formData.description}</p>
-                  </div>
-                )}
-                
-                {formData.link && (
-                  <div>
-                    <span className="font-semibold text-gray-700">Resource Link:</span>
-                    <p className="text-gray-600 break-all">{formData.link}</p>
-                  </div>
-                )}
+                {formData.description && <DetailRow label="Description" value={formData.description} />}
+                {formData.link && <DetailRow label="Resource Link" value={formData.link} />}
                 
                 {formData.isTimeLimited && (
                   <div>
                     <span className="font-semibold text-gray-700">Time Limit:</span>
                     <p className="text-gray-600">
                       {formData.timeLimit} {formData.timeLimitUnit}
-                      {calculateExpiryDate() && (
+                      {expiryDate && (
                         <span className="block text-sm text-amber-600">
-                          Expires: {calculateExpiryDate()?.toLocaleString()}
+                          Expires: {expiryDate.toLocaleString()}
                         </span>
                       )}
                     </p>
@@ -279,7 +289,7 @@ const UploadPage: React.FC = () => {
                   <div>
                     <span className="font-semibold text-gray-700">Hints ({validHints.length}):</span>
                     <div className="space-y-2 mt-2">
-                      {validHints.map((hint, index) => (
+                      {validHints.map((hint) => (
                         <div key={hint.id} className="bg-white border border-gray-200 rounded p-2">
                           <div className="flex justify-between items-start gap-2">
                             <p className="text-sm text-gray-600 flex-1">{hint.text}</p>
@@ -299,14 +309,14 @@ const UploadPage: React.FC = () => {
               <button
                 onClick={() => setShowConfirmation(false)}
                 disabled={isSubmitting}
-                className="px-6 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`${styles.button} border-2 border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmedSubmit}
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-lg font-medium transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className={`${styles.button} bg-rose-500 hover:bg-rose-600 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
               >
                 {isSubmitting ? (
                   <>
@@ -335,9 +345,7 @@ const UploadPage: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  if (!isAuthenticated) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-rose-100 p-4">
@@ -347,123 +355,56 @@ const UploadPage: React.FC = () => {
             Upload CTF Challenge
           </h1>
           <button
-              onClick={handleLogout}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition duration-200"
-            >
-              Logout
-            </button>
+            onClick={handleLogout}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition duration-200"
+          >
+            Logout
+          </button>
         </div>
         
         <div className="bg-white shadow-lg rounded-2xl p-8">
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                  Title/Heading
-                </label>
-                <input
-                  id="title"
-                  type="text"
-                  placeholder="CTF Challenge Title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 transition duration-200"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                  Flag
-                </label>
-                <input
-                  id="flag"
-                  type="text"
-                  placeholder="flag{example_flag_here}"
-                  value={formData.flag}
-                  onChange={handleChange}
-                  className="w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 transition duration-200"
-                  required
-                />
-              </div>
+              <InputField id="title" placeholder="CTF Challenge Title" required>Title/Heading</InputField>
+              <InputField id="flag" placeholder="flag{example_flag_here}" required>Flag</InputField>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                Description
-              </label>
+              <label className={styles.label}>Description</label>
               <textarea
                 id="description"
                 placeholder="Detailed description of the CTF challenge..."
                 value={formData.description}
                 onChange={handleChange}
                 rows={4}
-                className="w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 transition duration-200 resize-none"
+                className={`${styles.input} resize-none`}
                 required
               />
             </div>
 
             {/* Points, Category, Link */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                  Points
-                </label>
-                <input
-                  id="points"
-                  type="number"
-                  placeholder="100"
-                  value={formData.points}
-                  onChange={handleChange}
-                  className="w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 transition duration-200"
-                  required
-                />
-              </div>
+              <InputField id="points" type="number" placeholder="100" required>Points</InputField>
               
               <div>
-                <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                  Category
-                </label>
+                <label className={styles.label}>Category</label>
                 <select
                   id="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full bg-gray-50 border-2 border-gray-200 text-gray-800 py-3 px-4 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
+                  className={styles.input}
                 >
-                  <option>All</option>
-                  <option>Web Exploitation</option>
-                  <option>Cryptography</option>
-                  <option>Reverse Engineering</option>
-                  <option>Forensics</option>
-                  <option>General Skills</option>
-                  <option>Binary Exploitation</option>
-                  <option>Privilege Escalation</option>
-                  <option>IOT</option>
-                  <option>OSINT</option>
-                  <option>Miscellaneous</option>
-                  <option>Steganography</option>
+                  {CATEGORIES.map(cat => <option key={cat}>{cat}</option>)}
                 </select>
               </div>
               
-              <div>
-                <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                  Resource Link
-                </label>
-                <input
-                  id="link"
-                  type="url"
-                  placeholder="https://example.com/resource"
-                  value={formData.link}
-                  onChange={handleChange}
-                  className="w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 transition duration-200"
-                />
-              </div>
+              <InputField id="link" type="url" placeholder="https://example.com/resource">Resource Link</InputField>
             </div>
 
             {/* Time Limit Section */}
-            <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50">
+            <div className={styles.section}>
               <div className="flex items-center gap-3 mb-4">
                 <Clock className="w-5 h-5 text-rose-500" />
                 <h3 className="text-lg font-semibold text-gray-700">Time Limit Settings</h3>
@@ -485,44 +426,28 @@ const UploadPage: React.FC = () => {
                 
                 {formData.isTimeLimited && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                      <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                        Duration
-                      </label>
-                      <input
-                        id="timeLimit"
-                        type="number"
-                        placeholder="1"
-                        min="1"
-                        value={formData.timeLimit}
-                        onChange={handleChange}
-                        className="w-full bg-white text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 transition duration-200"
-                        required={formData.isTimeLimited}
-                      />
-                    </div>
+                    <InputField id="timeLimit" type="number" placeholder="1" required={formData.isTimeLimited}>Duration</InputField>
                     
                     <div>
-                      <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-                        Unit
-                      </label>
+                      <label className={styles.label}>Unit</label>
                       <select
                         id="timeLimitUnit"
                         value={formData.timeLimitUnit}
                         onChange={handleChange}
                         className="w-full bg-white border-2 border-gray-200 text-gray-800 py-3 px-4 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
                       >
-                        <option value="hours">Hours</option>
-                        <option value="days">Days</option>
-                        <option value="weeks">Weeks</option>
+                        {TIME_UNITS.map(unit => (
+                          <option key={unit.value} value={unit.value}>{unit.label}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
                 )}
                 
-                {formData.isTimeLimited && formData.timeLimit && (
+                {formData.isTimeLimited && formData.timeLimit && calculateExpiryDate() && (
                   <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-700">
-                      <strong>Room will expire:</strong> {calculateExpiryDate()?.toLocaleString() || 'Invalid date'}
+                      <strong>Room will expire:</strong> {calculateExpiryDate()?.toLocaleString()}
                     </p>
                   </div>
                 )}
@@ -530,7 +455,7 @@ const UploadPage: React.FC = () => {
             </div>
 
             {/* Hints Section */}
-            <div className="border-2 border-gray-200 rounded-lg p-6 bg-gray-50">
+            <div className={styles.section}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <Lightbulb className="w-5 h-5 text-rose-500" />
@@ -564,9 +489,7 @@ const UploadPage: React.FC = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">
-                          Hint Text
-                        </label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Hint Text</label>
                         <textarea
                           placeholder="Enter hint text..."
                           value={hint.text}
@@ -577,9 +500,7 @@ const UploadPage: React.FC = () => {
                       </div>
                       
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">
-                          Points Deduction
-                        </label>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Points Deduction</label>
                         <input
                           type="number"
                           placeholder="10"
@@ -593,27 +514,11 @@ const UploadPage: React.FC = () => {
                   </div>
                 ))}
               </div>
-              
-              {hints.length === 0 && (
-                <div className="text-center py-6 text-gray-500">
-                  <Lightbulb className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p>No hints added yet. Click "Add Hint" to get started.</p>
-                </div>
-              )}
             </div>
 
-            {/* Error and Success Messages */}
-            {error && (
-              <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-center">
-                {error}
-              </div>
-            )}
-            
-            {success && (
-              <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg text-center">
-                {success}
-              </div>
-            )}
+            {/* Messages */}
+            {error && <Alert type="error" message={error} />}
+            {success && <Alert type="success" message={success} />}
 
             {/* Submit Button */}
             <div className="flex justify-center pt-6">
