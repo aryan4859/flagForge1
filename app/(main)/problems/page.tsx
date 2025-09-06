@@ -394,7 +394,7 @@ const PaginationControls: React.FC<{
   </div>
 );
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
   const { status: sessionStatus } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -561,4 +561,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default Page;
