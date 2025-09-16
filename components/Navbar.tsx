@@ -23,7 +23,7 @@ import { useTheme } from "@/context/ThemeContext";
 const NavItem = ({ href, tags, onClick, style }: NavbarItems) => (
   <li
     className={cn(
-      "rounded-md transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-400",
+      "rounded-md transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-500",
       style
     )}
     onClick={onClick}

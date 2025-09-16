@@ -32,10 +32,10 @@ interface SubmissionData extends FormData {
 
 // Common styles
 const styles = {
-  input: "w-full bg-gray-50 text-gray-800 border-2 border-gray-200 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 transition duration-200",
-  label: "block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2",
+  input: "w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 placeholder-gray-500 dark:placeholder-gray-400",
+  label: "block uppercase tracking-wide text-gray-700 dark:text-gray-300 text-xs font-bold mb-2",
   button: "px-6 py-2 rounded-lg font-medium transition duration-200",
-  section: "border-2 border-gray-200 rounded-lg p-6 bg-gray-50",
+  section: "border-2 border-gray-200 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-700",
   alert: "p-4 border rounded-lg text-center"
 };
 
@@ -226,15 +226,15 @@ const UploadPage: React.FC = () => {
   );
 
   const Alert = ({ type, message }: { type: 'error' | 'success'; message: string }) => (
-    <div className={`${styles.alert} ${type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
+    <div className={`${styles.alert} ${type === 'error' ? 'bg-white dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'}`}>
       {message}
     </div>
   );
 
   const DetailRow = ({ label, value, isMono = false }: { label: string; value: string; isMono?: boolean }) => (
     <div>
-      <span className="font-semibold text-gray-700">{label}:</span>
-      <p className={`text-gray-600 break-words ${isMono ? 'font-mono bg-gray-100 px-2 py-1 rounded break-all' : ''}`}>
+      <span className="font-semibold text-gray-700 dark:text-gray-300">{label}:</span>
+      <p className={`text-gray-600 dark:text-gray-400 break-words ${isMono ? 'font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded break-all' : ''}`}>
         {value || "Not specified"}
       </p>
     </div>
@@ -248,17 +248,17 @@ const UploadPage: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <AlertCircle className="w-8 h-8 text-amber-500" />
-              <h2 className="text-2xl font-bold text-gray-800">Confirm Submission</h2>
+              <AlertCircle className="w-8 h-8 text-amber-500 dark:text-amber-400" />
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Confirm Submission</h2>
             </div>
             
             <div className="space-y-4 mb-6">
-              <p className="text-gray-600">Please review your CTF challenge details before submitting:</p>
+              <p className="text-gray-600 dark:text-gray-400">Please review your CTF challenge details before submitting:</p>
               
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <DetailRow label="Title" value={formData.title} />
                   <DetailRow label="Category" value={formData.category} />
@@ -273,11 +273,11 @@ const UploadPage: React.FC = () => {
                 
                 {formData.isTimeLimited && (
                   <div>
-                    <span className="font-semibold text-gray-700">Time Limit:</span>
-                    <p className="text-gray-600">
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">Time Limit:</span>
+                    <p className="text-gray-600 dark:text-gray-400">
                       {formData.timeLimit} {formData.timeLimitUnit}
                       {expiryDate && (
-                        <span className="block text-sm text-amber-600">
+                        <span className="block text-sm text-amber-600 dark:text-amber-400">
                           Expires: {expiryDate.toLocaleString()}
                         </span>
                       )}
@@ -287,13 +287,13 @@ const UploadPage: React.FC = () => {
                 
                 {validHints.length > 0 && (
                   <div>
-                    <span className="font-semibold text-gray-700">Hints ({validHints.length}):</span>
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">Hints ({validHints.length}):</span>
                     <div className="space-y-2 mt-2">
                       {validHints.map((hint) => (
-                        <div key={hint.id} className="bg-white border border-gray-200 rounded p-2">
+                        <div key={hint.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded p-2">
                           <div className="flex justify-between items-start gap-2">
-                            <p className="text-sm text-gray-600 flex-1">{hint.text}</p>
-                            <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
+                            <p className="text-sm text-gray-600 dark:text-gray-400 flex-1">{hint.text}</p>
+                            <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-2 py-1 rounded">
                               -{hint.pointsDeduction} pts
                             </span>
                           </div>
@@ -309,14 +309,14 @@ const UploadPage: React.FC = () => {
               <button
                 onClick={() => setShowConfirmation(false)}
                 disabled={isSubmitting}
-                className={`${styles.button} border-2 border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed`}
+                className={`${styles.button} border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmedSubmit}
                 disabled={isSubmitting}
-                className={`${styles.button} bg-rose-500 hover:bg-rose-600 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+                className={`${styles.button} bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
               >
                 {isSubmitting ? (
                   <>
@@ -339,8 +339,8 @@ const UploadPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 to-rose-100 flex items-center justify-center">
-        <div className="text-rose-500 text-xl font-bold">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-br from-white to-rose-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-rose-500 dark:text-rose-400 text-xl font-bold">Loading...</div>
       </div>
     );
   }
@@ -348,21 +348,21 @@ const UploadPage: React.FC = () => {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 to-rose-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-white to-rose-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-rose-500">
+          <h1 className="text-4xl sm:text-5xl font-bold text-rose-500 dark:text-rose-400">
             Upload CTF Challenge
           </h1>
           <button
             onClick={handleLogout}
-            className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition duration-200"
+            className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200"
           >
             Logout
           </button>
         </div>
         
-        <div className="bg-white shadow-lg rounded-2xl p-8">
+        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8">
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -406,8 +406,8 @@ const UploadPage: React.FC = () => {
             {/* Time Limit Section */}
             <div className={styles.section}>
               <div className="flex items-center gap-3 mb-4">
-                <Clock className="w-5 h-5 text-rose-500" />
-                <h3 className="text-lg font-semibold text-gray-700">Time Limit Settings</h3>
+                <Clock className="w-5 h-5 text-rose-500 dark:text-rose-400" />
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Time Limit Settings</h3>
               </div>
               
               <div className="space-y-4">
@@ -419,7 +419,7 @@ const UploadPage: React.FC = () => {
                     onChange={handleChange}
                     className="w-4 h-4 text-rose-600 bg-gray-100 border-gray-300 rounded focus:ring-rose-500"
                   />
-                  <label htmlFor="isTimeLimited" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="isTimeLimited" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Enable time-limited room
                   </label>
                 </div>
@@ -434,7 +434,7 @@ const UploadPage: React.FC = () => {
                         id="timeLimitUnit"
                         value={formData.timeLimitUnit}
                         onChange={handleChange}
-                        className="w-full bg-white border-2 border-gray-200 text-gray-800 py-3 px-4 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
+                        className="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 py-3 px-4 rounded-lg focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200"
                       >
                         {TIME_UNITS.map(unit => (
                           <option key={unit.value} value={unit.value}>{unit.label}</option>
@@ -445,8 +445,8 @@ const UploadPage: React.FC = () => {
                 )}
                 
                 {formData.isTimeLimited && formData.timeLimit && calculateExpiryDate() && (
-                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="text-sm text-blue-700">
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <p className="text-sm text-blue-700 dark:text-blue-400">
                       <strong>Room will expire:</strong> {calculateExpiryDate()?.toLocaleString()}
                     </p>
                   </div>
@@ -458,13 +458,13 @@ const UploadPage: React.FC = () => {
             <div className={styles.section}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <Lightbulb className="w-5 h-5 text-rose-500" />
-                  <h3 className="text-lg font-semibold text-gray-700">Hints</h3>
+                  <Lightbulb className="w-5 h-5 text-rose-500 dark:text-rose-400" />
+                  <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Hints</h3>
                 </div>
                 <button
                   type="button"
                   onClick={addHint}
-                  className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition duration-200"
+                  className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition duration-200"
                 >
                   <Plus className="w-4 h-4" />
                   Add Hint
@@ -473,9 +473,9 @@ const UploadPage: React.FC = () => {
               
               <div className="space-y-4">
                 {hints.map((hint, index) => (
-                  <div key={hint.id} className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                  <div key={hint.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-semibold text-gray-700">Hint {index + 1}</h4>
+                      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Hint {index + 1}</h4>
                       {hints.length > 1 && (
                         <button
                           type="button"
@@ -489,25 +489,25 @@ const UploadPage: React.FC = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Hint Text</label>
+                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Hint Text</label>
                         <textarea
                           placeholder="Enter hint text..."
                           value={hint.text}
                           onChange={(e) => updateHint(hint.id, 'text', e.target.value)}
                           rows={2}
-                          className="w-full bg-gray-50 text-gray-800 border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:border-rose-500 transition duration-200 resize-none"
+                          className="w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 resize-none placeholder-gray-500 dark:placeholder-gray-400"
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-xs font-medium text-gray-600 mb-1">Points Deduction</label>
+                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Points Deduction</label>
                         <input
                           type="number"
                           placeholder="10"
                           min="0"
                           value={hint.pointsDeduction}
                           onChange={(e) => updateHint(hint.id, 'pointsDeduction', e.target.value)}
-                          className="w-full bg-gray-50 text-gray-800 border border-gray-300 rounded-lg py-2 px-3 focus:outline-none focus:border-rose-500 transition duration-200"
+                          className="w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 placeholder-gray-500 dark:placeholder-gray-400"
                         />
                       </div>
                     </div>
@@ -526,7 +526,7 @@ const UploadPage: React.FC = () => {
                 type="submit"
                 onClick={handleInitialSubmit}
                 disabled={isSubmitting}
-                className="bg-rose-500 hover:bg-rose-600 rounded-xl px-8 py-3 text-white font-bold text-lg transition duration-200 focus:outline-none focus:ring-4 focus:ring-rose-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 rounded-xl px-8 py-3 text-white font-bold text-lg transition duration-200 focus:outline-none focus:ring-4 focus:ring-rose-200 dark:focus:ring-rose-800 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Upload Challenge 🚀
               </button>

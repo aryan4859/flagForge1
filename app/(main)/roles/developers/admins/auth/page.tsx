@@ -47,17 +47,17 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 to-rose-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-2xl rounded-2xl max-w-md w-full overflow-hidden">
-        <div className="bg-rose-500 px-8 py-6 text-center">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl max-w-md w-full overflow-hidden">
+        <div className="bg-rose-500 dark:bg-rose-600 px-8 py-6 text-center">
           <h1 className="text-3xl font-bold text-white">🔐 Admin Access</h1>
-          <p className="text-rose-100 mt-2">Enter credentials to create CTF rooms</p>
+          <p className="text-rose-100 dark:text-rose-200 mt-2">Enter credentials to create CTF rooms</p>
         </div>
         
         <div className="px-8 py-8">
           <div className="space-y-6">
             <div>
-              <label className="block text-gray-700 font-semibold mb-2" htmlFor="email">
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2" htmlFor="email">
                  Email
               </label>
               <input
@@ -67,13 +67,13 @@ const AuthPage = () => {
                 placeholder="example@example.com"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border-2 text-black border-gray-200 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
+                className="w-full px-4 py-3 border-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 placeholder-gray-500 dark:placeholder-gray-400"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-gray-700 text-black font-semibold mb-2" htmlFor="password">
+              <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-2" htmlFor="password">
                  Password
               </label>
               <input
@@ -83,13 +83,13 @@ const AuthPage = () => {
                 placeholder="Enter admin password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 text-black py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-500 transition duration-200"
+                className="w-full px-4 py-3 border-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 placeholder-gray-500 dark:placeholder-gray-400"
                 required
               />
             </div>
             
             {error && (
-              <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-center">
+              <div className="p-4 bg-white dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg text-center">
                 {error}
               </div>
             )}
@@ -99,16 +99,16 @@ const AuthPage = () => {
               disabled={loading}
               className={`w-full py-3 rounded-lg font-bold text-white transition duration-200 ${
                 loading 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-rose-500 hover:bg-rose-600 focus:outline-none focus:ring-4 focus:ring-rose-200'
+                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed' 
+                  : 'bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 focus:outline-none focus:ring-4 focus:ring-rose-200 dark:focus:ring-rose-800'
               }`}
             >
               {loading ? 'Authenticating...' : 'Access Admin Panel 🚀'}
             </button>
           </div>
           
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 text-center font-medium">
+          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center font-medium">
               🔑 Admin credentials required to create CTF rooms
             </p>
           </div>
