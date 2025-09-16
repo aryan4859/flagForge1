@@ -138,7 +138,6 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onView }) => {
       <ResourceDescription description={resource.description} />
       <ResourceFooter 
         createdAt={resource.createdAt as any} 
-        uploadedBy={resource.uploadedBy} 
       />
     </div>
   );
