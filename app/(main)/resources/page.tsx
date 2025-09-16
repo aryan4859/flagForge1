@@ -125,7 +125,8 @@ const ResourcesPage: React.FC = () => {
 
   // Handle resource click
   const handleResourceClick = (resource: Resource) => {
-    window.open(resource.resourceLink, '_blank', 'noopener,noreferrer');
+    window.open(resource.resourceLink, '_blank', 'noopener,noreferrer,nofollow');
+
   };
 
 
