@@ -10,7 +10,7 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (sessionStatus === "authenticated") {
-      router.replace("/home");
+      router.replace("/profile");
     }
   }, [sessionStatus, router]);
 
