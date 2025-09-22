@@ -72,7 +72,7 @@ function generateBadgeSVG(userData: any, userImage: string | null): string {
     <!-- Header -->
     <rect x="0" y="0" width="400" height="50" rx="12" fill="url(#badgeGradient)"/>
     <text x="20" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="bold" fill="white">
-      🚩 FlagForge.xyz
+    FlagForge.xyz
     </text>
     
     <!-- User Info -->
