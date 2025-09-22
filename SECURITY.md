@@ -9,7 +9,7 @@ flagForge is a Capture The Flag (CTF) platform that handles user authentication,
 | Version | Supported          | Notes |  
 | ------- | ------------------ | ----- |  
 | 2.0.0   | :white_check_mark: | Current development version |  
-| < 0.1.0 | :x:               | Pre-release versions not supported |  
+| < 2.1.0 | :x:               | Pre-release versions not supported |  
   
 ## Security Architecture  
   
