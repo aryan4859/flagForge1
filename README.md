@@ -75,4 +75,4 @@ For questions or support, contact the maintainer:
 - **GitHub**: [aryan4859](https://github.com/aryan4859)
 
 ## Stats
-![Alt](ttps://repobeats.axiom.co/api/embed/02af8e8621d7a600aa56c45db6612f56af820bc4.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/02af8e8621d7a600aa56c45db6612f56af820bc4.svg "Repobeats analytics image")
