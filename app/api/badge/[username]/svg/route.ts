@@ -78,11 +78,16 @@ function generateBadgeSVG(userData: any, userImage: string): string {
   </svg>`;
 }
 
-export async function GET(request: NextRequest, { params }: { params: { username: string } }) {
+// Fix: Updated the function signature to match Next.js App Router expectations
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ username: string }> }
+) {
   try {
     await connect();
     
-    const { username } = params;
+    // Await the params since it's now a Promise in newer Next.js versions
+    const { username } = await params;
     
     // Find user by name (case-insensitive, trimmed, partial match safe)
     const user = await UserSchema.findOne({
@@ -137,6 +142,8 @@ export async function GET(request: NextRequest, { params }: { params: { username
     
     const svg = generateBadgeSVG(userData, userImage);
     
+    // For PNG conversion, you would typically use a library like sharp
+    // For now, return SVG as the PNG endpoint might need additional setup
     return new NextResponse(svg, {
       headers: {
         'Content-Type': 'image/svg+xml',

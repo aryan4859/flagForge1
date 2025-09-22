@@ -6,14 +6,20 @@ import UserQuestionModel from '@/models/userQuestionSchema';
 export const runtime = "nodejs";
 
 // GET /api/user/[username] - Public user profile endpoint
-export async function GET(request: NextRequest, { params }: { params: { username: string } }) {
+export async function GET(
+  request: NextRequest, 
+  { params }: { params: Promise<{ username: string }> }
+) {
   try {
     await connect();
-        
-    const username = decodeURIComponent(params.username);
-const user = await UserSchema.findOne({ 
-  name: { $regex: new RegExp(`^${username}$`, 'i') } 
-}).select('name email image totalScore customBadges createdAt role');
+    
+    // Await the params since it's now a Promise in newer Next.js versions
+    const { username: rawUsername } = await params;
+    const username = decodeURIComponent(rawUsername);
+    
+    const user = await UserSchema.findOne({ 
+      name: { $regex: new RegExp(`^${username}$`, 'i') } 
+    }).select('name email image totalScore customBadges createdAt role');
     
     if (!user) {
       return NextResponse.json(
