@@ -1,6 +1,9 @@
-
-# flagforge.aryan4.com.np Vulnerability Disclosure
-Contact: https://srs.s4e.io/flagforge.aryan4.com.np/report
-Acknowledgments: https://srs.s4e.io/flagforge.aryan4.com.np
-Preferred-Languages: en
-#s4e-verify-token: 7df9fdfedd4b6f5f83f81eda0941fa60
+Contact: mailto:contact@flagforge.xyz 
+Contact: https://github.com/flagforge/flagForge1/issues  
+Expires: 2025-12-31T23:59:59.000Z  
+Encryption: https://keys.openpgp.org/search?q=contact@flagforge.xyz 
+Preferred-Languages: en  
+Canonical: https://flagforge.aryan4.com.np/security.txt  
+Policy: https://github.com/FlagForgeCTF/flagForge/blob/main/SECURITY.md  
+Hiring: https://github.com/FlagForgeCTF/flagForge/blob/main/CONTRIBUTING.md  
+Acknowledgments: https://github.com/FlagForgeCTF/flagForge#contributors
