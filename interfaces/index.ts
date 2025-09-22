@@ -21,6 +21,7 @@ export interface Users {
   email: string;
   image?: string;
   name?: string;
+  customBadges?:string;
   questionsDone?: string[];
   totalScore?: number;
   role?: string;
