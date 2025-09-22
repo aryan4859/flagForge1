@@ -550,7 +550,7 @@ const PublicUserPage = () => {
                             </p>
                             <div className="text-center space-y-1">
                               <div className="text-xs text-yellow-600 dark:text-yellow-400">
-                                Awarded by: <span className="font-semibold">{badge.assignedBy}</span>
+                                Awarded by: <span className="font-semibold">Flagforge</span>
                               </div>
                               <div className="text-xs text-yellow-600 dark:text-yellow-400">
                                 {formatDate(badge.assignedAt)}
