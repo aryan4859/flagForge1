@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CheckCircle, Upload } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 
 // Type definitions
 interface FormData {
@@ -36,55 +37,6 @@ const INITIAL_FORM_STATE: Omit<FormData, "uploadedBy"> = {
   description: "",
   category: "All",
   resourceLink: "",
-};
-
-const STORAGE_KEYS = {
-  adminAuth: "adminAuth",
-  adminEmail: "adminEmail",
-  adminUsername: "adminUsername",
-} as const;
-
-// Custom hooks
-const useAuth = (router: ReturnType<typeof useRouter>) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [username, setUsername] = useState("");
-
-  useEffect(() => {
-    const checkAuth = () => {
-      if (typeof window === "undefined") return;
-
-      const adminAuth = sessionStorage.getItem(STORAGE_KEYS.adminAuth);
-      const adminEmail = sessionStorage.getItem(STORAGE_KEYS.adminEmail);
-      const adminUsername =
-        sessionStorage.getItem(STORAGE_KEYS.adminUsername) ||
-        adminEmail?.split("@")[0] ||
-        "admin";
-
-      if (adminAuth === "true" && adminEmail) {
-        setIsAuthenticated(true);
-        setUsername(adminUsername);
-      } else {
-        router.push("/roles/developers/admins/auth");
-        return;
-      }
-
-      setLoading(false);
-    };
-
-    checkAuth();
-  }, [router]);
-
-  const logout = useCallback(() => {
-    if (typeof window === "undefined") return;
-
-    Object.values(STORAGE_KEYS).forEach((key) =>
-      sessionStorage.removeItem(key)
-    );
-    router.push("/roles/developers/admins/auth");
-  }, [router]);
-
-  return { isAuthenticated, loading, username, logout };
 };
 
 // Utility functions
@@ -129,17 +81,16 @@ const LoadingScreen: React.FC = () => (
   </div>
 );
 
-const AlertMessage: React.FC<{
-  message: string;
-  type: "error" | "success";
-}> = ({ message, type }) => {
+const AlertMessage: React.FC<{ message: string; type: "error" | "success" }> = ({
+  message,
+  type,
+}) => {
   const styles = {
     error:
       "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400",
     success:
       "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400",
   };
-
   return (
     <div className={`p-4 border rounded-lg text-center ${styles[type]}`}>
       {message}
@@ -217,11 +168,11 @@ const FormField: React.FC<{
   </div>
 );
 
-const DetailRow: React.FC<{
-  label: string;
-  value: string;
-  breakWords?: boolean;
-}> = ({ label, value, breakWords = false }) => (
+const DetailRow: React.FC<{ label: string; value: string; breakWords?: boolean }> = ({
+  label,
+  value,
+  breakWords = false,
+}) => (
   <div>
     <span className="font-semibold text-gray-700 dark:text-gray-300">
       {label}:
@@ -244,7 +195,6 @@ const ConfirmationPopup: React.FC<{
   onConfirm: () => void;
 }> = ({ show, formData, isSubmitting, onCancel, onConfirm }) => {
   if (!show) return null;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -255,19 +205,16 @@ const ConfirmationPopup: React.FC<{
               Confirm Submission
             </h2>
           </div>
-
           <div className="space-y-4 mb-6">
             <p className="text-gray-600 dark:text-gray-400">
               Please review your resource details before submitting:
             </p>
-
             <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <DetailRow label="Title" value={formData.title} breakWords />
                 <DetailRow label="Category" value={formData.category} />
                 <DetailRow label="Uploaded by" value={formData.uploadedBy} />
               </div>
-
               <DetailRow label="Resource Link" value={formData.resourceLink} />
               {formData.description && (
                 <DetailRow
@@ -278,7 +225,6 @@ const ConfirmationPopup: React.FC<{
               )}
             </div>
           </div>
-
           <div className="flex gap-4 justify-end">
             <button
               onClick={onCancel}
@@ -311,27 +257,73 @@ const ConfirmationPopup: React.FC<{
   );
 };
 
-// Main component
+// ✅ Main component
 const ResourceUploadPage: React.FC = () => {
   const router = useRouter();
-  const { isAuthenticated, loading, username, logout } = useAuth(router);
+  const { data: session, status } = useSession();
 
   const [formData, setFormData] = useState<FormData>({
     ...INITIAL_FORM_STATE,
     uploadedBy: "",
   });
-
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [adminCheckLoading, setAdminCheckLoading] = useState<boolean>(true);
 
-  // Update uploadedBy when username is available
-  useEffect(() => {
-    if (username) {
-      setFormData((prev) => ({ ...prev, uploadedBy: username }));
-    }
-  }, [username]);
+  
+
+  // Auth check
+ useEffect(() => {
+     const checkAuthAndAdmin = async () => {
+       if (status === 'loading') return;
+       
+       if (!session?.user) {
+         router.push('/roles/developers/admins/auth');
+         return;
+       }
+ 
+       try {
+         setAdminCheckLoading(true);
+         console.log('Checking admin status for uploads page:', session.user.email);
+         
+         const response = await fetch('/api/auth/check-admin', {
+           method: 'GET',
+           headers: {
+             'Content-Type': 'application/json',
+           },
+           cache: 'no-cache'
+         });
+         
+         const data = await response.json();
+         console.log('Admin check response in uploads:', response.status, data);
+         
+         if (response.ok && data.isAdmin) {
+           console.log('Admin access verified for uploads page');
+           setIsAuthenticated(true);
+           // Set the uploadedBy field
+           const username = session.user.name || session.user.email?.split('@')[0] || 'admin';
+           setFormData(prev => ({ ...prev, uploadedBy: username }));
+         } else {
+           console.log('Admin access denied for uploads page:', data.message);
+           router.push('/roles/developers/admins/auth');
+           return;
+         }
+       } catch (error) {
+         console.error('Error checking admin status in uploads:', error);
+         router.push('/roles/developers/admins/auth');
+         return;
+       } finally {
+         setAdminCheckLoading(false);
+         setLoading(false);
+       }
+     };
+ 
+     checkAuthAndAdmin();
+   }, [session, status, router]);
 
   const clearMessages = () => {
     setError("");
@@ -350,54 +342,45 @@ const ResourceUploadPage: React.FC = () => {
   const resetForm = () => {
     setFormData({
       ...INITIAL_FORM_STATE,
-      uploadedBy: username,
+      uploadedBy: session?.user?.name || session?.user?.email?.split("@")[0] || "",
     });
   };
 
   const handleInitialSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     clearMessages();
-
     const validationError = validateFormData(formData);
     if (validationError) {
       setError(validationError);
       return;
     }
-
     setShowConfirmation(true);
   };
 
   const handleConfirmedSubmit = async () => {
     setIsSubmitting(true);
     clearMessages();
-
     try {
       const submissionData: SubmissionData = {
         ...formData,
         createdAt: new Date().toISOString(),
       };
-
       const response = await fetch("/api/resources", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submissionData),
       });
-
       const data = await response.json();
-
       if (response.ok) {
         setSuccess("Resource uploaded successfully!");
         setShowConfirmation(false);
         resetForm();
-
-        setTimeout(() => {
-          router.push("/resources");
-        }, 2000);
+        setTimeout(() => router.push("/resources"), 2000);
       } else {
         setError(data.message || "An error occurred.");
         setShowConfirmation(false);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred.");
       setShowConfirmation(false);
     } finally {
@@ -405,8 +388,8 @@ const ResourceUploadPage: React.FC = () => {
     }
   };
 
-  if (loading) return <LoadingScreen />;
-  if (!isAuthenticated) return null;
+  if (status === "loading") return <LoadingScreen />;
+  if (status === "unauthenticated") return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-rose-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -416,7 +399,7 @@ const ResourceUploadPage: React.FC = () => {
             Upload Resource
           </h1>
           <button
-            onClick={logout}
+            onClick={() => signOut({ redirect: true, callbackUrl: "/roles/developers/admins/auth" })}
             className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200"
           >
             Logout

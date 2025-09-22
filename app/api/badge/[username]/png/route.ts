@@ -1,0 +1,153 @@
+import { NextRequest, NextResponse } from 'next/server';
+import connect from '@/utlis/db';
+import UserSchema from '@/models/userSchema';
+import UserQuestionModel from '@/models/userQuestionSchema';
+
+export const runtime = "nodejs";
+
+// Default image path - adjust based on your public folder structure
+const DEFAULT_IMAGE = '/flagforge.gif';
+
+function generateBadgeSVG(userData: any, userImage: string): string {
+  const { name, totalScore, rank, level, completedQuestions, customBadges } = userData;
+  
+  // Determine badge color based on score
+  let badgeColor = '#6B7280'; // Gray for Newbie
+  if (totalScore >= 3000) badgeColor = '#EAB308'; // Yellow for Flag Conqueror
+  else if (totalScore >= 2000) badgeColor = '#DC2626'; // Red for Forger
+  else if (totalScore >= 1500) badgeColor = '#EA580C'; // Orange for Cipher Hunter
+  else if (totalScore >= 1000) badgeColor = '#7C3AED'; // Purple for Hacker
+  else if (totalScore >= 500) badgeColor = '#059669'; // Green for Codebreaker
+  else if (totalScore >= 200) badgeColor = '#2563EB'; // Blue for Scout
+  
+  const specialBadgeCount = customBadges?.length || 0;
+  
+  // Use user image if available, otherwise use default flagforge.gif
+  const avatarContent = userImage 
+    ? `<image x="320" y="95" width="60" height="60" href="${userImage}" clip-path="url(#avatarClip)"/>`
+    : `<image x="320" y="95" width="60" height="60" href="${DEFAULT_IMAGE}" clip-path="url(#avatarClip)"/>`;
+  
+  return `<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#1F2937;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#111827;stop-opacity:1" />
+      </linearGradient>
+      <linearGradient id="badgeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:${badgeColor};stop-opacity:1" />
+        <stop offset="100%" style="stop-color:${badgeColor}CC;stop-opacity:1" />
+      </linearGradient>
+      <clipPath id="avatarClip">
+        <circle cx="350" cy="125" r="30"/>
+      </clipPath>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="400" height="200" rx="12" fill="url(#bgGradient)" stroke="#374151" stroke-width="2"/>
+    
+    <!-- Header -->
+    <rect x="0" y="0" width="400" height="50" rx="12" fill="url(#badgeGradient)"/>
+    <text x="20" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="bold" fill="white">
+      🚩 FlagForge.xyz
+    </text>
+    
+    <!-- User Info -->
+    <text x="20" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="white">
+      ${name}
+    </text>
+    <text x="20" y="105" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="${badgeColor}">
+      ${level}
+    </text>
+    
+    <!-- Stats -->
+    <text x="20" y="135" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#9CA3AF">
+      Rank: #${rank} • Score: ${totalScore.toLocaleString()} pts
+    </text>
+    <text x="20" y="155" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#9CA3AF">
+      Challenges: ${completedQuestions} • Special Badges: ${specialBadgeCount}
+    </text>
+    
+    <!-- Badge Icon - User Avatar -->
+    <circle cx="350" cy="125" r="30" fill="url(#badgeGradient)" stroke="white" stroke-width="3"/>
+    ${avatarContent}
+    
+    <!-- Footer -->
+    <text x="200" y="185" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#6B7280" text-anchor="middle">
+      Powered by FlagForge.xyz
+    </text>
+  </svg>`;
+}
+
+export async function GET(request: NextRequest, { params }: { params: { username: string } }) {
+  try {
+    await connect();
+    
+    const { username } = params;
+    
+    // Find user by name (case-insensitive, trimmed, partial match safe)
+    const user = await UserSchema.findOne({
+      name: { $regex: username.trim(), $options: 'i' }
+    }).select('name image totalScore customBadges createdAt');
+    
+    if (!user) {
+      return new NextResponse('User not found', { status: 404 });
+    }
+    
+    // Get completion stats
+    const completedQuestions = await UserQuestionModel.countDocuments({ 
+      userId: user._id 
+    });
+    
+    // Calculate rank
+    const allUsers = await UserSchema.find({}).sort({ totalScore: -1 }).select('_id');
+    const userRank = allUsers.findIndex(u => u._id.toString() === user._id.toString()) + 1;
+    
+    // Calculate level
+    const getLevel = (score: number): string => {
+      if (score < 200) return "[0x1][Newbie]";
+      if (score < 500) return "[0x2][Scout]";
+      if (score < 1000) return "[0x3][Codebreaker]";
+      if (score < 1500) return "[0x4][Hacker]";
+      if (score < 2000) return "[0x5][Cipher Hunter]";
+      if (score < 3000) return "[0x6][Forger]";
+      return "[0x7][Flag Conqueror]";
+    };
+    
+    // Get user image - use profile image if available, otherwise use default flagforge.gif
+    let userImage = user.image;
+    
+    // Validate user image URL
+    if (!userImage || 
+        typeof userImage !== 'string' || 
+        userImage.trim() === '' || 
+        userImage === 'undefined' || 
+        userImage === 'null' ||
+        userImage.toLowerCase() === 'null') {
+      userImage = null;
+    }
+    
+    const userData = {
+      name: user.name,
+      totalScore: user.totalScore || 0,
+      rank: userRank,
+      level: getLevel(user.totalScore || 0),
+      completedQuestions,
+      customBadges: user.customBadges || []
+    };
+    
+    const svg = generateBadgeSVG(userData, userImage);
+    
+    // For PNG conversion, you would typically use a library like sharp
+    // For now, return SVG as the PNG endpoint might need additional setup
+    return new NextResponse(svg, {
+      headers: {
+        'Content-Type': 'image/svg+xml',
+        'Cache-Control': 'public, max-age=300, s-maxage=300',
+      },
+    });
+    
+  } catch (error) {
+    console.error('Badge PNG generation error:', error);
+    return new NextResponse('Error generating badge', { status: 500 });
+  }
+}

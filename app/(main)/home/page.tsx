@@ -208,7 +208,6 @@ const Home = () => {
 
         <div className="relative max-w-6xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
-            {/* Left Side - Branding */}
             <div className="text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
                 <div className="relative">

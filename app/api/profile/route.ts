@@ -28,14 +28,10 @@ export async function GET(_req: any) {
       );
     }
 
-    // DEBUG: Log user info
-    console.log('User ID:', user._id);
-    console.log('User email:', user.email);
 
     // DEBUG: Get ALL user questions to see the structure
     const allUserQuestions = await UserQuestionModel.find({ userId: user._id });
-    console.log('All user questions count:', allUserQuestions.length);
-    console.log('Sample user questions:', allUserQuestions.slice(0, 3)); // Log first 3 records
+
 
     // DEBUG: Try different possible field names for completion
     const possibleCompletionFields = [
@@ -151,6 +147,7 @@ export async function GET(_req: any) {
       badges: getBadges(completedQuestions),
       streak: getStreak(completedQuestions),
       createdAt: user.createdAt,
+      customBadges: user.customBadges || [],
       debug: {
         totalUserQuestions: allUserQuestions.length,
         testQueries,

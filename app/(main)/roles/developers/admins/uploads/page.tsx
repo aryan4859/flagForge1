@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Clock, Plus, X, Lightbulb, AlertCircle, CheckCircle } from 'lucide-react';
+import Loading from '@/components/loading';
 
 // Type definitions
 interface FormData {
@@ -66,28 +68,59 @@ const UploadPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [adminCheckLoading, setAdminCheckLoading] = useState<boolean>(true);
+  
+  const { data: session, status } = useSession();
   const router = useRouter();
 
+  // Authentication and admin check
   useEffect(() => {
-    const checkAuth = (): void => {
-      if (typeof window !== 'undefined') {
-        const adminAuth = sessionStorage.getItem('adminAuth');
-        const adminEmail = sessionStorage.getItem('adminEmail');
-        const adminUsername = sessionStorage.getItem('adminUsername') || adminEmail?.split('@')[0] || 'admin';
+    const checkAuthAndAdmin = async () => {
+      if (status === 'loading') return;
+      
+      if (!session?.user) {
+        router.push('/roles/developers/admins/auth');
+        return;
+      }
+
+      try {
+        setAdminCheckLoading(true);
+        console.log('Checking admin status for uploads page:', session.user.email);
         
-        if (adminAuth === 'true' && adminEmail) {
+        const response = await fetch('/api/auth/check-admin', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-cache'
+        });
+        
+        const data = await response.json();
+        console.log('Admin check response in uploads:', response.status, data);
+        
+        if (response.ok && data.isAdmin) {
+          console.log('Admin access verified for uploads page');
           setIsAuthenticated(true);
-          setFormData(prev => ({ ...prev, uploadedBy: adminUsername }));
+          // Set the uploadedBy field
+          const username = session.user.name || session.user.email?.split('@')[0] || 'admin';
+          setFormData(prev => ({ ...prev, uploadedBy: username }));
         } else {
+          console.log('Admin access denied for uploads page:', data.message);
           router.push('/roles/developers/admins/auth');
           return;
         }
+      } catch (error) {
+        console.error('Error checking admin status in uploads:', error);
+        router.push('/roles/developers/admins/auth');
+        return;
+      } finally {
+        setAdminCheckLoading(false);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
-    checkAuth();
-  }, [router]);
+    checkAuthAndAdmin();
+  }, [session, status, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>): void => {
     const { id, value, type } = e.target;
@@ -193,12 +226,9 @@ const UploadPage: React.FC = () => {
     }
   };
 
-  const handleLogout = (): void => {
-    if (typeof window !== 'undefined') {
-      ['adminAuth', 'adminEmail', 'adminUsername'].forEach(key => 
-        sessionStorage.removeItem(key)
-      );
-    }
+  const handleLogout = async (): Promise<void> => {
+    const { signOut } = await import('next-auth/react');
+    await signOut({ redirect: false });
     router.push('/roles/developers/admins/auth');
   };
 
@@ -337,15 +367,15 @@ const UploadPage: React.FC = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white to-rose-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="text-rose-500 dark:text-rose-400 text-xl font-bold">Loading...</div>
-      </div>
-    );
+  // Show loading while checking session or admin status
+  if (status === 'loading' || loading || adminCheckLoading) {
+    return <Loading />;
   }
 
-  if (!isAuthenticated) return null;
+  // If not authenticated, don't render anything (redirect will happen)
+  if (!isAuthenticated || !session?.user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-rose-100 dark:from-gray-900 dark:to-gray-800 p-4">

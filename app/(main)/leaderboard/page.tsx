@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { User } from "lucide-react";
@@ -24,6 +25,7 @@ interface LeaderboardUser {
 
 const LeaderboardPage = () => {
   const { status: sessionStatus } = useSession();
+  const router = useRouter();
   const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -262,10 +264,12 @@ const LeaderboardPage = () => {
                       />
                     </div>
 
-                    <div className="flex-1">
-                      <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 transition-colors duration-300">
-                        {leaderboard[0].name}
-                      </h2>
+                    <div className="flex-1">                          <button
+                            onClick={() => router.push(`/user/${encodeURIComponent(leaderboard[0].name)}`)}
+                            className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
+                          >
+                            {leaderboard[0].name}
+                          </button>
                       <span className="font-medium text-red-500 dark:text-red-500 text-sm">
                         {getLevel(leaderboard[0].totalScore)}
                       </span>
@@ -346,9 +350,12 @@ const LeaderboardPage = () => {
                           <span className="font-medium text-xs text-red-500 dark:text-red-500 text-center">
                             {getLevel(user.totalScore)}
                           </span>
-                          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate text-center transition-colors duration-300">
+                          <button
+                            onClick={() => router.push(`/user/${encodeURIComponent(user.name)}`)}
+                            className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate text-center transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
+                          >
                             {user.name}
-                          </h2>
+                          </button>
                           <p className="text-xs text-gray-600 dark:text-gray-300 text-center transition-colors duration-300">
                             Points: {user.totalScore.toLocaleString()}
                           </p>
@@ -417,9 +424,12 @@ const LeaderboardPage = () => {
                             />
                           </div>
                           <div>
-                            <div className="text-red-500 dark:text-red-500 font-medium truncate">
+                            <button
+                              onClick={() => router.push(`/user/${encodeURIComponent(user.name)}`)}
+                              className="text-red-500 dark:text-red-500 font-medium truncate hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
+                            >
                               {user.name}
-                            </div>
+                            </button>
                             <div className="text-xs text-gray-500 dark:text-gray-400">
                               {getLevel(user.totalScore)}
                             </div>

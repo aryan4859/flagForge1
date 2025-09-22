@@ -13,6 +13,11 @@ import {
   Calendar,
   MapPin,
   Star,
+  Crown,
+  Gift,
+  Share2,
+  Copy,
+  ExternalLink
 } from "lucide-react";
 import Newbie from "../../../public/badges/0x1.png";
 import Scout from "../../../public/badges/0x2.png";
@@ -22,7 +27,18 @@ import Cipher from "../../../public/badges/0x5.png";
 import Forger from "../../../public/badges/0x6.png";
 import Conqueror from "../../../public/badges/0x7.png";
 import Flagforge from "../../../public/flagforge.gif";
+
 // Types
+interface CustomBadge {
+  _id?: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  assignedAt: Date;
+  assignedBy: string;
+}
+
 interface ProfileData {
   name: string;
   email: string;
@@ -35,7 +51,9 @@ interface ProfileData {
   badges: number;
   streak: number;
   createdAt: string;
+  customBadges?: CustomBadge[];
 }
+
 interface CompletedProblem {
   _id: string;
   title: string;
@@ -45,6 +63,7 @@ interface CompletedProblem {
   difficulty: string;
   completedAt: string;
 }
+
 interface CreatedRoom {
   _id: string;
   title: string;
@@ -54,6 +73,7 @@ interface CreatedRoom {
   createdAt: string;
   isPublished: boolean;
 }
+
 // Badge configuration
 const BADGE_CONFIG = [
   { name: "Newbie", threshold: 0, color: "from-gray-400 to-gray-600" },
@@ -72,6 +92,7 @@ const BADGE_CONFIG = [
     color: "from-yellow-400 to-yellow-600",
   },
 ];
+
 const CATEGORY_ICONS: { [key: string]: string } = {
   Web: "🌐",
   Crypto: "🔐",
@@ -86,6 +107,7 @@ const CATEGORY_ICONS: { [key: string]: string } = {
   Tutorial: "📚",
   Networking: "🌐",
 };
+
 const DIFFICULTY_CONFIG: {
   [key: string]: {
     color: string;
@@ -129,31 +151,36 @@ const DIFFICULTY_CONFIG: {
     darkBorder: "dark:border-purple-700",
   },
 };
+
 const ProfilePage = () => {
   // Hooks
   const { data: session, status: sessionStatus } = useSession();
+  
   // State
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [completedProblems, setCompletedProblems] = useState<
-    CompletedProblem[]
-  >([]);
+  const [completedProblems, setCompletedProblems] = useState<CompletedProblem[]>([]);
   const [createdRooms, setCreatedRooms] = useState<CreatedRoom[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [showBadgeTooltip, setShowBadgeTooltip] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("completed");
+  const [showCustomBadgeTooltip, setShowCustomBadgeTooltip] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState<boolean>(false);
+  const [copiedText, setCopiedText] = useState<string>('');
+  
   // Pagination states for completed problems
   const [problemsCurrentPage, setProblemsCurrentPage] = useState<number>(1);
   const [problemsLoading, setProblemsLoading] = useState<boolean>(false);
   const [problemsHasNextPage, setProblemsHasNextPage] = useState<boolean>(true);
-  const [totalCompletedProblems, setTotalCompletedProblems] =
-    useState<number>(0);
+  const [totalCompletedProblems, setTotalCompletedProblems] = useState<number>(0);
+  
   // Pagination states for created rooms
   const [roomsCurrentPage, setRoomsCurrentPage] = useState<number>(1);
   const [roomsLoading, setRoomsLoading] = useState<boolean>(false);
   const [roomsHasNextPage, setRoomsHasNextPage] = useState<boolean>(true);
   const [totalCreatedRooms, setTotalCreatedRooms] = useState<number>(0);
+
   // Utility Functions
   const getBadgeComponent = useCallback((score: number, size: number = 48) => {
     if (score < 200)
@@ -226,12 +253,14 @@ const ProfilePage = () => {
       />
     );
   }, []);
+
   const getCurrentBadgeName = useCallback((score: number) => {
     const badge = BADGE_CONFIG.slice()
       .reverse()
       .find((badge) => score >= badge.threshold);
     return badge ? badge.name : "Newbie";
   }, []);
+
   const getNextBadgeInfo = useCallback((score: number) => {
     const nextBadge = BADGE_CONFIG.find((badge) => score < badge.threshold);
     if (!nextBadge) return null;
@@ -248,6 +277,7 @@ const ProfilePage = () => {
       nextBadgeName: nextBadge.name,
     };
   }, []);
+
   const getImageSrc = useCallback(() => {
     const sources = [profileData?.image, session?.user?.image];
     for (const src of sources) {
@@ -264,10 +294,30 @@ const ProfilePage = () => {
     }
     return null;
   }, [profileData?.image, session?.user?.image]);
-  const getCategoryIcon = (category: string) =>
-    CATEGORY_ICONS[category] || "📝";
-  const getDifficultyStyle = (difficulty: string) =>
-    DIFFICULTY_CONFIG[difficulty] || DIFFICULTY_CONFIG["Easy"];
+
+  const getCategoryIcon = (category: string) => CATEGORY_ICONS[category] || "📝";
+  const getDifficultyStyle = (difficulty: string) => DIFFICULTY_CONFIG[difficulty] || DIFFICULTY_CONFIG["Easy"];
+
+  const formatDate = (date: string | Date) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedText(type);
+      setTimeout(() => setCopiedText(''), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
   // API Functions
   const fetchProfileData = useCallback(async () => {
     if (!session?.user?.email) return;
@@ -287,6 +337,7 @@ const ProfilePage = () => {
       console.error("Profile fetch error:", error);
     }
   }, [session?.user?.email]);
+
   const fetchCompletedProblems = useCallback(async () => {
     if (!session?.user?.email) return;
     setProblemsLoading(true);
@@ -335,11 +386,14 @@ const ProfilePage = () => {
       setProblemsLoading(false);
     }
   }, [session?.user?.email, problemsCurrentPage]);
+
   const fetchCreatedRooms = useCallback(async () => {
     if (!session?.user?.email) return;
     setRoomsLoading(true);
     try {
-      const res = await fetch(`/api/rooms/created?page=${roomsCurrentPage}`, {
+      // const res = await fetch(`/api/rooms/created?page=${roomsCurrentPage}`, {
+      const res = await fetch(`/`, {
+
         method: "GET",
         headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
       });
@@ -373,23 +427,28 @@ const ProfilePage = () => {
       setRoomsLoading(false);
     }
   }, [session?.user?.email, roomsCurrentPage]);
+
   // Pagination handlers
   const handleProblemsNextPage = () => {
     if (problemsHasNextPage && !problemsLoading)
       setProblemsCurrentPage((prev) => prev + 1);
   };
+
   const handleProblemsPrevPage = () => {
     if (problemsCurrentPage > 1 && !problemsLoading)
       setProblemsCurrentPage((prev) => prev - 1);
   };
+
   const handleRoomsNextPage = () => {
     if (roomsHasNextPage && !roomsLoading)
       setRoomsCurrentPage((prev) => prev + 1);
   };
+
   const handleRoomsPrevPage = () => {
     if (roomsCurrentPage > 1 && !roomsLoading)
       setRoomsCurrentPage((prev) => prev - 1);
   };
+
   // Effects
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -417,10 +476,12 @@ const ProfilePage = () => {
     fetchCompletedProblems,
     fetchCreatedRooms,
   ]);
+
   useEffect(() => {
     if (activeTab === "completed") setProblemsCurrentPage(1);
     else if (activeTab === "created") setRoomsCurrentPage(1);
   }, [activeTab]);
+
   useEffect(() => {
     if (activeTab === "completed" && session?.user?.email)
       fetchCompletedProblems();
@@ -430,14 +491,17 @@ const ProfilePage = () => {
     session?.user?.email,
     fetchCompletedProblems,
   ]);
+
   useEffect(() => {
     if (activeTab === "created" && session?.user?.email) fetchCreatedRooms();
   }, [roomsCurrentPage, activeTab, session?.user?.email, fetchCreatedRooms]);
+
   // Components
   const ProfileImage = () => {
     const imageSrc = getImageSrc();
     const displayName = profileData?.name || session?.user?.name || "User";
     const [hasError, setHasError] = useState(false);
+    
     if (imageSrc && !hasError) {
       return (
         <Image
@@ -452,6 +516,7 @@ const ProfilePage = () => {
         />
       );
     }
+    
     return (
       <Image
         src={Flagforge}
@@ -464,6 +529,67 @@ const ProfilePage = () => {
       />
     );
   };
+
+  const CustomBadgeDisplay = () => {
+    if (!profileData?.customBadges || profileData.customBadges.length === 0) return null;
+
+    return (
+      <div className="mt-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-lg">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+            <Crown className="w-5 h-5 mr-2 text-yellow-500" />
+            Special Badges
+          </h3>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {profileData.customBadges.length} badge{profileData.customBadges.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+        
+        <div className="flex flex-wrap gap-4">
+          {profileData.customBadges.map((badge, index) => (
+            <div
+              key={index}
+              className="relative group cursor-pointer"
+              onMouseEnter={() => setShowCustomBadgeTooltip(badge.name)}
+              onMouseLeave={() => setShowCustomBadgeTooltip(null)}
+            >
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-yellow-400 shadow-lg ring-2 ring-yellow-200 dark:ring-yellow-600 hover:scale-105 transition-transform duration-200">
+                <Image
+                  src={badge.icon}
+                  alt={badge.name}
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/api/placeholder/64/64';
+                  }}
+                />
+              </div>
+              
+              {/* Custom Badge Tooltip */}
+              {showCustomBadgeTooltip === badge.name && (
+                <div className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap z-20 shadow-lg">
+                  <div className="text-center">
+                    <div className="font-semibold text-yellow-300">{badge.name}</div>
+                    <div className="text-gray-300">{badge.description}</div>
+                    <div className="text-gray-400 mt-1">
+                      By: {badge.assignedBy}
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      {formatDate(badge.assignedAt)}
+                    </div>
+                  </div>
+                  {/* Tooltip Arrow */}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black"></div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const BadgeTooltip = () => {
     if (!showBadgeTooltip) return null;
     return (
@@ -503,6 +629,7 @@ const ProfilePage = () => {
       </div>
     );
   };
+
   const HeroStats = () => (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mt-8">
       {[
@@ -516,9 +643,17 @@ const ProfilePage = () => {
         },
         {
           icon: Award,
-          label: "Badges",
+          label: "System Badges",
           value: profileData?.badges || 0,
           color: "text-red-500",
+          bg: "bg-white/95 dark:bg-gray-800/95",
+          border: "border-gray-200 dark:border-gray-700",
+        },
+        {
+          icon: Crown,
+          label: "Special Badges",
+          value: profileData?.customBadges?.length || 0,
+          color: "text-yellow-500",
           bg: "bg-white/95 dark:bg-gray-800/95",
           border: "border-gray-200 dark:border-gray-700",
         },
@@ -557,6 +692,7 @@ const ProfilePage = () => {
       ))}
     </div>
   );
+
   const TabNavigation = () => (
     <div className="border-b border-gray-200 dark:border-gray-700">
       <nav className="flex space-x-8">
@@ -567,7 +703,12 @@ const ProfilePage = () => {
             icon: CheckCircle,
             count: totalCompletedProblems,
           },
-          { id: "badges", label: "Badge Collection", icon: Award, count: null },
+          { 
+            id: "badges", 
+            label: "Badge Collection", 
+            icon: Award, 
+            count: null 
+          },
           {
             id: "created",
             label: "Created Rooms",
@@ -591,9 +732,11 @@ const ProfilePage = () => {
       </nav>
     </div>
   );
+
   // Render conditions
   if (loading || sessionStatus === "loading") return <Loading />;
   if (sessionStatus === "unauthenticated") return <AuthError />;
+  
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
@@ -615,13 +758,15 @@ const ProfilePage = () => {
       </div>
     );
   }
+
   const nextBadge = getNextBadgeInfo(profileData?.totalScore || 0);
   const memberSince = profileData?.createdAt
     ? new Date(profileData.createdAt).getFullYear()
     : new Date().getFullYear();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Hero Section - Plain Background */}
+      {/* Hero Section */}
       <div className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
@@ -629,6 +774,7 @@ const ProfilePage = () => {
             <div className="flex-shrink-0">
               <ProfileImage />
             </div>
+            
             {/* Profile Info */}
             <div className="flex-grow text-center lg:text-left">
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
@@ -654,6 +800,7 @@ const ProfilePage = () => {
                     </div>
                   </div>
                 </div>
+                
                 {/* Current Badge */}
                 <div className="relative">
                   <div
@@ -668,6 +815,7 @@ const ProfilePage = () => {
                   <BadgeTooltip />
                 </div>
               </div>
+              
               {/* Score and Progress */}
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mt-8 shadow-lg">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -698,12 +846,33 @@ const ProfilePage = () => {
                   )}
                 </div>
               </div>
-              {/* Stats Grid in Hero */}
+              
+              <CustomBadgeDisplay />
+              
               <HeroStats />
+
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mt-8 shadow-lg">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+                    Share Your Profile
+                  </h3>
+                  <button
+                    onClick={() => setShowShareModal(true)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2 mx-auto"
+                  >
+                    <Share2 className="w-5 h-5" />
+                    <span>Share Badge</span>
+                  </button>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                    Create a shareable badge for GitHub, LinkedIn, Twitter and more!
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
       {/* Main Content */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 z-20">
         {/* Tabs */}
@@ -724,9 +893,7 @@ const ProfilePage = () => {
                   <div>
                     <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
                       {completedProblems.map((problem) => {
-                        const diffStyle = getDifficultyStyle(
-                          problem.difficulty
-                        );
+                        const diffStyle = getDifficultyStyle(problem.difficulty);
                         return (
                           <div
                             key={problem._id}
@@ -764,8 +931,7 @@ const ProfilePage = () => {
                       })}
                     </div>
                     {/* Pagination */}
-                    {(completedProblems.length > 0 ||
-                      problemsCurrentPage > 1) && (
+                    {(completedProblems.length > 0 || problemsCurrentPage > 1) && (
                       <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
                         <div className="text-sm text-gray-600 dark:text-gray-400">
                           Page {problemsCurrentPage}{" "}
@@ -775,9 +941,7 @@ const ProfilePage = () => {
                         <div className="flex gap-3">
                           <button
                             onClick={handleProblemsPrevPage}
-                            disabled={
-                              problemsCurrentPage === 1 || problemsLoading
-                            }
+                            disabled={problemsCurrentPage === 1 || problemsLoading}
                             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                               problemsCurrentPage === 1 || problemsLoading
                                 ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
@@ -820,86 +984,161 @@ const ProfilePage = () => {
                 ) : null}
               </div>
             )}
+
             {activeTab === "badges" && (
               <div>
-                <div className="text-center mb-10">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                    Badge Collection
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                    Unlock prestigious badges by accumulating points through
-                    completed challenges. Each badge represents your growing
-                    expertise in cybersecurity.
-                  </p>
+                {/* System Badges Section */}
+                <div className="mb-12">
+                  <div className="text-center mb-10">
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+                      System Badge Collection
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                      Unlock prestigious badges by accumulating points through completed challenges. 
+                      Each badge represents your growing expertise in cybersecurity.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {BADGE_CONFIG.map((badge) => {
+                      const earned = (profileData?.totalScore || 0) >= badge.threshold;
+                      const current = getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
+                      return (
+                        <div
+                          key={badge.name}
+                          className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
+                            earned
+                              ? current
+                                ? `border-red-500 bg-gradient-to-br ${badge.color} shadow-lg ring-2 ring-red-300 dark:ring-red-700 text-white`
+                                : "border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20 hover:shadow-md hover:border-green-400 dark:hover:border-green-500"
+                              : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+                          }`}
+                        >
+                          {current && (
+                            <div className="absolute -top-2 -right-2">
+                              <div className="bg-red-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                Current
+                              </div>
+                            </div>
+                          )}
+                          <div className={`mb-4 flex justify-center ${earned ? "" : "opacity-40 grayscale"}`}>
+                            {getBadgeComponent(badge.threshold, 72)}
+                          </div>
+                          <h4 className={`font-bold text-center mb-2 text-lg ${
+                              earned
+                                ? current
+                                  ? "text-white"
+                                  : "text-green-800 dark:text-green-400"
+                                : "text-gray-500 dark:text-gray-400"
+                            }`}
+                          >
+                            {badge.name}
+                          </h4>
+                          <p className={`text-sm text-center ${
+                              earned
+                                ? current
+                                  ? "text-red-100"
+                                  : "text-green-600 dark:text-green-400"
+                                : "text-gray-400 dark:text-gray-500"
+                            }`}
+                          >
+                            {badge.threshold}+ points required
+                          </p>
+                          {earned && !current && (
+                            <div className="mt-3 text-center">
+                              <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs rounded-full font-medium border border-green-200 dark:border-green-700">
+                                <CheckCircle className="w-3 h-3 inline mr-1" />
+                                Earned
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {BADGE_CONFIG.map((badge) => {
-                    const earned =
-                      (profileData?.totalScore || 0) >= badge.threshold;
-                    const current =
-                      getCurrentBadgeName(profileData?.totalScore || 0) ===
-                      badge.name;
-                    return (
-                      <div
-                        key={badge.name}
-                        className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
-                          earned
-                            ? current
-                              ? `border-red-500 bg-gradient-to-br ${badge.color} shadow-lg ring-2 ring-red-300 dark:ring-red-700 text-white`
-                              : "border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20 hover:shadow-md hover:border-green-400 dark:hover:border-green-500"
-                            : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
-                        }`}
-                      >
-                        {current && (
+
+                {/* Custom Badges Section */}
+                {profileData?.customBadges && profileData.customBadges.length > 0 && (
+                  <div>
+                    <div className="text-center mb-10">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center justify-center">
+                        <Crown className="w-6 h-6 mr-2 text-yellow-500" />
+                        Special Achievement Badges
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                        Exclusive badges awarded by administrators for exceptional contributions, 
+                        outstanding achievements, or special recognitions.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {profileData.customBadges.map((badge, index) => (
+                        <div
+                          key={index}
+                          className="relative p-6 rounded-xl border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 shadow-lg hover:shadow-xl transition-all duration-300 ring-2 ring-yellow-200 dark:ring-yellow-600"
+                        >
                           <div className="absolute -top-2 -right-2">
-                            <div className="bg-red-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-                              Current
+                            <div className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium flex items-center">
+                              <Gift className="w-3 h-3 mr-1" />
+                              Special
                             </div>
                           </div>
-                        )}
-                        <div
-                          className={`mb-4 flex justify-center ${
-                            earned ? "" : "opacity-40 grayscale"
-                          }`}
-                        >
-                          {getBadgeComponent(badge.threshold, 72)}
-                        </div>
-                        <h4
-                          className={`font-bold text-center mb-2 text-lg ${
-                            earned
-                              ? current
-                                ? "text-white"
-                                : "text-green-800 dark:text-green-400"
-                              : "text-gray-500 dark:text-gray-400"
-                          }`}
-                        >
-                          {badge.name}
-                        </h4>
-                        <p
-                          className={`text-sm text-center ${
-                            earned
-                              ? current
-                                ? "text-red-100"
-                                : "text-green-600 dark:text-green-400"
-                              : "text-gray-400 dark:text-gray-500"
-                          }`}
-                        >
-                          {badge.threshold}+ points required
-                        </p>
-                        {earned && !current && (
+                          <div className="mb-4 flex justify-center">
+                            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-yellow-400 shadow-lg ring-2 ring-yellow-200 dark:ring-yellow-600">
+                              <Image
+                                src={badge.icon}
+                                alt={badge.name}
+                                width={80}
+                                height={80}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/api/placeholder/80/80';
+                                }}
+                              />
+                            </div>
+                          </div>
+                          <h4 className="font-bold text-center mb-2 text-lg text-yellow-800 dark:text-yellow-400">
+                            {badge.name}
+                          </h4>
+                          <p className="text-sm text-center text-yellow-700 dark:text-yellow-500 mb-3">
+                            {badge.description}
+                          </p>
+                          <div className="text-center space-y-1">
+                            <div className="text-xs text-yellow-600 dark:text-yellow-400">
+                              Awarded by: <span className="font-semibold">{badge.assignedBy}</span>
+                            </div>
+                            <div className="text-xs text-yellow-600 dark:text-yellow-400">
+                              {formatDate(badge.assignedAt)}
+                            </div>
+                          </div>
                           <div className="mt-3 text-center">
-                            <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs rounded-full font-medium border border-green-200 dark:border-green-700">
-                              <CheckCircle className="w-3 h-3 inline mr-1" />
-                              Earned
+                            <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-xs rounded-full font-medium border border-yellow-200 dark:border-yellow-700">
+                              <Crown className="w-3 h-3 inline mr-1" />
+                              Exclusive
                             </span>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* No Custom Badges Message */}
+                {(!profileData?.customBadges || profileData.customBadges.length === 0) && (
+                  <div className="mt-12 text-center py-12 border-t border-gray-200 dark:border-gray-700">
+                    <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Crown className="w-8 h-8 text-yellow-500" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                      No Special Badges Yet
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                      Keep contributing to the community and demonstrating exceptional skills to earn exclusive special badges from administrators!
+                    </p>
+                  </div>
+                )}
               </div>
             )}
+
             {activeTab === "created" && (
               <div>
                 {roomsLoading && (
@@ -929,10 +1168,7 @@ const ProfilePage = () => {
                                 </h3>
                                 <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                                   <Calendar className="w-4 h-4 mr-1" />
-                                  Created{" "}
-                                  {new Date(
-                                    room.createdAt
-                                  ).toLocaleDateString()}
+                                  Created {new Date(room.createdAt).toLocaleDateString()}
                                 </div>
                               </div>
                               <div>
@@ -969,8 +1205,7 @@ const ProfilePage = () => {
                       <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
                         <div className="text-sm text-gray-600 dark:text-gray-400">
                           Page {roomsCurrentPage}{" "}
-                          {totalCreatedRooms > 0 &&
-                            `• ${totalCreatedRooms} rooms total`}
+                          {totalCreatedRooms > 0 && `• ${totalCreatedRooms} rooms total`}
                         </div>
                         <div className="flex gap-3">
                           <button
@@ -1005,9 +1240,7 @@ const ProfilePage = () => {
                       <Star className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      {roomsCurrentPage === 1
-                        ? "No Rooms Created Yet"
-                        : "No More Rooms"}
+                      {roomsCurrentPage === 1 ? "No Rooms Created Yet" : "No More Rooms"}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
                       {roomsCurrentPage === 1
@@ -1027,7 +1260,142 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                  Share Your Badge
+                </h2>
+                <button
+                  onClick={() => setShowShareModal(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Badge Preview */}
+              <div className="mb-6 text-center">
+                <Image
+                  src={`/api/badge/${encodeURIComponent(profileData?.name || '')}/svg`}
+                  alt="Profile Badge"
+                  width={400}
+                  height={200}
+                  unoptimized
+                  className="mx-auto border border-gray-200 dark:border-gray-700 rounded-lg"
+                />
+              </div>
+
+              {/* Share Options */}
+              <div className="space-y-4">
+                {(() => {
+                  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://flagforge.xyz';
+                  const profileUrl = `${currentDomain}/user/${encodeURIComponent(profileData?.name || '')}`;
+                  const badgeSvgUrl = `${currentDomain}/api/badge/${encodeURIComponent(profileData?.name || '')}/svg`;
+                  
+                  return (
+                    <>
+                      {/* Profile Link */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Profile Link
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={profileUrl}
+                            readOnly
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm"
+                          />
+                          <button
+                            onClick={() => copyToClipboard(profileUrl, 'link')}
+                            className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-1"
+                          >
+                            <Copy className="w-4 h-4" />
+                            {copiedText === 'link' ? <span>Copied!</span> : <span>Copy</span>}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* SVG Badge URL */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Badge SVG URL (for GitHub README)
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={badgeSvgUrl}
+                            readOnly
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm"
+                          />
+                          <button
+                            onClick={() => copyToClipboard(badgeSvgUrl, 'svg')}
+                            className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-1"
+                          >
+                            <Copy className="w-4 h-4" />
+                            {copiedText === 'svg' ? <span>Copied!</span> : <span>Copy</span>}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Markdown for GitHub */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Markdown (GitHub)
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={`[![${profileData?.name || ''}'s FlagForge Badge](${badgeSvgUrl})](${profileUrl})`}
+                            readOnly
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm"
+                          />
+                          <button
+                            onClick={() => copyToClipboard(`[![${profileData?.name || ''}'s FlagForge Badge](${badgeSvgUrl})](${profileUrl})`, 'markdown')}
+                            className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-1"
+                          >
+                            <Copy className="w-4 h-4" />
+                            {copiedText === 'markdown' ? <span>Copied!</span> : <span>Copy</span>}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* HTML */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          HTML
+                        </label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="text"
+                            value={`<a href="${profileUrl}"><img src="${badgeSvgUrl}" alt="${profileData?.name || ''}'s FlagForge Badge" /></a>`}
+                            readOnly
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm"
+                          />
+                          <button
+                            onClick={() => copyToClipboard(`<a href="${profileUrl}"><img src="${badgeSvgUrl}" alt="${profileData?.name || ''}'s FlagForge Badge" /></a>`, 'html')}
+                            className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-1"
+                          >
+                            <Copy className="w-4 h-4" />
+                            {copiedText === 'html' ? <span>Copied!</span> : <span>Copy</span>}
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
 export default ProfilePage;

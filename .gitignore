@@ -42,3 +42,5 @@ k6-test.js
 bun.lockb
 remove-duplicate.js
 recalculate.js
+sync-badges.js
+userroleupdate.js
