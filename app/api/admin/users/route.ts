@@ -7,15 +7,21 @@ import UserQuestionModel from "@/models/userQuestionSchema";
 
 export const runtime = "nodejs";
 
-// Admin authentication check - fetch from database
+// Helper function to create error responses
+function createErrorResponse(message: string, status: number) {
+  return NextResponse.json(
+    { success: false, message },
+    { status }
+  );
+}
+
 async function isAdmin(email: string): Promise<boolean> {
   try {
     await connect();
     
-    // Check if user exists and has Admin role
     const adminUser = await UserSchema.findOne({
       email: email,
-      role: 'Admin' // Matches your enum: ["User", "Admin"]
+      role: 'Admin'
     }).lean();
     
     return !!adminUser;
@@ -25,7 +31,26 @@ async function isAdmin(email: string): Promise<boolean> {
   }
 }
 
+async function getUserCompletionStats(user: any) {
+  try {
+    const completedCount = await UserQuestionModel.countDocuments({
+      userId: user._id,
+    });
 
+    return {
+      ...user,
+      completedQuestions: completedCount,
+      customBadges: user.customBadges || [],
+    };
+  } catch (error) {
+    console.error(`Error getting stats for user ${user._id}:`, error);
+    return {
+      ...user,
+      completedQuestions: 0,
+      customBadges: user.customBadges || [],
+    };
+  }
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -33,48 +58,21 @@ export async function GET(req: NextRequest) {
     
     const session = await getServerSession(authOptions);
     if (!session || !session.user?.email) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
+      return createErrorResponse("Unauthorized", 401);
     }
 
     // Check if user is admin (now queries database)
     if (!await isAdmin(session.user.email)) {
-      return NextResponse.json(
-        { success: false, message: "Access denied. Admin privileges required." },
-        { status: 403 }
-      );
+      return createErrorResponse("Access denied. Admin privileges required.", 403);
     }
 
-    // Get all users with their badges
     const users = await UserSchema.find({})
       .select('name email image totalScore customBadges createdAt')
       .sort({ totalScore: -1 })
       .lean();
 
-    // Get completion stats for each user
     const usersWithStats = await Promise.all(
-      users.map(async (user) => {
-        try {
-          const completedCount = await UserQuestionModel.countDocuments({
-            userId: user._id,
-          });
-
-          return {
-            ...user,
-            completedQuestions: completedCount,
-            customBadges: user.customBadges || [],
-          };
-        } catch (error) {
-          console.error(`Error getting stats for user ${user._id}:`, error);
-          return {
-            ...user,
-            completedQuestions: 0,
-            customBadges: user.customBadges || [],
-          };
-        }
-      })
+      users.map(getUserCompletionStats)
     );
 
     return NextResponse.json({
@@ -84,9 +82,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error fetching users:", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch users" },
-      { status: 500 }
-    );
+    return createErrorResponse("Failed to fetch users", 500);
   }
 }

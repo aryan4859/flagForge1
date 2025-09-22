@@ -28,10 +28,15 @@ interface BadgeImage {
   uploadedBy: string;
 }
 
-// Badge Image Manager Component
-const BadgeImageManager = ({ onImageSelect, currentImage }: { 
+// Badge Image Manager Component - FIXED VERSION
+const BadgeImageManager = ({ 
+  onImageSelect, 
+  currentImage,
+  uploaderName = 'unknown'
+}: { 
   onImageSelect: (imagePath: string) => void;
   currentImage?: string;
+  uploaderName?: string;
 }) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -89,26 +94,29 @@ const BadgeImageManager = ({ onImageSelect, currentImage }: {
     if (!uploadedFile) return;
 
     setUploading(true);
+    console.log('Starting upload...', uploadedFile.name);
     
-    // Create form data
-    const formData = new FormData();
-    formData.append('badge-image', uploadedFile);
-    formData.append('category', 'badge-template');
-    formData.append('name', uploadedFile.name.split('.')[0]); // Remove extension
-    
-    // Get uploader info from session
-    const { data: session } = useSession();
-    const uploaderName = session?.user?.name || session?.user?.email?.split('@')[0] || 'unknown';
-    formData.append('uploadedBy', uploaderName);
-
     try {
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', uploadedFile); // Changed from 'badge-image' to 'file'
+      formData.append('category', 'badge-template');
+      formData.append('name', uploadedFile.name.split('.')[0]);
+      formData.append('uploadedBy', uploaderName);
+
+      console.log('Sending request to /api/admin/upload-badge-image');
+      
       const response = await fetch('/api/admin/upload-badge-image', {
         method: 'POST',
         body: formData,
+        // Don't set Content-Type header - browser will set it with boundary
       });
 
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Upload successful:', data);
         onImageSelect(data.imagePath);
         setUploadedFile(null);
         setPreviewUrl(null);
@@ -116,11 +124,12 @@ const BadgeImageManager = ({ onImageSelect, currentImage }: {
         await fetchBadgeImages();
       } else {
         const errorData = await response.json();
-        alert(errorData.message || 'Failed to upload image');
+        console.error('Upload failed:', errorData);
+        alert(errorData.error || errorData.message || 'Failed to upload image');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Upload failed');
+      alert('Upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -276,7 +285,7 @@ const BadgeImageManager = ({ onImageSelect, currentImage }: {
                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900 dark:file:text-purple-200 dark:hover:file:bg-purple-800"
               />
               <p className="text-xs text-gray-400 mt-1">
-                Max size: 5MB. Supported formats: JPG, PNG, GIF, SVG
+                Max size: 5MB. Supported formats: JPG, PNG, GIF, SVG, WebP
               </p>
             </div>
           )}
@@ -547,6 +556,9 @@ const BadgeTemplatesPage: React.FC = () => {
     const matchesStatus = showInactive || template.isActive;
     return matchesSearch && matchesStatus;
   });
+
+  // Get uploader name for the BadgeImageManager
+  const uploaderName = session?.user?.name || session?.user?.email?.split('@')[0] || 'unknown';
 
   // Show loading while checking session or admin status
   if (status === 'loading' || loading || adminCheckLoading) {
@@ -928,6 +940,7 @@ const BadgeTemplatesPage: React.FC = () => {
                       <BadgeImageManager
                         onImageSelect={(imagePath) => setFormData(prev => ({ ...prev, icon: imagePath }))}
                         currentImage={formData.icon}
+                        uploaderName={uploaderName}
                       />
                     </div>
                   </div>
