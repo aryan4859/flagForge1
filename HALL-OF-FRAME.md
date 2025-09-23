@@ -22,7 +22,7 @@
 | Researcher | Handle | Company | Bugs | Severity | Badge | Profile |
 |------------|--------|---------|------|----------|-------|---------|
 | **Aryan** | @aryan4859 | Member | 2 | 🟠 High | 🥈 Silver | [GitHub (@aryan4859)](https://github.com/aryan4859) |
-| **Sarthak** | @sarthakkc36 | - | 1 | 🟠 High | — | [GitHub (@sarthakkc36)](https://github.com/sarthakkc36) |
+| **Sarthak** | @sarthakkc36 | - | 1 | 🟠 High | 🥈 Silver | [GitHub (@sarthakkc36)](https://github.com/sarthakkc36) |
 
 </details>
 
@@ -43,12 +43,12 @@
 
 ## 🎖️ Recognition Badges
 
-| Badge | Criteria | Holders |
-|-------|----------|---------|
-| 🥉 **Bronze** | Found Medium severity vulnerability | — |
-| 🥈 **Silver** | Found High severity vulnerability | Aryan (@aryan4859) |
-| 🥇 **Gold** | Found Critical severity vulnerability | — |
-| 🏅 **Platinum** | 5+ valid vulnerabilities across categories | — |
+| Badge | Criteria |
+|-------|----------|
+| 🥉 **Bronze** | Found Medium severity vulnerability |
+| 🥈 **Silver** | Found High severity vulnerability |
+| 🥇 **Gold** | Found Critical severity vulnerability |
+| 🏅 **Platinum** | 5+ valid vulnerabilities across categories |
 
 ---
 
