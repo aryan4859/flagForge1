@@ -19,7 +19,7 @@
 | Researcher | Handle | Company | Bugs | Severity | Badge | Profile |
 |------------|--------|---------|------|----------|-------|---------|
 | **Aryan** | @aryan4859 | Member | 2 | 🟠 High | 🥈 Silver | [GitHub](https://github.com/aryan4859) |
-
+| **Sarthak** | @sarthakkc36 | - | 1 | 🟠 High | - | [GitHub](https://github.com/sarthakkc36) |
 ---
 
 ## 📊 Statistics
