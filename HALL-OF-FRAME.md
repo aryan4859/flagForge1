@@ -1,4 +1,4 @@
-# Hall of Fame
+# 🏆 Hall of Fame
 
 <p align="center">
     <img src="https://img.shields.io/badge/Flag%20Forge-Hall%20of%20Fame-orange?style=for-the-badge&logo=trophy&logoColor=white" alt="Hall of Fame">
@@ -14,23 +14,30 @@
 
 ---
 
-### 2025 Contributor
+### 📅 Contributors by Year
+
+<details open>
+<summary><strong>2025 Contributors</strong></summary>
 
 | Researcher | Handle | Company | Bugs | Severity | Badge | Profile |
 |------------|--------|---------|------|----------|-------|---------|
-| **Aryan** | @aryan4859 | Member | 2 | 🟠 High | 🥈 Silver | [GitHub](https://github.com/aryan4859) |
-| **Sarthak** | @sarthakkc36 | - | 1 | 🟠 High | - | [GitHub](https://github.com/sarthakkc36) |
+| **Aryan** | @aryan4859 | Member | 2 | 🟠 High | 🥈 Silver | [GitHub (@aryan4859)](https://github.com/aryan4859) |
+| **Sarthak** | @sarthakkc36 | - | 1 | 🟠 High | — | [GitHub (@sarthakkc36)](https://github.com/sarthakkc36) |
+
+</details>
+
 ---
 
 ## 📊 Statistics
 
-| **Total Bug Hunters** | **2** |
-|-----------------------|--------|
-| **Total Vulnerabilities** | **3** |
-| **Critical** | **0** |
-| **High** | **3** |
-| **Medium** | **0** |
-| **Low** | **0** |
+| **Metric** | **Count** |
+|------------|-----------|
+| Total Bug Hunters | 2 |
+| Total Vulnerabilities | 3 |
+| Critical | 0 |
+| High | 3 |
+| Medium | 0 |
+| Low | 0 |
 
 ---
 
@@ -38,16 +45,17 @@
 
 | Badge | Criteria | Holders |
 |-------|----------|---------|
+| 🥉 **Bronze** | Found Medium severity vulnerability | — |
 | 🥈 **Silver** | Found High severity vulnerability | Aryan (@aryan4859) |
-| - | - | Sarthak (@sarthakkc36) |
+| 🥇 **Gold** | Found Critical severity vulnerability | — |
+| 🏅 **Platinum** | 5+ valid vulnerabilities across categories | — |
 
 ---
 
 <p align="center">
-    <strong>Thank you to our security researcher! 🛡️</strong>
+    <strong>Thank you to our security researchers! 🛡️</strong>
     <br>
-       <i>Want to join this list? Report vulnerabilities in the <a href="https://github.com/FlagForgeCTF/flagForge/issues">GitHub Issues section</a>.</i>
-
+    <i>Want to join this list? Report vulnerabilities in the <a href="https://github.com/FlagForgeCTF/flagForge/issues">GitHub Issues section</a>.</i>
 </p>
 
 ---
