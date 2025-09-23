@@ -24,11 +24,11 @@
 
 ## 📊 Statistics
 
-| **Total Bug Hunters** | **1** |
+| **Total Bug Hunters** | **2** |
 |-----------------------|--------|
-| **Total Vulnerabilities** | **2** |
+| **Total Vulnerabilities** | **3** |
 | **Critical** | **0** |
-| **High** | **2** |
+| **High** | **3** |
 | **Medium** | **0** |
 | **Low** | **0** |
 
@@ -39,6 +39,7 @@
 | Badge | Criteria | Holders |
 |-------|----------|---------|
 | 🥈 **Silver** | Found High severity vulnerability | Aryan (@aryan4859) |
+| - | - | Sarthak (@sarthakkc36) |
 
 ---
 
