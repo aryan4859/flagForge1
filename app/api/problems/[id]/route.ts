@@ -13,24 +13,31 @@ export const runtime = "nodejs";
 // Schema for user hints tracking (same as in hints route)
 const userHintSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question", required: true },
+  questionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Question",
+    required: true,
+  },
   usedHints: [{ type: Number }], // Array of hint indices
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
 });
 
 userHintSchema.index({ userId: 1, questionId: 1 }, { unique: true });
 
-const UserHintModel = mongoose.models.UserHint || mongoose.model("UserHint", userHintSchema);
+const UserHintModel =
+  mongoose.models.UserHint || mongoose.model("UserHint", userHintSchema);
 
 // Helper functions to reduce duplication
 async function findQuestionById(id: string) {
   const question = await QuestionModel.findById(id);
   if (!question) {
-    return { error: NextResponse.json(
-      { message: `Question ${id} not found` },
-      { status: HttpStatusCode.NotFound }
-    )};
+    return {
+      error: NextResponse.json(
+        { message: `Question ${id} not found` },
+        { status: HttpStatusCode.NotFound }
+      ),
+    };
   }
   return { question };
 }
@@ -38,10 +45,12 @@ async function findQuestionById(id: string) {
 async function findUserByEmail(email: string) {
   const user = await userSchema.findOne({ email });
   if (!user) {
-    return { error: NextResponse.json(
-      { message: "User not found" },
-      { status: HttpStatusCode.NotFound }
-    )};
+    return {
+      error: NextResponse.json(
+        { message: "User not found" },
+        { status: HttpStatusCode.NotFound }
+      ),
+    };
   }
   return { user };
 }
@@ -63,7 +72,7 @@ function checkQuestionExpiry(question: any) {
 async function getUserHints(userId: string, questionId: string) {
   const userHint = await UserHintModel.findOne({
     userId,
-    questionId
+    questionId,
   });
   return userHint ? userHint.usedHints : [];
 }
@@ -71,7 +80,7 @@ async function getUserHints(userId: string, questionId: string) {
 async function checkExistingSolution(userId: string, questionId: string) {
   return await UserQuestionModel.findOne({
     userId,
-    questionId
+    questionId,
   });
 }
 
@@ -87,7 +96,7 @@ export async function GET(
     await connect();
     const { id } = await params;
     const session = await getServerSession(authOptions);
-    
+
     const { question, error: questionError } = await findQuestionById(id);
     if (questionError) return questionError;
 
@@ -95,9 +104,9 @@ export async function GET(
 
     if (expired) {
       return NextResponse.json(
-        { 
+        {
           message: "This time-limited challenge has expired",
-          expired: true 
+          expired: true,
         },
         { status: 410 }
       );
@@ -105,30 +114,33 @@ export async function GET(
 
     const questionData = question.toObject();
     delete questionData.flag;
+    delete questionData.hinsts; // Remove hints from main data
 
     const user = await userSchema.findOne({ email: session?.user.email });
-    const userQuestion = await UserQuestionModel.findOne({ 
-      userId: user?.id, 
-      questionId: id 
+    const userQuestion = await UserQuestionModel.findOne({
+      userId: user?.id,
+      questionId: id,
     });
 
     const isDone = !!userQuestion;
-    
+
     // Get used hints for this user and question
     const usedHints = user ? await getUserHints(user._id, id) : [];
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       question: questionData,
       isDone,
       expired,
       timeRemaining,
       expiryDate: question.expiryDate,
-      usedHints: usedHints
+      usedHints: usedHints,
     });
-
   } catch (error) {
     console.error("Error fetching question:", error);
-    return createErrorResponse("Internal server error", HttpStatusCode.InternalServerError);
+    return createErrorResponse(
+      "Internal server error",
+      HttpStatusCode.InternalServerError
+    );
   }
 }
 
@@ -149,7 +161,7 @@ export async function POST(
     const body = await request.json();
     const { flag: submittedFlag } = body;
 
-    if (!submittedFlag || typeof submittedFlag !== 'string') {
+    if (!submittedFlag || typeof submittedFlag !== "string") {
       return createErrorResponse("Flag is required", HttpStatusCode.BadRequest);
     }
 
@@ -160,11 +172,16 @@ export async function POST(
     // Check if question has expired
     const { expired } = checkQuestionExpiry(question);
     if (expired) {
-      return createErrorResponse("This challenge has expired", HttpStatusCode.Gone);
+      return createErrorResponse(
+        "This challenge has expired",
+        HttpStatusCode.Gone
+      );
     }
 
     // Find the user
-    const { user, error: userError } = await findUserByEmail(session.user.email);
+    const { user, error: userError } = await findUserByEmail(
+      session.user.email
+    );
     if (userError) return userError;
 
     // Check if user has already solved this question
@@ -185,29 +202,31 @@ export async function POST(
       try {
         // Calculate final points considering hint penalties
         let finalPoints = Number(question.points) || 0;
-        
+
         // Get used hints to calculate penalty
         const usedHints = await getUserHints(user._id, id);
         if (usedHints.length > 0) {
           let totalPenalty = 0;
           const hints = question.hints || [];
-          
+
           usedHints.forEach((hintIndex: number) => {
             if (hintIndex < hints.length && hints[hintIndex].pointsDeduction) {
               totalPenalty += Number(hints[hintIndex].pointsDeduction) || 0;
             }
           });
-          
+
           // Note: Penalty was already deducted when hints were used
           // So we don't deduct again, but we can show the effective points earned
-          console.log(`User ${user._id} solved with ${totalPenalty} points already deducted from hints`);
+          console.log(
+            `User ${user._id} solved with ${totalPenalty} points already deducted from hints`
+          );
         }
-        
+
         const newSolution = new UserQuestionModel({
           userId: user._id,
           questionId: id,
           solvedAt: new Date(),
-          pointsEarned: finalPoints
+          pointsEarned: finalPoints,
         });
 
         await newSolution.save();
@@ -215,44 +234,50 @@ export async function POST(
         const updateResult = await userSchema.findByIdAndUpdate(
           user._id,
           { $inc: { totalScore: finalPoints } },
-          { 
+          {
             new: true,
-            upsert: false 
+            upsert: false,
           }
         );
 
         if (!updateResult) {
           console.error("Failed to update user score");
         } else {
-          console.log(`User score updated. Added: ${finalPoints}, New total: ${updateResult.totalScore}`);
+          console.log(
+            `User score updated. Added: ${finalPoints}, New total: ${updateResult.totalScore}`
+          );
         }
 
         return NextResponse.json(
-          { 
+          {
             message: "Right! Congratulations on solving the challenge!",
             points: finalPoints,
-            success: true
+            success: true,
           },
           { status: HttpStatusCode.Ok }
         );
-
       } catch (saveError) {
         console.error("Error saving solution:", saveError);
-        return createErrorResponse("Error saving your solution. Please try again.", HttpStatusCode.InternalServerError);
+        return createErrorResponse(
+          "Error saving your solution. Please try again.",
+          HttpStatusCode.InternalServerError
+        );
       }
     } else {
       // Flag is incorrect
       return NextResponse.json(
-        { 
+        {
           message: "Incorrect flag. Try again!",
-          success: false
+          success: false,
         },
         { status: HttpStatusCode.Ok }
       );
     }
-
   } catch (error) {
     console.error("Error in POST handler:", error);
-    return createErrorResponse("Internal server error", HttpStatusCode.InternalServerError);
+    return createErrorResponse(
+      "Internal server error",
+      HttpStatusCode.InternalServerError
+    );
   }
 }
