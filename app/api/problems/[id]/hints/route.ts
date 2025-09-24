@@ -15,15 +15,20 @@ import mongoose from "mongoose";
 // Schema for user hints tracking
 const userHintSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question", required: true },
+  questionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Question",
+    required: true,
+  },
   usedHints: [{ type: Number }], // Array of hint indices
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
 });
 
 userHintSchema.index({ userId: 1, questionId: 1 }, { unique: true });
 
-const UserHintModel = mongoose.models.UserHint || mongoose.model("UserHint", userHintSchema);
+const UserHintModel =
+  mongoose.models.UserHint || mongoose.model("UserHint", userHintSchema);
 
 // GET - Fetch available hints for a question
 export async function GET(
@@ -34,7 +39,7 @@ export async function GET(
     await connect();
     const { id } = await params;
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { message: "Unauthorized" },
@@ -43,7 +48,7 @@ export async function GET(
     }
 
     const question = await QuestionModel.findById(id);
-    
+
     if (!question) {
       return NextResponse.json(
         { message: `Question ${id} not found` },
@@ -74,17 +79,33 @@ export async function GET(
     // Get used hints for this user and question
     const userHint = await UserHintModel.findOne({
       userId: user._id,
-      questionId: id
+      questionId: id,
     });
 
     const usedHints = userHint ? userHint.usedHints : [];
     const hints = question.hints || [];
 
-    return NextResponse.json({ 
-      hints: hints,
-      usedHints: usedHints
+    //only hints text for unlocked hints
+    const safeHints = hints.map((hint: any, idx: number) => {
+      if (usedHints.includes(idx)) {
+        return {
+          index: idx,
+          text: hint.text,
+          pointsDeduction: hint.pointsDeduction || 0,
+        };
+      } else {
+        return {
+          index: idx,
+          text: null, // Hide text for locked hints
+          pointsDeduction: hint.pointsDeduction || 0,
+        };
+      }
     });
 
+    return NextResponse.json({
+      hints: safeHints,
+      usedHints: usedHints,
+    });
   } catch (error) {
     console.error("Error fetching hints:", error);
     return NextResponse.json(
@@ -103,7 +124,7 @@ export async function POST(
     await connect();
     const { id } = await params;
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user?.email) {
       return NextResponse.json(
         { message: "Unauthorized" },
@@ -114,7 +135,7 @@ export async function POST(
     const body = await request.json();
     const { hintIndex } = body;
 
-    if (typeof hintIndex !== 'number' || hintIndex < 0) {
+    if (typeof hintIndex !== "number" || hintIndex < 0) {
       return NextResponse.json(
         { message: "Invalid hint index" },
         { status: HttpStatusCode.BadRequest }
@@ -122,7 +143,7 @@ export async function POST(
     }
 
     const question = await QuestionModel.findById(id);
-    
+
     if (!question) {
       return NextResponse.json(
         { message: `Question ${id} not found` },
@@ -153,18 +174,21 @@ export async function POST(
     // Check if user has already solved this question
     const existingSolution = await UserQuestionModel.findOne({
       userId: user._id,
-      questionId: id
+      questionId: id,
     });
 
     if (existingSolution) {
       return NextResponse.json(
-        { message: "You have already solved this challenge! Hints are not needed." },
+        {
+          message:
+            "You have already solved this challenge! Hints are not needed.",
+        },
         { status: HttpStatusCode.BadRequest }
       );
     }
 
     const hints = question.hints || [];
-    
+
     if (hintIndex >= hints.length) {
       return NextResponse.json(
         { message: "Hint not found" },
@@ -177,14 +201,14 @@ export async function POST(
     // Get or create user hint record
     let userHint = await UserHintModel.findOne({
       userId: user._id,
-      questionId: id
+      questionId: id,
     });
 
     if (!userHint) {
       userHint = new UserHintModel({
         userId: user._id,
         questionId: id,
-        usedHints: []
+        usedHints: [],
       });
     }
 
@@ -205,9 +229,12 @@ export async function POST(
     let pointsDeducted = 0;
 
     // Deduct points if specified
-    if (requestedHint.pointsDeduction && Number(requestedHint.pointsDeduction) > 0) {
+    if (
+      requestedHint.pointsDeduction &&
+      Number(requestedHint.pointsDeduction) > 0
+    ) {
       pointsDeducted = Number(requestedHint.pointsDeduction);
-      
+
       // Update user's total score
       const updateResult = await userSchema.findByIdAndUpdate(
         user._id,
@@ -226,9 +253,8 @@ export async function POST(
       message: message,
       hint: requestedHint.text,
       pointsDeducted: pointsDeducted,
-      success: true
+      success: true,
     });
-
   } catch (error) {
     console.error("Error requesting hint:", error);
     return NextResponse.json(
