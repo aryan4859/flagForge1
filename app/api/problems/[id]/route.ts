@@ -114,7 +114,7 @@ export async function GET(
 
     const questionData = question.toObject();
     delete questionData.flag;
-    delete questionData.hinsts; // Remove hints from main data
+    delete questionData.hints; // Remove hints from main data
 
     const user = await userSchema.findOne({ email: session?.user.email });
     const userQuestion = await UserQuestionModel.findOne({
