@@ -7,7 +7,8 @@ import logo from "@/public/flagforge-logo.png";
 import { CgMenuRightAlt } from "react-icons/cg";
 import { NavbarData } from "@/utlis/data";
 import { NavbarItems } from "@/interfaces";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { signOut } from "@/utlis/auth";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
