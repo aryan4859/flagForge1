@@ -23,7 +23,7 @@
 |------------|--------|------|----------|-------|---------|----------|
 | **Aryan Shrestha** | @aryan4859 | 3 | 🔴 High | 🥇 Gold | [GitHub (@aryan4859)](https://github.com/aryan4859) | CVE-2025-59826 ,CVE-2025-59833, CVE-2025-59841 |
 | **Sarthak KC** | @sarthakkc36 | 1 | 🔴 High | 🥈 Silver | [GitHub (@sarthakkc36)](https://github.com/sarthakkc36) | CVE-2025-59827 |
-| **Rijan Poudel** | @At0mXploit | 1 | 🟠 Medium | 🥉 Bronze | [GitHub (@At0mXploit)](https://github.com/At0mXploit) | - |
+| **Rijan Poudel** | @At0mXploit | 2 | 🟠 High | 🥈 Silver | [GitHub (@At0mXploit)](https://github.com/At0mXploit) | CVE-2025-59843 |
 
 </details>
 
@@ -34,9 +34,9 @@
 | **Metric** | **Count** |
 |------------|-----------|
 | Total Bug Hunters | 3 |
-| Total Vulnerabilities | 5 |
+| Total Vulnerabilities | 6 |
 | Critical | 1 |
-| High | 3 |
+| High | 4 |
 | Medium | 1 |
 | Low | 0 |
 
