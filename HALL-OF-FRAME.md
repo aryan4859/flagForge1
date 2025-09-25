@@ -19,10 +19,10 @@
 <details open>
 <summary><strong>2025 Contributors</strong></summary>
 
-| Researcher | Handle | Company | Bugs | Severity | Badge | Profile |
-|------------|--------|---------|------|----------|-------|---------|
-| **Aryan** | @aryan4859 | Member | 2 | 🟠 High | 🥈 Silver | [GitHub (@aryan4859)](https://github.com/aryan4859) |
-| **Sarthak** | @sarthakkc36 | - | 1 | 🟠 High | 🥈 Silver | [GitHub (@sarthakkc36)](https://github.com/sarthakkc36) |
+| Researcher | Handle | Company | Bugs | Severity | Badge | Profile |  CVE ID'S | 
+|------------|--------|---------|------|----------|-------|---------|----------|
+| **Aryan Shrestha** | @aryan4859 | Member | 3 | 🟠 High | 🥇 Gold | [GitHub (@aryan4859)](https://github.com/aryan4859) | CVE-2025-59826 ,CVE-2025-59833, CVE-2025-59841 |
+| **Sarthak KC** | @sarthakkc36 | - | 1 | 🟠 High | 🥈 Silver | [GitHub (@sarthakkc36)](https://github.com/sarthakkc36) | CVE-2025-59827 |
 
 </details>
 
@@ -33,8 +33,8 @@
 | **Metric** | **Count** |
 |------------|-----------|
 | Total Bug Hunters | 2 |
-| Total Vulnerabilities | 3 |
-| Critical | 0 |
+| Total Vulnerabilities | 4 |
+| Critical | 1 |
 | High | 3 |
 | Medium | 0 |
 | Low | 0 |
