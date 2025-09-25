@@ -79,9 +79,9 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <div className="pt-[5rem] px-[3rem] flex flex-col gap-[5rem] dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
-      <div className="flex flex-col gap-[50px]">
-        <h2 className="sm:w-[80%] mx-auto text-[2.6rem] sm:text-6xl text-center text-gray-600 dark:text-gray-100 leading-[180%] sm:leading-2 tracking-tight transition-colors duration-300">
+    <div className="pt-8 sm:pt-16 md:pt-20 px-4 sm:px-8 md:px-12 flex flex-col gap-8 sm:gap-16 md:gap-20 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      <div className="flex flex-col gap-6 sm:gap-10 md:gap-12">
+        <h1 className="w-full sm:w-[90%] md:w-[80%] mx-auto text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-center text-gray-600 dark:text-gray-100 leading-tight sm:leading-tight md:leading-tight tracking-tight transition-colors duration-300">
           Welcome to
           <span className="text-red-500 dark:text-red-500 font-extrabold">
             {" "}
@@ -89,8 +89,8 @@ const Hero: React.FC = () => {
           </span>
           <span className="font-bold">Capture The Flag (CTF) </span>
           playground!🏆
-        </h2>
-        <h2 className="w-[98%] sm:w-[75%] mx-auto my-0 text-center text-base sm:text-lg text-gray-700 dark:text-gray-300 transition-colors duration-300">
+        </h1>
+        <p className="w-full sm:w-[85%] md:w-[75%] mx-auto text-center text-sm sm:text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
           <span className="text-red-500 dark:text-red-500 font-extrabold">
             FlagForge
           </span>{" "}
@@ -103,23 +103,25 @@ const Hero: React.FC = () => {
           CTF competition offers a challenging environment for individuals to
           sharpen their skills in cybersecurity, cryptography 🗝️, web
           exploitation 💻, reverse engineering 🔍, & more.
-        </h2>
-        <Link
-          href={status === "authenticated" ? "/problems" : "/authentication"}
-          className="mx-auto"
-        >
-          <button className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 rounded-lg w-[18rem] px-4 py-4 text-white text-center mx-[auto] my-0 font-bold transition-colors duration-300">
-            Start Solving 🚀
-          </button>
-        </Link>
+        </p>
+        <div className="flex justify-center">
+          <Link
+            href={status === "authenticated" ? "/problems" : "/authentication"}
+            className="w-full max-w-xs sm:max-w-sm"
+          >
+            <button className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700 rounded-lg px-6 py-3 sm:px-8 sm:py-4 text-white text-center font-bold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation">
+              Start Solving 🚀
+            </button>
+          </Link>
+        </div>
       </div>
 
-      <div className="w-auto mx-auto my-0 flex flex-col md:flex-row p-6 gap-8">
-        <div className="mx-auto my-0 flex flex-col gap-3 justify-center shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border-gray-200/80 dark:border-gray-700 border p-7 rounded-xl bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] transition-colors duration-300">
-          <h1 className="font-extrabold text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
+      <div className="w-full mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-8 px-2 sm:px-4 md:px-6">
+        <div className="flex flex-col gap-2 sm:gap-3 justify-center shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border-gray-200/80 dark:border-gray-700 border p-4 sm:p-5 md:p-7 rounded-xl bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] transition-colors duration-300">
+          <h2 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
             Innovative Challenges 🧿
-          </h1>
-          <p className="text-gray-700 dark:text-gray-300 transition-colors duration-300">
+          </h2>
+          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
             <span className="text-red-500 dark:text-red-500 font-bold">
               FlagForge
             </span>{" "}
@@ -128,11 +130,11 @@ const Hero: React.FC = () => {
             rewarding experience for all.
           </p>
         </div>
-        <div className="mx-auto my-0 flex flex-col gap-3 justify-center p-5 rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] border-gray-200/80 dark:border-gray-700 border transition-colors duration-300">
-          <h1 className="font-extrabold text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
+        <div className="flex flex-col gap-2 sm:gap-3 justify-center p-4 sm:p-5 md:p-5 rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] border-gray-200/80 dark:border-gray-700 border transition-colors duration-300">
+          <h2 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
             Beginner-Friendly 🌐
-          </h1>
-          <p className="text-gray-700 dark:text-gray-300 transition-colors duration-300">
+          </h2>
+          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
             <span className="text-red-500 dark:text-red-500 font-extrabold">
               FlagForge{" "}
             </span>
@@ -141,11 +143,11 @@ const Hero: React.FC = () => {
             supportive environment for learning and growth.
           </p>
         </div>
-        <div className="mx-auto my-0 flex flex-col gap-3 justify-center p-5 rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] border-gray-200/80 dark:border-gray-700 border transition-colors duration-300">
-          <h1 className="font-extrabold text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
+        <div className="flex flex-col gap-2 sm:gap-3 justify-center p-4 sm:p-5 md:p-5 rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] border-gray-200/80 dark:border-gray-700 border transition-colors duration-300">
+          <h2 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
             Improvement 🎁
-          </h1>
-          <p className="text-gray-700 dark:text-gray-300 transition-colors duration-300">
+          </h2>
+          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
             <span className="text-red-500 dark:text-red-500 font-extrabold">
               FlagForge
             </span>{" "}
@@ -158,58 +160,55 @@ const Hero: React.FC = () => {
 
       {/* Testimonial Carousel */}
       <div className="w-full mx-auto">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-6 sm:mb-8 md:mb-12">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
               Trusted by tech experts and users
             </h2>
           </div>
 
           <div className="relative max-w-4xl mx-auto">
             <div
-              className={`bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 transition-all duration-300 ease-in-out ${
-                isAnimating
+              className={`bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-4 sm:p-6 md:p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 transition-all duration-300 ease-in-out ${isAnimating
                   ? "opacity-40 scale-[0.98]"
                   : "opacity-100 scale-100"
-              }`}
+                }`}
               onMouseEnter={() => setIsAutoPlaying(false)}
               onMouseLeave={() => setIsAutoPlaying(true)}
             >
-              <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-8">
                 {/* Testimonial Image */}
                 <div
-                  className={`flex-shrink-0 transition-all duration-300 ease-in-out ${
-                    isAnimating
+                  className={`flex-shrink-0 transition-all duration-300 ease-in-out ${isAnimating
                       ? "opacity-0 translate-x-4"
                       : "opacity-100 translate-x-0"
-                  }`}
+                    }`}
                 >
                   <Image
                     src={testimonials[currentTestimonial].image}
                     alt={testimonials[currentTestimonial].name}
-                    width={128}
-                    height={128}
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover transition-all duration-300 ease-in-out hover:scale-105"
+                    width={96}
+                    height={96}
+                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-full object-cover transition-all duration-300 ease-in-out hover:scale-105 mx-auto"
                   />
                 </div>
 
                 {/* Testimonial Content */}
                 <div
-                  className={`flex-1 text-center md:text-left transition-all duration-300 ease-in-out ${
-                    isAnimating
+                  className={`flex-1 text-center md:text-left transition-all duration-300 ease-in-out ${isAnimating
                       ? "opacity-0 translate-x-8"
                       : "opacity-100 translate-x-0"
-                  }`}
+                    }`}
                 >
-                  <blockquote className="text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 leading-relaxed transition-all duration-300 ease-in-out">
+                  <blockquote className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 md:mb-6 leading-relaxed transition-all duration-300 ease-in-out">
                     "{testimonials[currentTestimonial].testimonial}"
                   </blockquote>
 
                   <div className="transition-all duration-300 ease-in-out">
-                    <div className="font-bold text-xl text-gray-800 dark:text-gray-100">
+                    <div className="font-bold text-base sm:text-lg md:text-xl text-gray-800 dark:text-gray-100">
                       {testimonials[currentTestimonial].name}
                     </div>
-                    <div className="text-gray-600 dark:text-gray-400 mt-1">
+                    <div className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
                       {testimonials[currentTestimonial].position}
                     </div>
                   </div>
@@ -217,13 +216,12 @@ const Hero: React.FC = () => {
               </div>
             </div>
 
-            {/* Navigation Arrows */}
+            {/* Navigation Arrows - Hidden on mobile, visible on desktop */}
             <button
               onClick={() => handleManualNavigation(prevTestimonial)}
               disabled={isAnimating}
-              className={`absolute left-[-20px] top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full p-3 shadow-lg border border-gray-200 dark:border-gray-600 transition-all duration-300 hover:scale-110 active:scale-95 ${
-                isAnimating ? "opacity-50 cursor-not-allowed" : "opacity-100"
-              }`}
+              className={`hidden md:block absolute left-[-20px] top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full p-3 shadow-lg border border-gray-200 dark:border-gray-600 transition-all duration-300 hover:scale-110 active:scale-95 ${isAnimating ? "opacity-50 cursor-not-allowed" : "opacity-100"
+                }`}
               aria-label="Previous testimonial"
             >
               <svg
@@ -248,9 +246,8 @@ const Hero: React.FC = () => {
             <button
               onClick={() => handleManualNavigation(nextTestimonial)}
               disabled={isAnimating}
-              className={`absolute right-[-20px] top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full p-3 shadow-lg border border-gray-200 dark:border-gray-600 transition-all duration-300 hover:scale-110 active:scale-95 ${
-                isAnimating ? "opacity-50 cursor-not-allowed" : "opacity-100"
-              }`}
+              className={`hidden md:block absolute right-[-20px] top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full p-3 shadow-lg border border-gray-200 dark:border-gray-600 transition-all duration-300 hover:scale-110 active:scale-95 ${isAnimating ? "opacity-50 cursor-not-allowed" : "opacity-100"
+                }`}
               aria-label="Next testimonial"
             >
               <svg
@@ -273,7 +270,7 @@ const Hero: React.FC = () => {
             </button>
 
             {/* Dots indicator */}
-            <div className="flex justify-center mt-6 gap-2">
+            <div className="flex justify-center mt-4 sm:mt-6 gap-2 sm:gap-3">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
@@ -281,15 +278,13 @@ const Hero: React.FC = () => {
                     handleManualNavigation(() => changeTestimonial(index))
                   }
                   disabled={isAnimating}
-                  className={`w-3 h-3 rounded-full transition-all duration-500 ease-out ${
-                    index === currentTestimonial
+                  className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full transition-all duration-500 ease-out touch-manipulation ${index === currentTestimonial
                       ? "bg-red-500 scale-125 shadow-lg shadow-red-500/30"
-                      : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 hover:scale-110"
-                  } ${
-                    isAnimating
+                      : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 hover:scale-110 active:scale-95"
+                    } ${isAnimating
                       ? "opacity-50 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                   aria-label={`Go to testimonial ${index + 1}`}
                 />
               ))}
