@@ -4,7 +4,7 @@ Expires: 2025-12-31T23:59:59.000Z
 Encryption: https://keys.openpgp.org/search?q=contact@flagforge.xyz 
 Preferred-Languages: en  
 Canonical: https://flagforge.aryan4.com.np/security.txt  
-Policy: https://github.com/FlagForgeCTF/flagForge/blob/main/SECURITY.md  
-Hiring: https://github.com/FlagForgeCTF/flagForge/blob/main/CONTRIBUTING.md  
+Policy: https://github.com/FlagForgeCTF/flagForge/blob/mainv2/SECURITY.md  
+Hiring: https://github.com/FlagForgeCTF/flagForge/blob/mainv2/CONTRIBUTING.md  
 Acknowledgments: https://github.com/FlagForgeCTF/flagForge#contributors
-Hall-of-Frame:https://github.com/FlagForgeCTF/flagForge/blob/main/HALL-OF-FRAME.md
+Hall-of-Frame:https://github.com/FlagForgeCTF/flagForge/blob/mainv2/HALL-OF-FRAME.md

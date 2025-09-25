@@ -214,9 +214,6 @@ export async function POST(
               totalPenalty += Number(hints[hintIndex].pointsDeduction) || 0;
             }
           });
-
-          // Note: Penalty was already deducted when hints were used
-          // So we don't deduct again, but we can show the effective points earned
           console.log(
             `User ${user._id} solved with ${totalPenalty} points already deducted from hints`
           );
