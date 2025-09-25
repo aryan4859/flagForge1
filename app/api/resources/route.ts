@@ -1,8 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 import connectDB from "@/utlis/db";
+import userSchema from "@/models/userSchema";
 import ResourceModel from "@/models/Resource";
 
 const RESOURCES_PER_PAGE = 12;
+
+// authorization middleware
+async function requireAdmin(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user || !session.user.email) {
+    return NextResponse.json(
+      { success: false, error: "Not authenticated" },
+      { status: 401 }
+    );
+  }
+  await connectDB();
+  const user = await userSchema.findOne({ email: session.user.email });
+  if (!user || user.role !== "Admin") {
+    return NextResponse.json(
+      { success: false, error: "Admin privileges required" },
+      { status: 403 }
+    );
+  }
+  return null; // Means admin check passed
+}
 
 // GET /api/resources
 export async function GET(request: NextRequest) {
@@ -16,24 +39,23 @@ export async function GET(request: NextRequest) {
 
     // Build filter query
     const filter: any = {};
-    
+
     if (category && category !== "All") {
       filter.category = category;
     }
-    
+
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } }
+        { description: { $regex: search, $options: "i" } },
       ];
     }
 
     // Calculate pagination
     const skip = (page - 1) * RESOURCES_PER_PAGE;
-    
+
     // Get resources with pagination
-    const resources = await ResourceModel
-      .find(filter)
+    const resources = await ResourceModel.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(RESOURCES_PER_PAGE)
@@ -46,10 +68,10 @@ export async function GET(request: NextRequest) {
     // Get unique categories for filter dropdown
     const categoriesAggregation = await ResourceModel.aggregate([
       { $group: { _id: "$category" } },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
     ]);
-    
-    const categories = ["All", ...categoriesAggregation.map(cat => cat._id)];
+
+    const categories = ["All", ...categoriesAggregation.map((cat) => cat._id)];
 
     return NextResponse.json({
       success: true,
@@ -63,7 +85,6 @@ export async function GET(request: NextRequest) {
       },
       categories,
     });
-
   } catch (error) {
     console.error("Error fetching resources:", error);
     return NextResponse.json(
@@ -75,6 +96,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/resources
 export async function POST(request: NextRequest) {
+  const adminCheck = await requireAdmin(request);
+  if (adminCheck) return adminCheck; // Return if not admin
   try {
     await connectDB();
 
@@ -120,14 +143,13 @@ export async function POST(request: NextRequest) {
     await newResource.save();
 
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         message: "Resource uploaded successfully",
-        data: newResource
+        data: newResource,
       },
       { status: 201 }
     );
-
   } catch (error) {
     console.error("Error creating resource:", error);
     return NextResponse.json(
@@ -139,6 +161,8 @@ export async function POST(request: NextRequest) {
 
 // DELETE /api/resources
 export async function DELETE(request: NextRequest) {
+  const adminCheck = await requireAdmin(request);
+  if (adminCheck) return adminCheck; // Return if not admin
   try {
     await connectDB();
 
@@ -163,9 +187,8 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Resource deleted successfully"
+      message: "Resource deleted successfully",
     });
-
   } catch (error) {
     console.error("Error deleting resource:", error);
     return NextResponse.json(
