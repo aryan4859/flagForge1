@@ -23,7 +23,7 @@ Flag Forge is a simple Capture The Flag (CTF) platform designed to host, manage,
 
 ---
 
-## Technologies Used
+## 🛠 Technologies Used
 
 <p align="left"> 
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="javascript" width="40" height="40"/> </a>  <a href="https://www.typescriptlang.org/" target="_blank" rel="noreferrer"> <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" alt="typescript" width="40" height="40"/> </a>
@@ -77,28 +77,26 @@ npm run dev
 
 ---
 
-## Contributors
+## 👩‍💻 Contributors
 
 <a href="https://github.com/aryan4859/flagForge/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=aryan4859/flagForge" />
+  <img src="https://contrib.rocks/image?repo=aryan4859/flagForge" alt="Contributors"/>
 </a>
 
 Contributions are welcome! Please fork the repository, make your changes, and submit a pull request.
 
 ---
 
-## License
+## ⚖️ License
 
-Flag Forge is licensed under the GPL-3.0 License. See the `LICENSE` file for more details.
+**FlagForge** is licensed under the **GPL-3.0 License**. See the `LICENSE` file for details.  
 
 ---
 
-## Contact
+## 📬 Contact
 
-For questions or support, contact the maintainer:
-
-- **Email**: contact@aryan4.com.np
-- **GitHub**: [aryan4859](https://github.com/aryan4859)
+- **Email**: contact@aryan4.com.np  
+- **GitHub**: [aryan4859](https://github.com/aryan4859)  
 
 ## Stats
 
