@@ -55,6 +55,48 @@ const TIME_UNITS = [
   { value: 'weeks', label: 'Weeks' }
 ];
 
+// Move InputField OUTSIDE the main component to prevent recreation
+const InputField = ({ id, type = "text", placeholder, required = false, children, formData, handleChange }: {
+  id: keyof FormData;
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+  children?: React.ReactNode;
+  formData: FormData;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+}) => (
+  <div>
+    <label className={styles.label}>{children || id.charAt(0).toUpperCase() + id.slice(1)}</label>
+    <input
+      id={id}
+      type={type}
+      placeholder={placeholder}
+      value={formData[id] as string}
+      onChange={handleChange}
+      className={styles.input}
+      required={required}
+      {...(type === "number" && { min: id === "points" ? "1" : "0" })}
+    />
+  </div>
+);
+
+// Move Alert outside as well
+const Alert = ({ type, message }: { type: 'error' | 'success'; message: string }) => (
+  <div className={`${styles.alert} ${type === 'error' ? 'bg-white dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'}`}>
+    {message}
+  </div>
+);
+
+// Move DetailRow outside as well
+const DetailRow = ({ label, value, isMono = false }: { label: string; value: string; isMono?: boolean }) => (
+  <div>
+    <span className="font-semibold text-gray-700 dark:text-gray-300">{label}:</span>
+    <p className={`text-gray-600 dark:text-gray-400 break-words ${isMono ? 'font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded break-all' : ''}`}>
+      {value || "Not specified"}
+    </p>
+  </div>
+);
+
 const UploadPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     title: "", flag: "", description: "", points: "", category: "All",
@@ -232,44 +274,6 @@ const UploadPage: React.FC = () => {
     router.push('/roles/developers/admins/auth');
   };
 
-  // Reusable components
-  const InputField = ({ id, type = "text", placeholder, required = false, children }: {
-    id: keyof FormData;
-    type?: string;
-    placeholder?: string;
-    required?: boolean;
-    children?: React.ReactNode;
-  }) => (
-    <div>
-      <label className={styles.label}>{children || id.charAt(0).toUpperCase() + id.slice(1)}</label>
-      <input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        value={formData[id] as string}
-        onChange={handleChange}
-        className={styles.input}
-        required={required}
-        {...(type === "number" && { min: id === "points" ? "1" : "0" })}
-      />
-    </div>
-  );
-
-  const Alert = ({ type, message }: { type: 'error' | 'success'; message: string }) => (
-    <div className={`${styles.alert} ${type === 'error' ? 'bg-white dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'}`}>
-      {message}
-    </div>
-  );
-
-  const DetailRow = ({ label, value, isMono = false }: { label: string; value: string; isMono?: boolean }) => (
-    <div>
-      <span className="font-semibold text-gray-700 dark:text-gray-300">{label}:</span>
-      <p className={`text-gray-600 dark:text-gray-400 break-words ${isMono ? 'font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded break-all' : ''}`}>
-        {value || "Not specified"}
-      </p>
-    </div>
-  );
-
   const ConfirmationPopup = () => {
     if (!showConfirmation) return null;
 
@@ -396,8 +400,24 @@ const UploadPage: React.FC = () => {
           <div className="space-y-6">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InputField id="title" placeholder="CTF Challenge Title" required>Title/Heading</InputField>
-              <InputField id="flag" placeholder="flag{example_flag_here}" required>Flag</InputField>
+              <InputField 
+                id="title" 
+                placeholder="CTF Challenge Title" 
+                required 
+                formData={formData} 
+                handleChange={handleChange}
+              >
+                Title/Heading
+              </InputField>
+              <InputField 
+                id="flag" 
+                placeholder="flag{example_flag_here}" 
+                required 
+                formData={formData} 
+                handleChange={handleChange}
+              >
+                Flag
+              </InputField>
             </div>
 
             {/* Description */}
@@ -416,7 +436,16 @@ const UploadPage: React.FC = () => {
 
             {/* Points, Category, Link */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <InputField id="points" type="number" placeholder="100" required>Points</InputField>
+              <InputField 
+                id="points" 
+                type="number" 
+                placeholder="100" 
+                required 
+                formData={formData} 
+                handleChange={handleChange}
+              >
+                Points
+              </InputField>
               
               <div>
                 <label className={styles.label}>Category</label>
@@ -430,7 +459,15 @@ const UploadPage: React.FC = () => {
                 </select>
               </div>
               
-              <InputField id="link" type="url" placeholder="https://example.com/resource">Resource Link</InputField>
+              <InputField 
+                id="link" 
+                type="url" 
+                placeholder="https://example.com/resource" 
+                formData={formData} 
+                handleChange={handleChange}
+              >
+                Resource Link
+              </InputField>
             </div>
 
             {/* Time Limit Section */}
@@ -456,7 +493,16 @@ const UploadPage: React.FC = () => {
                 
                 {formData.isTimeLimited && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <InputField id="timeLimit" type="number" placeholder="1" required={formData.isTimeLimited}>Duration</InputField>
+                    <InputField 
+                      id="timeLimit" 
+                      type="number" 
+                      placeholder="1" 
+                      required={formData.isTimeLimited} 
+                      formData={formData} 
+                      handleChange={handleChange}
+                    >
+                      Duration
+                    </InputField>
                     
                     <div>
                       <label className={styles.label}>Unit</label>
