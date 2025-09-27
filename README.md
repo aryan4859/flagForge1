@@ -7,6 +7,7 @@
 <img src="https://img.shields.io/github/commit-activity/t/aryan4859/flagforge?style=flat&amp;logo=githubactions&amp;logoColor=white&amp;logoSize=auto" alt="shields">
 <img src="https://img.shields.io/github/license/aryan4859/flagforge?style=flat&amp;logo=gnuemacs&amp;logoColor=white&amp;logoSize=auto" alt="shields"> 
 <img src="https://img.shields.io/github/license/aryan4859/flagforge?style=flat&amp;logo=gnuemacs&amp;logoColor=white&amp;logoSize=auto" alt="shields"> 
+<img src="https://img.shields.io/github/license/aryan4859/flagforge?style=flat&amp;logo=gnuemacs&amp;logoColor=white&amp;logoSize=auto" alt="shields"> 
 <img src="https://img.shields.io/github/forks/aryan4859/flagforge?style=flat&amp;logo=greasyfork&amp;logoSize=auto" alt="shields">
 <img src="https://img.shields.io/github/stars/aryan4859/flagforge?style=flat&amp;logo=github&amp;logoSize=auto" alt="shields"></p>
 
