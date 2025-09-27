@@ -15,6 +15,7 @@
 <img src="https://img.shields.io/website?url=https%3A%2F%2Fflagforge.aryan4.com.np&amp;up_message=online&amp;up_color=green&amp;down_message=online&amp;down_color=red&amp;style=flat&amp;logo=appveyor&amp;logoColor=violet&amp;logoSize=auto&amp;cacheSeconds=3600" alt="shields">
 <img src="https://img.shields.io/github/commit-activity/t/aryan4859/flagforge?style=flat&amp;logo=githubactions&amp;logoColor=white&amp;logoSize=auto" alt="shields">
 <img src="https://img.shields.io/github/license/aryan4859/flagforge?style=flat&amp;logo=gnuemacs&amp;logoColor=white&amp;logoSize=auto" alt="shields"> 
+<img src="https://img.shields.io/github/license/aryan4859/flagforge?style=flat&amp;logo=gnuemacs&amp;logoColor=white&amp;logoSize=auto" alt="shields"> 
 <img src="https://img.shields.io/github/forks/aryan4859/flagforge?style=flat&amp;logo=greasyfork&amp;logoSize=auto" alt="shields">
 <img src="https://img.shields.io/github/stars/aryan4859/flagforge?style=flat&amp;logo=github&amp;logoSize=auto" alt="shields"></p>
 
