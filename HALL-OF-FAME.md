@@ -22,7 +22,7 @@ _These amazing individuals have responsibly disclosed vulnerabilities, strengthe
 | Researcher         | Handle       | Bugs | Severity (per bug)              | Badge     | Profile                                  | CVE IDs                                        |
 | ------------------ | ------------ | ---- | ------------------------------- | --------- | ---------------------------------------- | ---------------------------------------------- |
 | **Aryan Shrestha** | @aryan4859   | 3    | 🔴 Critical, 🔴 High, 🟠 Medium | 🥇 Gold   | [GitHub](https://github.com/aryan4859)   | CVE-2025-59826, CVE-2025-59833, CVE-2025-59841 |
-| **Rijan Poudel**   | @At0mXploit  | 2    | 🔴 High, 🟠 Medium              | 🥈 Silver | [GitHub](https://github.com/At0mXploit)  | CVE-2025-59843                                 |
+| **Rijan Poudel**   | @At0mXploit  | 2    | 🔴 High, 🟠 Medium              | 🥈 Silver | [GitHub](https://github.com/At0mXploit)  | CVE-2025-59843, CVE-2025-59932                                  |
 | **Sarthak KC**     | @sarthakkc36 | 1    | 🔴 High                         | 🥈 Silver | [GitHub](https://github.com/sarthakkc36) | CVE-2025-59827                                 |
 
 </details>
