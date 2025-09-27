@@ -140,7 +140,7 @@ In the event of a confirmed incident:
 
 ## Security Contact
 
-📧 **Primary Contact**: contact@aryan4.com.np  
+📧 **Primary Contact**: security@flagforge.xyz
 🐙 **GitHub Issues**: For non-sensitive discussions  
 ⏱ **Response Time**: 24 hours for acknowledgment
 
