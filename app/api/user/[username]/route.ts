@@ -1,42 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
-import connect from '@/utlis/db';
-import UserSchema from '@/models/userSchema';
-import UserQuestionModel from '@/models/userQuestionSchema';
+import { NextRequest, NextResponse } from "next/server";
+import connect from "@/utlis/db";
+import UserSchema from "@/models/userSchema";
+import UserQuestionModel from "@/models/userQuestionSchema";
 
 export const runtime = "nodejs";
 
 // GET /api/user/[username] - Public user profile endpoint
 export async function GET(
-  request: NextRequest, 
+  request: NextRequest,
   { params }: { params: Promise<{ username: string }> }
 ) {
   try {
     await connect();
-    
+
     // Await the params since it's now a Promise in newer Next.js versions
     const { username: rawUsername } = await params;
     const username = decodeURIComponent(rawUsername);
-    
-    const user = await UserSchema.findOne({ 
-      name: { $regex: new RegExp(`^${username}$`, 'i') } 
-    }).select('name email image totalScore customBadges createdAt role');
-    
+
+    const user = await UserSchema.findOne({
+      name: { $regex: new RegExp(`^${username}$`, "i") },
+    }).select("name image totalScore customBadges createdAt role");
+
     if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    
+
     // Get completion stats
-    const completedQuestions = await UserQuestionModel.countDocuments({ 
-      userId: user._id 
+    const completedQuestions = await UserQuestionModel.countDocuments({
+      userId: user._id,
     });
-    
+
     // Calculate rank
-    const allUsers = await UserSchema.find({}).sort({ totalScore: -1 }).select('_id totalScore');
-    const userRank = allUsers.findIndex(u => u._id.toString() === user._id.toString()) + 1;
-    
+    const allUsers = await UserSchema.find({})
+      .sort({ totalScore: -1 })
+      .select("_id totalScore");
+    const userRank =
+      allUsers.findIndex((u) => u._id.toString() === user._id.toString()) + 1;
+
     // Calculate level
     const getLevel = (score: number): string => {
       if (score < 200) return "[0x1][Newbie]";
@@ -47,7 +47,7 @@ export async function GET(
       if (score < 3000) return "[0x6][Forger]";
       return "[0x7][Flag Conqueror]";
     };
-    
+
     // Calculate system badges
     const getBadges = (completed: number): number => {
       let badges = 0;
@@ -59,10 +59,9 @@ export async function GET(
       if (completed >= 100) badges++;
       return badges;
     };
-    
+
     const profileData = {
       name: user.name,
-      email: user.email, // You might want to hide this for privacy
       image: user.image,
       totalScore: user.totalScore || 0,
       rank: userRank,
@@ -71,18 +70,17 @@ export async function GET(
       badges: getBadges(completedQuestions),
       customBadges: user.customBadges || [],
       createdAt: user.createdAt,
-      memberSince: new Date(user.createdAt).getFullYear()
+      memberSince: new Date(user.createdAt).getFullYear(),
     };
-    
+
     return NextResponse.json({
       success: true,
-      user: profileData
+      user: profileData,
     });
-    
   } catch (error) {
-    console.error('Public profile API error:', error);
+    console.error("Public profile API error:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
