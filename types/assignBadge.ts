@@ -22,13 +22,12 @@ export interface AssignBadgeRequest {
   badgeType?: 'template' | 'custom';
   reason?: string;
   assignedBy?: string; // Now optional
-  // Support for frontend format
   badge?: {
     name: string;
     description: string;
     icon: string;
     color: string;
-    assignedBy?: string; // Also optional here
+    assignedBy?: string;
     assignedAt: string;
   };
 }

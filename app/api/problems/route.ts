@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     const user = await userSchema.findOne({ email: session?.user?.email });
-    if (!user || user.role !== "admin") {
+    if (!user || user.role !== "Admin") {
       return NextResponse.json(
         { message: "You are not authorized to add a question" },
         { status: HttpStatusCode.Unauthorized }

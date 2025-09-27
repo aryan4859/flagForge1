@@ -9,90 +9,121 @@ export default function Footer() {
     {
       name: "LinkedIn",
       url: "https://www.linkedin.com/company/flagforge/",
-      icon: <Linkedin className="w-5 h-5 text-[#0077B5]" />, // LinkedIn blue
+      icon: <Linkedin className="w-6 h-6 text-[#0077B5]" />, // LinkedIn blue
     },
     {
       name: "Instagram",
       url: "https://www.instagram.com/flag.forge/",
-      icon: <Instagram className="w-5 h-5 text-[#E4405F]" />, // Instagram pink
+      icon: <Instagram className="w-6 h-6 text-[#E4405F]" />, // Instagram pink
     },
     {
       name: "GitHub",
       url: "https://github.com/FlagForgeCTF/",
-      icon: <Github className="w-5 h-5 text-[#181717] dark:text-[#ffffff]" />, // GitHub black/white
+      icon: <Github className="w-6 h-6 text-[#181717] dark:text-[#ffffff]" />, // GitHub black/white
     },
   ];
 
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300 rounded-lg m-4">
-      <div className="w-full max-w-screen-2xl mx-auto p-4 md:py-8">
-        <div className="sm:flex sm:items-center sm:justify-between">
-          <Link
-            href="/"
-            className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse"
-          >
-            <Image src={logo} alt="logo" height={70} width={70} />
-            <span className="self-center text-2xl font-semibold whitespace-nowrap text-gray-900 dark:text-gray-100 transition-colors duration-300">
-              FlagForge
-            </span>
-          </Link>
-
-          {/* Social Media Icons in the middle */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 flex space-x-4">
-            {socialLinks.map((social) => (
-              <Link
-                key={social.name}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300"
-                aria-label={`Visit our ${social.name} page`}
-              >
-                {social.icon}
-              </Link>
-            ))}
+    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300 rounded-lg m-2 sm:m-4">
+      <div className="w-full max-w-screen-2xl mx-auto p-6 sm:p-4 md:py-8">
+        {/* Mobile-first layout */}
+        <div className="flex flex-col space-y-8 sm:space-y-6 md:space-y-0 md:flex-row md:items-center md:justify-between">
+          {/* Logo section */}
+          <div className="flex justify-center md:justify-start">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 rtl:space-x-reverse p-2 sm:p-0 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
+            >
+              <Image src={logo} alt="logo" height={60} width={60} className="sm:h-[70px] sm:w-[70px]" />
+              <span className="self-center text-xl sm:text-2xl font-semibold whitespace-nowrap text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                FlagForge
+              </span>
+            </Link>
           </div>
 
-          <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mb-0 transition-colors duration-300">
-            <li>
-              <Link href="/about" className="hover:underline me-4 md:me-6">
-                About
-              </Link>
-            </li>
-            
-            <li>
-              <Link href="/resources" className="hover:underline me-4 md:me-6">
-                Resources
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:underline me-4 md:me-6">
-                Contact
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/privacy-policy"
-                className="hover:underline me-4 md:me-6"
-              >
-                Privacy Policy
-              </Link>
-            </li>
-            <li>
-              <Link href="/licensing" className="hover:underline">
-                Licensing
-              </Link>
-            </li>
-            
-          </ul>
+          {/* Social Media Icons - centered on mobile, middle on desktop */}
+          <div className="flex justify-center md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
+            <div className="flex space-x-4 sm:space-x-6">
+              {socialLinks.map((social) => (
+                <Link
+                  key={social.name}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 sm:p-3 rounded-xl sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 touch-manipulation active:scale-95"
+                  aria-label={`Visit our ${social.name} page`}
+                >
+                  <div className="w-7 h-7 sm:w-6 sm:h-6">
+                    {React.cloneElement(social.icon, {
+                      className: social.icon.props.className.replace('w-6 h-6', 'w-7 h-7 sm:w-6 sm:h-6')
+                    })}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Links - stacked on mobile, horizontal on desktop */}
+          <nav className="flex justify-center md:justify-end">
+            <ul className="grid grid-cols-1 gap-3 w-full max-w-xs sm:grid-cols-2 sm:gap-4 sm:max-w-none md:flex md:flex-wrap md:items-center md:gap-0 text-base sm:text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300">
+              <li>
+                <Link 
+                  href="/about" 
+                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
+                >
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/resources" 
+                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
+                >
+                  Resources
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/contact" 
+                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
+                >
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li className="sm:col-span-2 md:col-span-1">
+                <Link 
+                  href="/licensing" 
+                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
+                >
+                  Licensing
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
-        <hr className="my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-3 transition-colors duration-300" />
-        <span className="block text-sm text-gray-500 dark:text-gray-400 sm:text-center transition-colors duration-300">
-          © Maintained By{" "}
-          <Link href="https://www.linkedin.com/company/shyenasec/" className="hover:underline">
-            Shyena Inc.
-          </Link>
-        </span>
+
+        <hr className="my-8 sm:my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-8 transition-colors duration-300" />
+        
+        {/* Copyright section */}
+        <div className="text-center">
+          <span className="block text-base sm:text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 leading-relaxed">
+            © Maintained By{" "}
+            <Link 
+              href="https://www.linkedin.com/company/shyenasec/" 
+              className="inline-block py-1 px-2 -mx-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0"
+            >
+              Shyena Inc.
+            </Link>
+          </span>
+        </div>
       </div>
     </footer>
   );
