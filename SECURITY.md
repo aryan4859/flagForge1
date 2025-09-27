@@ -65,11 +65,7 @@ This ensures testing does not affect live users or disrupt ongoing competitions.
 - Issues requiring physical access to infrastructure
 
 ### How to Report
-
-Send all vulnerability reports to:
-
-📧 **contact@aryan4.com.np**  
-📌 **Subject line**: `[SECURITY] Vulnerability Report - FlagForge`
+ 
 
 **Please include**:
 
