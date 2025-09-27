@@ -99,7 +99,7 @@ Flag Forge is licensed under the GPL-3.0 License. See the `LICENSE` file for mor
 
 For questions or support, contact the maintainer:
 
-- **Email**: contact@aryan4.com.np
+- **Email**: lagzen.thakuri@flagforge.xyz, contact@aryan4.com.np
 - **GitHub**: [aryan4859](https://github.com/aryan4859)
 
 ## Stats
