@@ -2,6 +2,7 @@ import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import connect from "@/utlis/db";
 import UserModel from "@/models/userSchema";
+import { TokenBlacklistService } from "./tokenBlacklist";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -12,7 +13,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",      // store session in JWT
+    strategy: "jwt",
     maxAge: 60 * 60,      // 1 hour
     updateAge: 15 * 60,   // refresh JWT every 15 minutes
   },
@@ -43,14 +44,28 @@ export const authOptions: AuthOptions = {
       return false;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // Generate JTI for new tokens
+      if (!token.jti) {
+        token.jti = TokenBlacklistService.generateJTI();
+      }
+
       if (user) {
-        token.id = user.id;           
+        token.id = user.id;
         token.email = user.email;
         token.name = user.name;
         token.picture = user.image;
         token.totalScore = (user as any).totalScore || 0;
       }
+
+      // Add issued at timestamp and expiration
+      if (!token.iat) {
+        token.iat = Math.floor(Date.now() / 1000);
+      }
+      
+      // Set expiration time (1 hour from now)
+      token.exp = Math.floor(Date.now() / 1000) + (60 * 60);
+
       return token;
     },
 
@@ -63,6 +78,12 @@ export const authOptions: AuthOptions = {
           name: token.name as string | null,
           image: token.picture as string | null,
           totalScore: token.totalScore as number,
+        };
+        // Add token info to session for debugging
+        (session as any).tokenInfo = {
+          jti: token.jti,
+          exp: token.exp,
+          iat: token.iat
         };
       }
       return session;

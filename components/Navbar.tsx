@@ -166,7 +166,7 @@ const Navbar: React.FC = () => {
                         <button
                           onClick={() => {
                             handleMenuClick();
-                            signOut();
+                           async() => await signOut();
                           }}
                           className="flex items-center w-full px-4 py-3 text-base font-medium text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300 touch-manipulation active:scale-95"
                         >
@@ -240,7 +240,7 @@ const Navbar: React.FC = () => {
                   <DropdownMenuItem>
                     <button
                       className="w-full text-left text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400"
-                      onClick={() => signOut()}
+                      onClick={async() => await signOut()}
                     >
                       Sign Out
                     </button>

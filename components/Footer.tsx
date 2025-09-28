@@ -115,12 +115,12 @@ export default function Footer() {
         {/* Copyright section */}
         <div className="text-center">
           <span className="block text-base sm:text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 leading-relaxed">
-            © Maintained By{" "}
+            © Maintained By{" "}-
             <Link 
               href="https://www.linkedin.com/company/shyenasec/" 
               className="inline-block py-1 px-2 -mx-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0"
             >
-              Shyena Inc.
+              - {""}Shyena Inc.
             </Link>
           </span>
         </div>
