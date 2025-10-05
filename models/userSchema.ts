@@ -72,8 +72,6 @@ const userSchema = new Schema<Users>(
   }
 );
 
-userSchema.index({ email: 1 });
-
 userSchema.methods.getBadgeCount = function() {
   return this.customBadges.length;
 };
