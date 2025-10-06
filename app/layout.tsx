@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: "FlagForge",
     images: [
       {
-        url: "https://flagforge.aryan4.com.np/og-image.jpg",
+        url: "https://flagforge.xyz/flagforge.gif",
         width: 1200,
         height: 630,
         alt: "FlagForge - Capture The Flag Platform",
