@@ -7,6 +7,7 @@ import userSchema from "@/models/userSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
+import { sendDiscordNotification } from "@/utlis/discordNotifier";
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
@@ -40,6 +41,18 @@ export async function POST(req: NextRequest) {
       body.description
     ) {
       const product = await QuestionModel.create(body);
+      await product.save();
+      const challengeLink = `https://flagforge.xyz/problems/${product._id}`;
+
+      // Send Discord notification
+      await sendDiscordNotification(
+        "🧩 New Challenge Released!",
+        body.description,
+        "NEW_CHALLENGE",
+        body.points,
+        body.category,
+        challengeLink
+      );
 
       return NextResponse.json(
         { success: true, message: "Your qustion has been created" },
