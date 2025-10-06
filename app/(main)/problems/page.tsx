@@ -6,13 +6,6 @@ import AuthError from "@/components/authError";
 import { IoFilter, IoChevronDown } from "react-icons/io5";
 import { useSession } from "next-auth/react";
 import { Questions } from "@/interfaces";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Challenges - CTF Platform",
-  description:
-    "Explore and solve challenges in various categories on our CTF platform.",
-};
 
 // Extended interface to include expiry information
 interface QuestionWithExpiry extends Questions {

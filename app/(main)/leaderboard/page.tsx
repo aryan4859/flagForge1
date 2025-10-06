@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
-import { User } from "lucide-react";
 import Image from "next/image";
 import Newbie from "../../../public/badges/0x1.png";
 import Scout from "../../../public/badges/0x2.png";
@@ -14,12 +13,6 @@ import Cipher from "../../../public/badges/0x5.png";
 import Forger from "../../../public/badges/0x6.png";
 import Conqueror from "../../../public/badges/0x7.png";
 import Flagforge from "../../../public/flagforge.gif";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Leaderboard - Flagforge",
-  description: "View the top players on the Flagforge leaderboard.",
-};
 
 interface LeaderboardUser {
   name: string;
