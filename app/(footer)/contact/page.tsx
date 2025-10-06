@@ -1,4 +1,21 @@
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact Us - FlagForge CTF Platform",
+  description:
+    "Get in touch with FlagForge. Contact us via email at info@flagforge.xyz, phone at +977 9828137085, or visit us in Lalitpur, Nepal. We'd love to hear from you!",
+  openGraph: {
+    title: "Contact FlagForge - Get in Touch",
+    description:
+      "Contact the FlagForge team for inquiries, support, or collaboration opportunities.",
+    url: "https://flagforge.xyz/contact",
+    type: "website",
+  },
+  alternates: {
+    canonical: "/contact",
+  },
+};
 
 export default function Contact() {
   return (
@@ -33,7 +50,12 @@ export default function Contact() {
                   Email
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
-                  info@flagforge.xyz
+                  <a
+                    href="mailto:info@flagforge.xyz"
+                    className="text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors duration-300"
+                  >
+                    info@flagforge.xyz
+                  </a>
                 </p>
               </div>
             </div>
@@ -49,7 +71,12 @@ export default function Contact() {
                   Phone
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
-                  +977 9828137085
+                  <a
+                    href="tel:+9779828137085"
+                    className="text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors duration-300"
+                  >
+                    +977 9828137085
+                  </a>
                 </p>
               </div>
             </div>
