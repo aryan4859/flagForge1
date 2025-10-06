@@ -24,7 +24,7 @@ _These amazing individuals have responsibly disclosed vulnerabilities, strengthe
 | **Aryan Shrestha** | @aryan4859   | 3    | 🔴 Critical, 🔴 High, 🟠 Medium | 🥇 Gold   | [GitHub](https://github.com/aryan4859)   | CVE-2025-59826, CVE-2025-59833, CVE-2025-59841 |
 | **Rijan Poudel**   | @At0mXploit  | 2    | 🔴 High, 🟠 Medium              | 🥈 Silver | [GitHub](https://github.com/At0mXploit)  | CVE-2025-59843, CVE-2025-59932                                  |
 | **Sarthak KC**     | @sarthakkc36 | 1    | 🔴 High                         | 🥈 Silver | [GitHub](https://github.com/sarthakkc36) | CVE-2025-59827                                 |
-
+| **Sarams Rauniyar**     | @0x0w1z | 1    | 🔴 Critical                         |  🥇 Gold    | [GitHub](https://github.com/0x0w1z) | -                                |
 </details>
 
 ---
@@ -33,9 +33,9 @@ _These amazing individuals have responsibly disclosed vulnerabilities, strengthe
 
 | **Metric**                     | **Count** |
 | ------------------------------ | --------- |
-| Total Bug Hunters              | 3         |
-| Total Vulnerabilities Reported | 6         |
-| Critical                       | 1         |
+| Total Bug Hunters              | 4         |
+| Total Vulnerabilities Reported | 7         |
+| Critical                       | 2         |
 | High                           | 4         |
 | Medium                         | 1         |
 | Low                            | 0         |
