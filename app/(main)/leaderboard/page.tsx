@@ -14,6 +14,12 @@ import Cipher from "../../../public/badges/0x5.png";
 import Forger from "../../../public/badges/0x6.png";
 import Conqueror from "../../../public/badges/0x7.png";
 import Flagforge from "../../../public/flagforge.gif";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Leaderboard - Flagforge",
+  description: "View the top players on the Flagforge leaderboard.",
+};
 
 interface LeaderboardUser {
   name: string;
@@ -264,12 +270,18 @@ const LeaderboardPage = () => {
                       />
                     </div>
 
-                    <div className="flex-1">                          <button
-                            onClick={() => router.push(`/user/${encodeURIComponent(leaderboard[0].name)}`)}
-                            className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
-                          >
-                            {leaderboard[0].name}
-                          </button>
+                    <div className="flex-1">
+                      {" "}
+                      <button
+                        onClick={() =>
+                          router.push(
+                            `/user/${encodeURIComponent(leaderboard[0].name)}`
+                          )
+                        }
+                        className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
+                      >
+                        {leaderboard[0].name}
+                      </button>
                       <span className="font-medium text-red-500 dark:text-red-500 text-sm">
                         {getLevel(leaderboard[0].totalScore)}
                       </span>
@@ -351,7 +363,11 @@ const LeaderboardPage = () => {
                             {getLevel(user.totalScore)}
                           </span>
                           <button
-                            onClick={() => router.push(`/user/${encodeURIComponent(user.name)}`)}
+                            onClick={() =>
+                              router.push(
+                                `/user/${encodeURIComponent(user.name)}`
+                              )
+                            }
                             className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate text-center transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
                           >
                             {user.name}
@@ -425,7 +441,11 @@ const LeaderboardPage = () => {
                           </div>
                           <div>
                             <button
-                              onClick={() => router.push(`/user/${encodeURIComponent(user.name)}`)}
+                              onClick={() =>
+                                router.push(
+                                  `/user/${encodeURIComponent(user.name)}`
+                                )
+                              }
                               className="text-red-500 dark:text-red-500 font-medium truncate hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
                             >
                               {user.name}

@@ -14,6 +14,13 @@ import {
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { Resource } from "@/models/Resource";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Learning Resources",
+  description:
+    "Explore our curated collection of learning materials organized by category.",
+};
 
 interface ResourcesResponse {
   success: boolean;
@@ -311,4 +318,3 @@ const ResourcesPage: React.FC = () => {
 };
 
 export default ResourcesPage;
-  
