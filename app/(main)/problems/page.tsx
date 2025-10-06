@@ -48,12 +48,12 @@ interface ApiResponse {
 const DEFAULT_CATEGORIES = [
   "All",
   "Web Exploitation",
-  "Cryptography", 
+  "Cryptography",
   "Reverse Engineering",
   "Forensics",
   "General Skills",
   "Binary Exploitation",
-  "IOT"
+  "IOT",
 ];
 
 const UPDATE_INTERVAL = 60000; // 1 minute
@@ -62,11 +62,11 @@ const DESCRIPTION_TRUNCATE_LENGTH = 95;
 // Utility functions
 const formatTimeRemaining = (timeMs: number): string => {
   if (timeMs <= 0) return "Expired";
-  
+
   const days = Math.floor(timeMs / (1000 * 60 * 60 * 24));
   const hours = Math.floor((timeMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((timeMs % (1000 * 60 * 60)) / (1000 * 60));
-  
+
   if (days > 0) {
     return `${days}d ${hours}h left`;
   } else if (hours > 0) {
@@ -76,7 +76,7 @@ const formatTimeRemaining = (timeMs: number): string => {
   }
 };
 
-const sanitizeProblems = (data: Problem[]): Problem[] => 
+const sanitizeProblems = (data: Problem[]): Problem[] =>
   data.map(({ flag, ...rest }) => rest);
 
 // Custom hooks
@@ -87,16 +87,16 @@ const useCategories = () => {
   const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/categories');
+      const response = await fetch("/api/categories");
       if (response.ok) {
         const data = await response.json();
         setCategories(data.categories);
       } else {
-        console.error('Failed to fetch categories');
+        console.error("Failed to fetch categories");
         setCategories(DEFAULT_CATEGORIES);
       }
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error("Error fetching categories:", error);
       setCategories(DEFAULT_CATEGORIES);
     } finally {
       setLoading(false);
@@ -110,7 +110,11 @@ const useCategories = () => {
   return { categories, loading, fetchCategories };
 };
 
-const useProblems = (currentPage: number, selectedCategory: string, categoriesLoading: boolean) => {
+const useProblems = (
+  currentPage: number,
+  selectedCategory: string,
+  categoriesLoading: boolean
+) => {
   const [problems, setProblems] = useState<QuestionWithExpiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [score, setScore] = useState(0);
@@ -134,7 +138,8 @@ const useProblems = (currentPage: number, selectedCategory: string, categoriesLo
         throw new Error(errorDetails.message || "Failed to fetch problems");
       }
 
-      const { data, totalScore, questionDone, pagination }: ApiResponse = await response.json();
+      const { data, totalScore, questionDone, pagination }: ApiResponse =
+        await response.json();
 
       const sanitizedData = sanitizeProblems(data);
       setScore(totalScore);
@@ -142,7 +147,6 @@ const useProblems = (currentPage: number, selectedCategory: string, categoriesLo
       setQuestionDone(questionDone);
       setHasNextPage(pagination.hasNext);
       setTotalPages(pagination.totalPages);
-      
     } catch (error: unknown) {
       if (error instanceof Error) {
         alert("Unable to fetch problems. Please try again later.");
@@ -168,14 +172,14 @@ const useProblems = (currentPage: number, selectedCategory: string, categoriesLo
     questionDone,
     hasNextPage,
     totalPages,
-    fetchProblems
+    fetchProblems,
   };
 };
 
 // Sub-components
-const StatsSection: React.FC<{ 
-  score: number; 
-  questionDone: any; 
+const StatsSection: React.FC<{
+  score: number;
+  questionDone: any;
   showFilterDropdown: boolean;
   onToggleFilter: () => void;
 }> = ({ score, questionDone, showFilterDropdown, onToggleFilter }) => (
@@ -187,7 +191,7 @@ const StatsSection: React.FC<{
           {score}
         </span>
       </h2>
-      
+
       <p className="text-center text-xl sm:text-xl font-medium text-gray-600 dark:text-gray-300 transition-colors duration-300">
         Total Question Solved:&nbsp;
         <span className="text-red-400 dark:text-red-500 font-extrabold transition-colors duration-300">
@@ -198,7 +202,7 @@ const StatsSection: React.FC<{
 
     {/* Mobile Filter Button */}
     <div className="flex gap-2 items-center justify-center text-center text-xl sm:hidden font-medium text-gray-600">
-      <button 
+      <button
         onClick={onToggleFilter}
         className="flex items-center gap-1"
         aria-label="Toggle filter dropdown"
@@ -214,13 +218,20 @@ const DesktopFilter: React.FC<{
   categoriesLoading: boolean;
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-}> = ({ categories, categoriesLoading, selectedCategory, onCategoryChange }) => (
+}> = ({
+  categories,
+  categoriesLoading,
+  selectedCategory,
+  onCategoryChange,
+}) => (
   <div className="hidden sm:flex items-center gap-4 justify-end mb-4">
     <div className="flex items-center gap-2">
       <IoFilter className="text-xl text-gray-600 dark:text-gray-300" />
-      <span className="text-gray-600 dark:text-gray-300 font-medium">Filter by Category:</span>
+      <span className="text-gray-600 dark:text-gray-300 font-medium">
+        Filter by Category:
+      </span>
     </div>
-    
+
     <div className="relative">
       {categoriesLoading ? (
         <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-gray-500">
@@ -241,7 +252,7 @@ const DesktopFilter: React.FC<{
       )}
       <IoChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
     </div>
-    
+
     {selectedCategory !== "All" && (
       <button
         onClick={() => onCategoryChange("All")}
@@ -259,15 +270,25 @@ const MobileFilter: React.FC<{
   categoriesLoading: boolean;
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-}> = ({ show, categories, categoriesLoading, selectedCategory, onCategoryChange }) => {
+}> = ({
+  show,
+  categories,
+  categoriesLoading,
+  selectedCategory,
+  onCategoryChange,
+}) => {
   if (!show) return null;
 
   return (
     <div className="sm:hidden mb-4">
       <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4">
-        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Filter by Category</h3>
+        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">
+          Filter by Category
+        </h3>
         {categoriesLoading ? (
-          <div className="text-center py-4 text-gray-500">Loading categories...</div>
+          <div className="text-center py-4 text-gray-500">
+            Loading categories...
+          </div>
         ) : (
           <div className="grid grid-cols-2 gap-2">
             {categories.map((category) => (
@@ -299,34 +320,40 @@ const FilterResultsInfo: React.FC<{
   <div className="flex justify-between items-center mb-4">
     <div className="text-sm text-gray-600 dark:text-gray-400">
       {selectedCategory !== "All" ? (
-        <span>Showing {problemsCount} challenges in "{selectedCategory}" (Page {currentPage} of {totalPages})</span>
+        <span>
+          Showing {problemsCount} challenges in "{selectedCategory}" (Page{" "}
+          {currentPage} of {totalPages})
+        </span>
       ) : (
-        <span>Showing all challenges (Page {currentPage} of {totalPages})</span>
+        <span>
+          Showing all challenges (Page {currentPage} of {totalPages})
+        </span>
       )}
     </div>
   </div>
 );
 
-const ExpiryOverlay: React.FC<{ 
-  expiryDate?: string; 
-  expired?: boolean; 
+const ExpiryOverlay: React.FC<{
+  expiryDate?: string;
+  expired?: boolean;
   timeRemaining?: number;
 }> = ({ expiryDate, expired, timeRemaining }) => {
   if (!expiryDate) return null;
 
   return (
     <>
-      <div className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium ${
-        expired 
-          ? 'bg-red-500 text-white' 
-          : 'bg-yellow-500 text-black'
-      }`}>
-        {expired 
-          ? 'EXPIRED' 
-          : timeRemaining ? formatTimeRemaining(timeRemaining) : 'Limited Time'
-        }
+      <div
+        className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium ${
+          expired ? "bg-red-500 text-white" : "bg-yellow-500 text-black"
+        }`}
+      >
+        {expired
+          ? "EXPIRED"
+          : timeRemaining
+          ? formatTimeRemaining(timeRemaining)
+          : "Limited Time"}
       </div>
-      
+
       {expired && (
         <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-lg">
           {/* Expired overlay without text to avoid duplication */}
@@ -336,8 +363,8 @@ const ExpiryOverlay: React.FC<{
   );
 };
 
-const NoProblemsMessage: React.FC<{ 
-  selectedCategory: string; 
+const NoProblemsMessage: React.FC<{
+  selectedCategory: string;
   onShowAll: () => void;
 }> = ({ selectedCategory, onShowAll }) => (
   <div className="col-span-full text-center py-12">
@@ -345,10 +372,9 @@ const NoProblemsMessage: React.FC<{
       <IoFilter className="mx-auto text-4xl mb-4 opacity-50" />
       <p className="text-lg font-medium">No challenges found</p>
       <p className="text-sm">
-        {selectedCategory !== "All" 
+        {selectedCategory !== "All"
           ? `No challenges available in "${selectedCategory}" category`
-          : "No challenges available at the moment"
-        }
+          : "No challenges available at the moment"}
       </p>
       {selectedCategory !== "All" && (
         <button
@@ -401,14 +427,14 @@ const Page: React.FC = () => {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   const { categories, loading: categoriesLoading } = useCategories();
-  const { 
-    problems, 
-    setProblems, 
-    loading: problemsLoading, 
-    score, 
-    questionDone, 
-    hasNextPage, 
-    totalPages 
+  const {
+    problems,
+    setProblems,
+    loading: problemsLoading,
+    score,
+    questionDone,
+    hasNextPage,
+    totalPages,
   } = useProblems(currentPage, selectedCategory, categoriesLoading);
 
   // Handle category filter change
@@ -434,16 +460,19 @@ const Page: React.FC = () => {
   // Update time remaining for expiring challenges
   useEffect(() => {
     const interval = setInterval(() => {
-      setProblems(prevProblems => 
-        prevProblems.map(problem => {
+      setProblems((prevProblems) =>
+        prevProblems.map((problem) => {
           if (problem.expiryDate && !problem.expired) {
             const now = new Date();
             const expiryDate = new Date(problem.expiryDate);
-            const timeRemaining = Math.max(0, expiryDate.getTime() - now.getTime());
+            const timeRemaining = Math.max(
+              0,
+              expiryDate.getTime() - now.getTime()
+            );
             return {
               ...problem,
               expired: timeRemaining <= 0,
-              timeRemaining
+              timeRemaining,
             };
           }
           return problem;
@@ -474,8 +503,8 @@ const Page: React.FC = () => {
       <h1 className="text-4xl sm:text-5xl tracking-tight text-center text-red-500 font-bold">
         Challenges
       </h1>
-      
-      <StatsSection 
+
+      <StatsSection
         score={score}
         questionDone={questionDone}
         showFilterDropdown={showFilterDropdown}
@@ -511,34 +540,39 @@ const Page: React.FC = () => {
       <div className="mx-auto my-0 flex justify-between">
         <div className="mx-auto my-0 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1 sm:grid-cols-2 items-center gap-4">
           {problems.length > 0 ? (
-            problems.map(({
-              title,
-              category,
-              points,
-              description,
-              _id,
-              done,
-              expired,
-              timeRemaining,
-              expiryDate,
-            }: QuestionWithExpiry) => (
-              <div key={_id} className="relative">
-                <QustionCards
-                  title={title}
-                  category={category}
-                  points={points}
-                  description={description.substring(0, DESCRIPTION_TRUNCATE_LENGTH)}
-                  done={questionDone}
-                  _id={_id}
-                />
-                
-                <ExpiryOverlay
-                  expiryDate={expiryDate}
-                  expired={expired}
-                  timeRemaining={timeRemaining}
-                />
-              </div>
-            ))
+            problems.map(
+              ({
+                title,
+                category,
+                points,
+                description,
+                _id,
+                done,
+                expired,
+                timeRemaining,
+                expiryDate,
+              }: QuestionWithExpiry) => (
+                <div key={_id} className="relative">
+                  <QustionCards
+                    title={title}
+                    category={category}
+                    points={points}
+                    description={description.substring(
+                      0,
+                      DESCRIPTION_TRUNCATE_LENGTH
+                    )}
+                    done={questionDone}
+                    _id={_id}
+                  />
+
+                  <ExpiryOverlay
+                    expiryDate={expiryDate}
+                    expired={expired}
+                    timeRemaining={timeRemaining}
+                  />
+                </div>
+              )
+            )
           ) : (
             <NoProblemsMessage
               selectedCategory={selectedCategory}
