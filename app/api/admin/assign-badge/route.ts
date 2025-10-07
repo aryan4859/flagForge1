@@ -300,6 +300,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<any>> {
   try {
     await connect();
     console.log("GET request - Database connected");
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck) return adminCheck;
 
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
@@ -361,6 +363,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<any>> {
 export async function DELETE(request: NextRequest): Promise<NextResponse<any>> {
   try {
     await connect();
+    const adminCheck = await requireAdmin(request);
+    if (adminCheck) return adminCheck;
     console.log("DELETE request - Database connected");
 
     const { searchParams } = new URL(request.url);
