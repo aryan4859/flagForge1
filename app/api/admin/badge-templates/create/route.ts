@@ -1,81 +1,49 @@
 // File: /api/admin/badge-templates/create/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import  connect  from '@/utlis/db';
+import { NextRequest, NextResponse } from "next/server";
+import connect from "@/utlis/db";
+import BadgeTemplate from "@/models/badgeTemplateSchema";
 
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
+    await connect(); // connect to MongoDB
+
     const body = await request.json();
     const { name, description, icon, color, isActive, createdBy } = body;
-    
-    // Validation
-    if (!name || !name.trim()) {
-      return NextResponse.json(
-        { error: 'Badge name is required' },
-        { status: 400 }
-      );
-    }
-    
-    if (!description || !description.trim()) {
-      return NextResponse.json(
-        { error: 'Badge description is required' },
-        { status: 400 }
-      );
-    }
-    
-    if (!icon || !icon.trim()) {
-      return NextResponse.json(
-        { error: 'Badge icon is required' },
-        { status: 400 }
-      );
-    }
 
-    const { db } = await connect();
-    
-    // Check if template with same name already exists
-    const existingTemplate = await db.collection('badgeTemplates').findOne({ 
-      name: name.trim() 
-    });
-    
-    if (existingTemplate) {
-      return NextResponse.json(
-        { error: 'A badge template with this name already exists' },
-        { status: 400 }
-      );
-    }
-    
+    // Validation
+    if (!name?.trim()) return NextResponse.json({ error: "Badge name is required" }, { status: 400 });
+    if (!description?.trim()) return NextResponse.json({ error: "Badge description is required" }, { status: 400 });
+    if (!icon?.trim()) return NextResponse.json({ error: "Badge icon is required" }, { status: 400 });
+    if (!createdBy?.trim()) return NextResponse.json({ error: "CreatedBy is required" }, { status: 400 });
+
+    // Check for duplicate name
+    const existing = await BadgeTemplate.findOne({ name: name.trim() });
+    if (existing) return NextResponse.json({ error: "A badge template with this name already exists" }, { status: 400 });
+
     // Create new template
-    const templateDoc = {
+    const newTemplate = new BadgeTemplate({
       name: name.trim(),
       description: description.trim(),
       icon: icon.trim(),
-      color: color || '#8B5CF6',
+      color: color || "#8B5CF6",
       isActive: isActive !== undefined ? isActive : true,
-      createdAt: new Date(),
-      createdBy: createdBy || 'unknown'
-    };
-
-    const result = await db.collection('badgeTemplates').insertOne(templateDoc);
-    
-    const createdTemplate = await db.collection('badgeTemplates').findOne({
-      _id: result.insertedId
+      createdBy: createdBy.trim(),
     });
-    
+
+    await newTemplate.save();
+
     console.log(`Badge template created: ${name} by ${createdBy}`);
-    
+
     return NextResponse.json({
       success: true,
-      template: createdTemplate,
-      message: 'Badge template created successfully'
+      template: newTemplate,
+      message: "Badge template created successfully",
     });
-    
+
   } catch (error) {
-    console.error('Badge template creation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create badge template' },
-      { status: 500 }
-    );
+    console.error("Badge template creation error:", error);
+    return NextResponse.json({ error: "Failed to create badge template" }, { status: 500 });
   }
 }
-
