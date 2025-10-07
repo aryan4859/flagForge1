@@ -19,12 +19,13 @@ _These amazing individuals have responsibly disclosed vulnerabilities, strengthe
 <details open>
 <summary><strong>2025 Contributors</strong></summary>
 
-| Researcher         | Handle       | Bugs | Severity (per bug)              | Badge     | Profile                                  | CVE IDs                                        |
-| ------------------ | ------------ | ---- | ------------------------------- | --------- | ---------------------------------------- | ---------------------------------------------- |
-| **Aryan Shrestha** | @aryan4859   | 3    | 🔴 Critical, 🔴 High, 🟠 Medium | 🥇 Gold   | [GitHub](https://github.com/aryan4859)   | CVE-2025-59826, CVE-2025-59833, CVE-2025-59841 |
-| **Rijan Poudel**   | @At0mXploit  | 2    | 🔴 High, 🟠 Medium              | 🥈 Silver | [GitHub](https://github.com/At0mXploit)  | CVE-2025-59843, CVE-2025-59932                                  |
-| **Sarthak KC**     | @sarthakkc36 | 1    | 🔴 High                         | 🥈 Silver | [GitHub](https://github.com/sarthakkc36) | CVE-2025-59827                                 |
-| **Sarams Rauniyar**     | @0x0w1z | 1    | 🔴 Critical                         |  🥇 Gold    | [GitHub](https://github.com/0x0w1z) | -                                |
+| Researcher          | Handle       | Bugs | Severity (per bug)              | Badge     | Profile                                  | CVE IDs                                        |
+| ------------------- | ------------ | ---- | ------------------------------- | --------- | ---------------------------------------- | ---------------------------------------------- |
+| **Aryan Shrestha**  | @aryan4859   | 3    | 🔴 Critical, 🔴 High, 🟠 Medium | 🥇 Gold   | [GitHub](https://github.com/aryan4859)   | CVE-2025-59826, CVE-2025-59833, CVE-2025-59841 |
+| **Rijan Poudel**    | @At0mXploit  | 2    | 🔴 High, 🟠 Medium              | 🥈 Silver | [GitHub](https://github.com/At0mXploit)  | CVE-2025-59843, CVE-2025-59932                 |
+| **Sarthak KC**      | @sarthakkc36 | 1    | 🔴 High                         | 🥈 Silver | [GitHub](https://github.com/sarthakkc36) | CVE-2025-59827                                 |
+| **Sarams Rauniyar** | @0x0w1z      | 1    | 🔴 Critical                     | 🥇 Gold   | [GitHub](https://github.com/0x0w1z)      | CVE-2025-61777                                 |
+
 </details>
 
 ---
