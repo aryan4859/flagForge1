@@ -5,9 +5,21 @@ if (!MONGO_URL) {
   throw new Error("❌ Please define MONGO_URL in .env");
 }
 
-let cached = (global as any).mongoose || { conn: null, promise: null };
+// Global cached connection for Next.js hot reloads
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
 
-const connect = async () => {
+declare global {
+  // eslint-disable-next-line no-var
+  var mongooseCache: MongooseCache;
+  var sigintListenerAdded: boolean;
+}
+
+const cached: MongooseCache = global.mongooseCache || { conn: null, promise: null };
+
+async function connect() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
@@ -21,19 +33,25 @@ const connect = async () => {
 
   try {
     cached.conn = await cached.promise;
+    console.log("✅ MongoDB connected");
   } catch (error) {
     cached.promise = null;
-    throw new Error("❌ Error connecting to Mongoose: " + (error as Error).message);
+    throw new Error("❌ Error connecting to MongoDB: " + (error as Error).message);
   }
 
-  (global as any).mongoose = cached;
-  return cached.conn;
-};
+  // Add SIGINT listener only once
+  if (!global.sigintListenerAdded) {
+    process.on("SIGINT", async () => {
+      await mongoose.connection.close();
+      console.log("💤 MongoDB disconnected on app termination");
+      process.exit(0);
+    });
+    global.sigintListenerAdded = true;
+  }
 
-process.on("SIGINT", async () => {
-  await mongoose.connection.close();
-  console.log("💤 MongoDB disconnected on app termination");
-  process.exit(0);
-});
+  global.mongooseCache = cached;
+
+  return cached.conn;
+}
 
 export default connect;
