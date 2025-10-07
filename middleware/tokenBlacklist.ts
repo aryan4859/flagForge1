@@ -16,7 +16,7 @@ const isPublicPath = (pathname: string): boolean => {
   return publicPaths.some(path => pathname.startsWith(path));
 };
 
-export async function middleware(request: NextRequest) {
+export async function tokenBlacklistMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip middleware for public paths

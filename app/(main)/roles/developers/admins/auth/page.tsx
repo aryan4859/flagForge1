@@ -69,7 +69,7 @@ const AuthPage = () => {
 
     try {
       const result = await signIn(provider, {
-        redirect: false, // Don't redirect automatically
+        redirect: false,
       });
 
       if (result?.error) {
@@ -77,7 +77,6 @@ const AuthPage = () => {
         setError('Sign in failed. Please check your credentials.');
       } else if (result?.ok) {
         console.log('Sign in successful');
-        // Don't redirect here, let the useEffect handle admin check after session updates
       }
     } catch (error) {
       console.error('Sign in error:', error);
