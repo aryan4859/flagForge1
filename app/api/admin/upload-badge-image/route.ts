@@ -1,22 +1,15 @@
+// File: /api/admin/badge-images/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 import connect from "@/utlis/db";
-import userSchema from "@/models/userSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import BadgeImageModel from "@/models/badgeTemplateSchema";
+import userSchema from "@/models/userSchema";
 
 export const runtime = "nodejs";
-
-// Badge image schema interface
-interface BadgeImage {
-  name: string;
-  path: string;
-  category: string;
-  uploadedAt: Date;
-  uploadedBy: string;
-}
 
 // Admin check helper
 async function requireAdmin() {
@@ -35,8 +28,8 @@ async function requireAdmin() {
   return null;
 }
 
+// POST /api/admin/badge-images
 export async function POST(request: NextRequest) {
-  // Admin check
   const adminCheck = await requireAdmin();
   if (adminCheck) return adminCheck;
 
@@ -47,149 +40,93 @@ export async function POST(request: NextRequest) {
     const name = (formData.get("name") as string) || "unnamed";
     const uploadedBy = (formData.get("uploadedBy") as string) || "unknown";
 
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-    }
+    if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
 
-    // Validate file type
-    const allowedTypes = [
-      "image/png",
-      "image/jpeg",
-      "image/jpg",
-      "image/webp",
-      "image/gif",
-      "image/svg+xml",
-    ];
+    const allowedTypes = ["image/png","image/jpeg","image/jpg","image/webp","image/gif","image/svg+xml"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        {
-          error:
-            "Invalid file type. Please upload PNG, JPG, WebP, GIF, or SVG images.",
-        },
+        { error: "Invalid file type. Allowed: PNG, JPG, WebP, GIF, SVG." },
         { status: 400 }
       );
     }
 
-    // Validate file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      return NextResponse.json(
-        { error: "File too large. Maximum size is 5MB." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "File too large. Max size: 5MB." }, { status: 400 });
     }
 
-    // Generate unique filename
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 15);
     const extension = path.extname(file.name).toLowerCase() || ".png";
     const filename = `badge-${timestamp}-${randomStr}${extension}`;
 
-    // Ensure upload directory exists
     const uploadDir = path.join(process.cwd(), "public", "badges", "images");
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
+    if (!existsSync(uploadDir)) await mkdir(uploadDir, { recursive: true });
 
-    // Convert file to buffer and save
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const filePath = path.join(uploadDir, filename);
     await writeFile(filePath, buffer);
 
-    // Create public URL
     const imagePath = `/badges/images/${filename}`;
 
-    // Save to database
-    try {
-      const { db } = await connect();
+    await connect(); // Ensure DB connected
+    const badgeDoc = await BadgeImageModel.create({
+      name: name || filename.split(".")[0],
+      path: imagePath,
+      category,
+      uploadedAt: new Date(),
+      uploadedBy,
+    });
 
-      const badgeImageDoc: BadgeImage = {
-        name: name || filename.split(".")[0],
-        path: imagePath,
-        category,
-        uploadedAt: new Date(),
-        uploadedBy,
-      };
+    console.log(`✅ Badge image uploaded: ${imagePath}`);
 
-      const result = await db
-        .collection("badge_images")
-        .insertOne(badgeImageDoc);
+    return NextResponse.json({
+      success: true,
+      imagePath,
+      filename,
+      imageId: badgeDoc._id,
+      message: "Badge image uploaded successfully",
+    });
 
-      console.log(`Badge image uploaded and saved to DB: ${imagePath}`);
-
-      return NextResponse.json({
-        success: true,
-        imagePath,
-        filename,
-        imageId: result.insertedId,
-        message: "Badge image uploaded successfully",
-      });
-    } catch (dbError) {
-      console.error("Database error:", dbError);
-      // File was uploaded successfully, but DB save failed
-      return NextResponse.json({
-        success: true,
-        imagePath,
-        filename,
-        message: "Badge image uploaded successfully (database save failed)",
-        warning: "Image saved to filesystem but not to database",
-      });
-    }
   } catch (error) {
-    console.error("Badge image upload error:", error);
-    return NextResponse.json(
-      { error: "Failed to upload badge image" },
-      { status: 500 }
-    );
+    console.error("❌ Badge image upload error:", error);
+    return NextResponse.json({ error: "Failed to upload badge image" }, { status: 500 });
   }
 }
 
+// DELETE /api/admin/badge-images
 export async function DELETE(request: NextRequest) {
-  // Admin check
   const adminCheck = await requireAdmin();
   if (adminCheck) return adminCheck;
 
   try {
     const { searchParams } = new URL(request.url);
     const imagePath = searchParams.get("path");
-
     if (!imagePath || !imagePath.startsWith("/badges/images/")) {
-      return NextResponse.json(
-        { error: "Invalid image path" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid image path" }, { status: 400 });
     }
 
-    // Remove from database first
-    try {
-      const { db } = await connect();
-      await db.collection("badge_images").deleteOne({ path: imagePath });
-    } catch (dbError) {
-      console.error("Database deletion error:", dbError);
+    await connect();
+    const badgeDoc = await BadgeImageModel.findOne({ path: imagePath });
+    if (!badgeDoc) {
+      return NextResponse.json({ error: "Badge image not found in database" }, { status: 404 });
     }
 
-    // Remove file from filesystem
+    await badgeDoc.deleteOne();
+
     const fullPath = path.join(process.cwd(), "public", imagePath);
+    if (existsSync(fullPath)) await unlink(fullPath);
 
-    if (existsSync(fullPath)) {
-      const fs = await import("fs/promises");
-      await fs.unlink(fullPath);
-      return NextResponse.json({
-        success: true,
-        message: "Image deleted successfully",
-      });
-    } else {
-      return NextResponse.json(
-        { error: "Image file not found" },
-        { status: 404 }
-      );
-    }
+    console.log(`✅ Badge image deleted: ${imagePath}`);
+
+    return NextResponse.json({
+      success: true,
+      message: "Badge image deleted successfully",
+    });
+
   } catch (error) {
-    console.error("Badge image deletion error:", error);
-    return NextResponse.json(
-      { error: "Failed to delete badge image" },
-      { status: 500 }
-    );
+    console.error("❌ Badge image deletion error:", error);
+    return NextResponse.json({ error: "Failed to delete badge image" }, { status: 500 });
   }
 }

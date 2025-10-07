@@ -1,84 +1,72 @@
-
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import connect from "@/utlis/db";
-import { ObjectId } from 'mongodb';
+import BadgeTemplate from "@/models/badgeTemplateSchema";
+import mongoose from "mongoose";
 
 export const runtime = "nodejs";
 
 export async function PATCH(request: NextRequest) {
   try {
+    await connect();
+
     const body = await request.json();
     const { templateId, isActive } = body;
-    
+
+    // 1️⃣ Validate templateId
     if (!templateId) {
       return NextResponse.json(
-        { error: 'Template ID is required' },
-        { status: 400 }
-      );
-    }
-    
-    if (!ObjectId.isValid(templateId)) {
-      return NextResponse.json(
-        { error: 'Invalid template ID format' },
-        { status: 400 }
-      );
-    }
-    
-    if (isActive === undefined || isActive === null) {
-      return NextResponse.json(
-        { error: 'isActive status is required' },
+        { error: "Template ID is required" },
         { status: 400 }
       );
     }
 
-    const { db } = await connect();
-    
-    // Check if template exists
-    const template = await db.collection('badgeTemplates').findOne({ 
-      _id: new ObjectId(templateId) 
-    });
-    
+    if (!mongoose.Types.ObjectId.isValid(templateId)) {
+      return NextResponse.json(
+        { error: "Invalid template ID format" },
+        { status: 400 }
+      );
+    }
+
+    // 2️⃣ Validate isActive
+    if (isActive === undefined || isActive === null) {
+      return NextResponse.json(
+        { error: "isActive status is required" },
+        { status: 400 }
+      );
+    }
+
+    // 3️⃣ Find the template
+    const template = await BadgeTemplate.findById(templateId);
     if (!template) {
       return NextResponse.json(
-        { error: 'Badge template not found' },
+        { error: "Badge template not found" },
         { status: 404 }
       );
     }
-    
-    // Update the active status
-    const result = await db.collection('badgeTemplates').updateOne(
-      { _id: new ObjectId(templateId) },
-      { 
-        $set: { 
-          isActive: Boolean(isActive),
-          updatedAt: new Date()
-        } 
-      }
+
+    // 4️⃣ Update the active status
+    template.isActive = Boolean(isActive);
+    template.updatedAt = new Date();
+    await template.save();
+
+    console.log(
+      `✅ Badge template status updated: ${template.name} - ${
+        isActive ? "activated" : "deactivated"
+      }`
     );
-    
-    if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { error: 'Badge template not found' },
-        { status: 404 }
-      );
-    }
-    
-    const updatedTemplate = await db.collection('badgeTemplates').findOne({
-      _id: new ObjectId(templateId)
-    });
-    
-    console.log(`Badge template status updated: ${template.name} - ${isActive ? 'activated' : 'deactivated'}`);
-    
+
+    // 5️⃣ Return response
     return NextResponse.json({
       success: true,
-      template: updatedTemplate,
-      message: `Badge template ${isActive ? 'activated' : 'deactivated'} successfully`
+      template,
+      message: `Badge template ${
+        isActive ? "activated" : "deactivated"
+      } successfully`,
     });
-    
   } catch (error) {
-    console.error('Badge template status update error:', error);
+    console.error("❌ Badge template status update error:", error);
     return NextResponse.json(
-      { error: 'Failed to update badge template status' },
+      { error: "Failed to update badge template status" },
       { status: 500 }
     );
   }
