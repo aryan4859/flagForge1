@@ -17,23 +17,50 @@ export async function POST(request: NextRequest) {
                         request.cookies.get('__Secure-next-auth.session-token')?.value;
     
     if (session) {
-      // Log the logout event for security monitoring
       console.log(`User logout: ${session.user.email} at ${new Date().toISOString()}`);
     }
 
     // CRITICAL: Blacklist the current token before clearing cookies
-    if (token && sessionToken) {
+    if (sessionToken && token?.exp) {
       try {
-        await TokenBlacklistService.addToBlacklist(sessionToken);
-        console.log(`Token blacklisted for user: ${session?.user?.email || 'unknown'}`);
+        // Convert JWT exp (seconds) to Date
+    const expiryDate = new Date(Number(token.exp) * 1000);
+        
+        await TokenBlacklistService.addToBlacklist(
+          sessionToken,
+          expiryDate,
+          token.sub // user ID
+        );
+        
+        console.log(`✅ Token blacklisted for user: ${session?.user?.email || 'unknown'}`);
+        console.log(`   Expires at: ${expiryDate.toISOString()}`);
       } catch (blacklistError) {
-        console.error('Failed to blacklist token during logout:', blacklistError);
+        console.error('❌ Failed to blacklist token during logout:', blacklistError);
         // Continue with logout even if blacklisting fails
       }
+    } else if (sessionToken) {
+      // If no expiry found, blacklist for 24 hours as fallback
+      try {
+        const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        await TokenBlacklistService.addToBlacklist(
+          sessionToken,
+          expiryDate,
+          session?.user?.id
+        );
+        console.log(`✅ Token blacklisted (24h default) for user: ${session?.user?.email || 'unknown'}`);
+      } catch (blacklistError) {
+        console.error('❌ Failed to blacklist token during logout:', blacklistError);
+      }
+    } else {
+      console.warn('⚠️ No session token found to blacklist during logout');
     }
 
     const response = new NextResponse(
-      JSON.stringify({ success: true, message: 'Logged out successfully' }),
+      JSON.stringify({ 
+        success: true, 
+        message: 'Logged out successfully',
+        tokenBlacklisted: !!sessionToken 
+      }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
 
@@ -49,55 +76,67 @@ export async function POST(request: NextRequest) {
     response.cookies.set('next-auth.session-token', '', {
       ...cookieOptions,
       expires: new Date(0),
+      maxAge: 0,
     });
 
     // Also clear the secure variant
     response.cookies.set('__Secure-next-auth.session-token', '', {
       ...cookieOptions,
-      secure: true, // Always secure for this variant
+      secure: true,
       expires: new Date(0),
+      maxAge: 0,
     });
 
     // Clear callback URL
     response.cookies.set('next-auth.callback-url', '', {
       ...cookieOptions,
       expires: new Date(0),
+      maxAge: 0,
     });
 
     response.cookies.set('__Secure-next-auth.callback-url', '', {
       ...cookieOptions,
       secure: true,
       expires: new Date(0),
+      maxAge: 0,
     });
 
     // Clear CSRF token
     response.cookies.set('next-auth.csrf-token', '', {
       ...cookieOptions,
       expires: new Date(0),
+      maxAge: 0,
     });
 
     response.cookies.set('__Secure-next-auth.csrf-token', '', {
       ...cookieOptions,
       secure: true,
       expires: new Date(0),
+      maxAge: 0,
     });
 
     // If using custom domain, also clear with domain prefix
     if (process.env.NODE_ENV === 'production' && process.env.NEXTAUTH_URL) {
-      const domain = new URL(process.env.NEXTAUTH_URL).hostname;
-      
-      response.cookies.set('next-auth.session-token', '', {
-        ...cookieOptions,
-        domain,
-        expires: new Date(0),
-      });
+      try {
+        const domain = new URL(process.env.NEXTAUTH_URL).hostname;
+        
+        response.cookies.set('next-auth.session-token', '', {
+          ...cookieOptions,
+          domain,
+          expires: new Date(0),
+          maxAge: 0,
+        });
 
-      response.cookies.set('__Secure-next-auth.session-token', '', {
-        ...cookieOptions,
-        domain,
-        secure: true,
-        expires: new Date(0),
-      });
+        response.cookies.set('__Secure-next-auth.session-token', '', {
+          ...cookieOptions,
+          domain,
+          secure: true,
+          expires: new Date(0),
+          maxAge: 0,
+        });
+      } catch (urlError) {
+        console.error('Failed to parse NEXTAUTH_URL for domain cookies:', urlError);
+      }
     }
 
     return response;
@@ -110,8 +149,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Optional: Add GET method for logout links
+// GET method redirects to login
 export async function GET(request: NextRequest) {
-  // Redirect GET requests to POST for security
-  return NextResponse.redirect(new URL('/login', request.url));
+  return NextResponse.redirect(new URL('/authentication', request.url));
 }

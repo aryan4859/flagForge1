@@ -1,126 +1,126 @@
-import { randomUUID } from 'crypto';
-import jwt from 'jsonwebtoken';
-import TokenBlacklistModel from '@/models/tokenBlacklistSchema';
-import connect from '@/utlis/db';
+import { Redis } from '@upstash/redis';
+import { randomBytes } from 'crypto';
 
-export interface TokenPayload {
-  jti: string;
-  sub?: string;
-  exp: number;
-  iat: number;
-  [key: string]: any;
+// Initialize Redis client
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+interface BlacklistData {
+  userId?: string;
+  blacklistedAt: string;
+  expiresAt: string;
 }
 
 export class TokenBlacklistService {
-  static async addToBlacklist(tokenString: string): Promise<void> {
+  /**
+   * Add a session token to the blacklist
+   * @param sessionToken - The NextAuth session token (plain string, not JWT)
+   * @param expiresAt - When the token expires
+   * @param userId - Optional user ID for tracking
+   */
+  static async addToBlacklist(
+    sessionToken: string, 
+    expiresAt: Date,
+    userId?: string
+  ): Promise<void> {
     try {
-      await connect();
+      const ttl = Math.floor((expiresAt.getTime() - Date.now()) / 1000);
       
-      // Try to decode the JWT token
-      let decoded: TokenPayload;
-      
-      try {
-        // First try to decode as a proper JWT
-        decoded = jwt.decode(tokenString) as TokenPayload;
+      if (ttl > 0) {
+        const data: BlacklistData = {
+          userId,
+          blacklistedAt: new Date().toISOString(),
+          expiresAt: expiresAt.toISOString(),
+        };
         
-        // If that fails, try to verify it (this will also decode it)
-        if (!decoded) {
-          decoded = jwt.verify(tokenString, process.env.NEXTAUTH_SECRET!) as TokenPayload;
-        }
-      } catch (jwtError) {
-        // If it's not a proper JWT, try to parse as JSON (for our mock tokens)
-        try {
-          decoded = JSON.parse(tokenString) as TokenPayload;
-        } catch (parseError) {
-          console.error('Unable to parse token:', parseError);
-          throw new Error('Invalid token format');
-        }
+        await redis.setex(
+          `blacklist:${sessionToken}`,
+          ttl,
+          JSON.stringify(data)
+        );
+        
+        console.log('✅ Token blacklisted:', { 
+          token: sessionToken.substring(0, 20) + '...', 
+          userId,
+          expiresIn: `${ttl}s`,
+          expiresAt: expiresAt.toISOString()
+        });
+      } else {
+        console.log('⏰ Token already expired, not adding to blacklist');
       }
-      
-      if (!decoded?.jti) {
-        throw new Error('Token missing JTI');
-      }
-
-      const expiresAt = decoded.exp ? new Date(decoded.exp * 1000) : new Date(Date.now() + (60 * 60 * 1000));
-      
-      // Add token to blacklist
-      const result = await TokenBlacklistModel.findOneAndUpdate(
-        { jti: decoded.jti },
-        {
-          jti: decoded.jti,
-          userId: decoded.sub || decoded.id,
-          expiresAt: expiresAt,
-          blacklistedAt: new Date()
-        },
-        { upsert: true, new: true }
-      );
-      
-      console.log('Token blacklisted:', { jti: decoded.jti, userId: decoded.sub || decoded.id });
       
     } catch (error) {
-      console.error('Error adding token to blacklist:', error);
+      console.error('❌ Error adding token to blacklist:', error);
       throw error;
     }
   }
 
-  static async isBlacklisted(tokenString: string): Promise<boolean> {
+  static async isBlacklisted(sessionToken: string): Promise<boolean> {
     try {
-      await connect();
+      const result = await redis.get(`blacklist:${sessionToken}`);
+      const isBlacklisted = result !== null;
       
-      let decoded: TokenPayload;
-      
-      try {
-        // Try to decode as JWT first
-        decoded = jwt.decode(tokenString) as TokenPayload;
-        if (!decoded) {
-          decoded = jwt.verify(tokenString, process.env.NEXTAUTH_SECRET!) as TokenPayload;
-        }
-      } catch (jwtError) {
-        // If not JWT, try JSON parse
-        try {
-          decoded = JSON.parse(tokenString) as TokenPayload;
-        } catch (parseError) {
-          console.error('Unable to parse token for blacklist check:', parseError);
-          return true; // Consider invalid tokens as blacklisted
-        }
+      if (isBlacklisted) {
+        console.log('🚫 Token is blacklisted:', sessionToken.substring(0, 20) + '...');
       }
-      
-      if (!decoded?.jti) {
-        return true; // Consider tokens without JTI as blacklisted
-      }
-
-      const blacklistedToken = await TokenBlacklistModel.findOne({ 
-        jti: decoded.jti 
-      });
-      
-      const isBlacklisted = !!blacklistedToken;
-      console.log('Blacklist check:', { jti: decoded.jti, isBlacklisted });
       
       return isBlacklisted;
     } catch (error) {
-      console.error('Error checking token blacklist:', error);
-      return true; // Fail secure
+      console.error('❌ Error checking token blacklist:', error);
+      return false;
+    }
+  }
+
+  static async removeFromBlacklist(sessionToken: string): Promise<void> {
+    try {
+      await redis.del(`blacklist:${sessionToken}`);
+      console.log('🗑️ Token removed from blacklist:', sessionToken.substring(0, 20) + '...');
+    } catch (error) {
+      console.error('❌ Error removing token from blacklist:', error);
+      throw error;
+    }
+  }
+
+  static async getBlacklistInfo(sessionToken: string): Promise<BlacklistData | null> {
+    try {
+      const data = await redis.get<string>(`blacklist:${sessionToken}`);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('❌ Error getting blacklist info:', error);
+      return null;
+    }
+  }
+
+  static async getAllBlacklisted(): Promise<string[]> {
+    try {
+      const keys = await redis.keys('blacklist:*');
+      return keys.map(key => key.replace('blacklist:', ''));
+    } catch (error) {
+      console.error('❌ Error getting all blacklisted tokens:', error);
+      return [];
+    }
+  }
+
+  static async getBlacklistCount(): Promise<number> {
+    try {
+      const keys = await redis.keys('blacklist:*');
+      return keys.length;
+    } catch (error) {
+      console.error('❌ Error getting blacklist count:', error);
+      return 0;
     }
   }
 
   static async cleanupExpired(): Promise<void> {
-    try {
-      await connect();
-      
-      const now = new Date();
-      const threeMonthsAgo = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
-      
-      const result = await TokenBlacklistModel.deleteMany({
-        expiresAt: { $lt: threeMonthsAgo }
-      });
-      
-      console.log(`Cleaned up ${result.deletedCount} expired tokens`);
-    } catch (error) {
-      console.error('Error cleaning up expired tokens:', error);
-    }
+    console.log('✨ Redis auto-expires tokens, manual cleanup not needed');
   }
 
+  /**
+   * Generate a unique JTI (JWT ID)
+   */
   static generateJTI(): string {
-    return randomUUID();
+    return randomBytes(16).toString('hex');
   }
 }

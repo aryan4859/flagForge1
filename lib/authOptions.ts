@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import connect from "@/utlis/db";
 import UserModel from "@/models/userSchema";
 import { TokenBlacklistService } from "./tokenBlacklist";
+import { randomUUID } from "crypto";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -12,15 +13,18 @@ export const authOptions: AuthOptions = {
       authorization: { params: { scope: "email profile" } },
     }),
   ],
+
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60,      // 1 hour
-    updateAge: 15 * 60,   // refresh JWT every 15 minutes
+    maxAge: 60 * 60, // 1 hour
+    updateAge: 15 * 60, // refresh JWT every 15 minutes
   },
+
   jwt: {
     secret: process.env.NEXTAUTH_SECRET,
-    maxAge: 60 * 60,      // match session maxAge
+    maxAge: 60 * 60,
   },
+
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
@@ -33,59 +37,76 @@ export const authOptions: AuthOptions = {
               name: user.name,
               image: user.image,
               totalScore: 0,
+              role: "User",
             }).save();
           }
           return true;
         } catch (err) {
-          console.error(err);
+          console.error("❌ Sign-in error:", err);
           return false;
         }
       }
       return false;
     },
 
+    // 🔥 CRITICAL FIX: Always fetch user data from DB
     async jwt({ token, user, trigger }) {
-      // Generate JTI for new tokens
+      await connect();
+
+      // Generate JTI if missing
       if (!token.jti) {
-        token.jti = TokenBlacklistService.generateJTI();
+        token.jti = randomUUID();
       }
 
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        token.picture = user.image;
-        token.totalScore = (user as any).totalScore || 0;
+      // Determine which email to use
+      const emailToQuery = user?.email || token.email;
+
+      // ✅ ALWAYS fetch from database to ensure role is present
+      if (emailToQuery) {
+        try {
+          const dbUser = await UserModel.findOne({ email: emailToQuery });
+
+          if (dbUser) {
+            token.id = dbUser._id.toString();
+            token.email = dbUser.email;
+            token.name = dbUser.name;
+            token.picture = dbUser.image;
+            token.totalScore = dbUser.totalScore ?? 0;
+            token.role = dbUser.role ?? "User";
+          } else {
+            // Fallback if user not found
+            token.role = token.role || "User";
+          }
+        } catch (err) {
+          console.error("❌ Error fetching user for JWT:", err);
+          token.role = token.role || "User";
+        }
       }
 
-      // Add issued at timestamp and expiration
-      if (!token.iat) {
-        token.iat = Math.floor(Date.now() / 1000);
-      }
-      
-      // Set expiration time (1 hour from now)
-      token.exp = Math.floor(Date.now() / 1000) + (60 * 60);
+      // Timestamps
+      const now = Math.floor(Date.now() / 1000);
+      token.iat = now;
+      token.exp = now + 60 * 60;
 
       return token;
     },
 
     async session({ session, token }) {
-      if (token) {
-        session.user = {
-          ...session.user,
-          id: token.id as string,
-          email: token.email as string | null,
-          name: token.name as string | null,
-          image: token.picture as string | null,
-          totalScore: token.totalScore as number,
-        };
-        // Add token info to session for debugging
-        (session as any).tokenInfo = {
-          jti: token.jti,
-          exp: token.exp,
-          iat: token.iat
-        };
-      }
+      session.user = {
+        id: token.id as string,
+        email: token.email ?? null,
+        name: token.name ?? null,
+        image: token.picture ?? null,
+        totalScore: (token.totalScore as number) ?? 0,
+        role: (token.role as string) ?? "User",
+      };
+
+      (session as any).tokenInfo = {
+        jti: token.jti,
+        exp: token.exp,
+        iat: token.iat,
+      };
+
       return session;
     },
   },
