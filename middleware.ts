@@ -1,5 +1,3 @@
-export const runtime = "nodejs";
-
 import { NextRequest, NextResponse } from "next/server";
 import { tokenBlacklistMiddleware } from "./middleware/tokenBlacklist";
 import { adminMiddleware } from "./middleware/adminToken";
@@ -7,34 +5,26 @@ import { adminMiddleware } from "./middleware/adminToken";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Block curl/wget/Postman
-  if (pathname.startsWith("/api") || pathname.startsWith("/roles")) {
-    const ua = request.headers.get("user-agent") || "";
-    if (/curl|wget|python-requests|postman/i.test(ua)) {
-      return NextResponse.json(
-        { message: "Requests from curl/wget/Postman are blocked" },
-        { status: 403 }
-      );
-    }
-  }
+  console.log("🧭 Root middleware triggered for:", pathname);
 
-  // Token blacklist
+  // 1️⃣ Run token blacklist check for all routes
   const blacklistResponse = await tokenBlacklistMiddleware(request);
-  if (blacklistResponse) return blacklistResponse;
+  if (blacklistResponse) return blacklistResponse; // Blocked
 
-  // Admin check
-  if (
-    pathname.startsWith("/api/admin") ||
-    pathname.startsWith("/roles/developers/admins") ||
-    pathname.startsWith("/auth/")
-  ) {
+  // 2️⃣ Run admin middleware only for admin routes
+  const adminPaths = ["/api/admin", "/roles/developers/admins", "/auth/"];
+
+  if (adminPaths.some((path) => pathname.startsWith(path))) {
     const adminResponse = await adminMiddleware(request);
-    if (adminResponse) return adminResponse;
+    if (adminResponse) return adminResponse; // Not admin
   }
 
+  // 3️⃣ Continue to route if all checks passed
   return NextResponse.next();
 }
 
+// Apply middleware to API and roles routes
 export const config = {
-  matcher: ["/api/:path*", "/roles/:path*"],
+  matcher: ["/api/admin/:path*", "/roles/:path*"],
+  runtime: "nodejs",
 };
