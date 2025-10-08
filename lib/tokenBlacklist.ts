@@ -1,7 +1,7 @@
-import { randomUUID } from 'crypto';
-import jwt from 'jsonwebtoken';
-import TokenBlacklistModel from '@/models/tokenBlacklistSchema';
-import connect from '@/utlis/db';
+import { randomUUID } from "crypto";
+import jwt from "jsonwebtoken";
+import TokenBlacklistModel from "@/models/tokenBlacklistSchema";
+import connect from "@/utlis/db";
 
 export interface TokenPayload {
   jti: string;
@@ -12,114 +12,90 @@ export interface TokenPayload {
 }
 
 export class TokenBlacklistService {
+  // Add a token to blacklist
   static async addToBlacklist(tokenString: string): Promise<void> {
     try {
       await connect();
-      
-      // Try to decode the JWT token
-      let decoded: TokenPayload;
-      
-      try {
-        // First try to decode as a proper JWT
-        decoded = jwt.decode(tokenString) as TokenPayload;
-        
-        // If that fails, try to verify it (this will also decode it)
-        if (!decoded) {
-          decoded = jwt.verify(tokenString, process.env.NEXTAUTH_SECRET!) as TokenPayload;
-        }
-      } catch (jwtError) {
-        // If it's not a proper JWT, try to parse as JSON (for our mock tokens)
-        try {
-          decoded = JSON.parse(tokenString) as TokenPayload;
-        } catch (parseError) {
-          console.error('Unable to parse token:', parseError);
-          throw new Error('Invalid token format');
-        }
-      }
-      
-      if (!decoded?.jti) {
-        throw new Error('Token missing JTI');
+
+      let jti: string | undefined;
+      let userId: string | undefined;
+      let expiresAt: Date | undefined;
+
+      // 1️⃣ Try decode as JWT
+      const decoded = jwt.decode(tokenString) as TokenPayload | null;
+
+      if (decoded && decoded.jti) {
+        jti = decoded.jti;
+        userId = decoded.sub || decoded.id;
+        expiresAt = decoded.exp
+          ? new Date(decoded.exp * 1000)
+          : new Date(Date.now() + 60 * 60 * 1000);
+      } else {
+        // 2️⃣ If not JWT, treat as opaque token string
+        jti = tokenString;
+        userId = undefined;
+        expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour expiry by default
       }
 
-      const expiresAt = decoded.exp ? new Date(decoded.exp * 1000) : new Date(Date.now() + (60 * 60 * 1000));
-      
-      // Add token to blacklist
-      const result = await TokenBlacklistModel.findOneAndUpdate(
-        { jti: decoded.jti },
-        {
-          jti: decoded.jti,
-          userId: decoded.sub || decoded.id,
-          expiresAt: expiresAt,
-          blacklistedAt: new Date()
-        },
+      await TokenBlacklistModel.findOneAndUpdate(
+        { jti },
+        { jti, userId, expiresAt, blacklistedAt: new Date() },
         { upsert: true, new: true }
       );
-      
-      console.log('Token blacklisted:', { jti: decoded.jti, userId: decoded.sub || decoded.id });
-      
+
+      console.log("Token blacklisted:", { jti, userId });
     } catch (error) {
-      console.error('Error adding token to blacklist:', error);
+      console.error("Error adding token to blacklist:", error);
       throw error;
     }
   }
 
+  // Check if token is blacklisted
   static async isBlacklisted(tokenString: string): Promise<boolean> {
     try {
       await connect();
-      
-      let decoded: TokenPayload;
-      
-      try {
-        // Try to decode as JWT first
-        decoded = jwt.decode(tokenString) as TokenPayload;
-        if (!decoded) {
-          decoded = jwt.verify(tokenString, process.env.NEXTAUTH_SECRET!) as TokenPayload;
-        }
-      } catch (jwtError) {
-        // If not JWT, try JSON parse
-        try {
-          decoded = JSON.parse(tokenString) as TokenPayload;
-        } catch (parseError) {
-          console.error('Unable to parse token for blacklist check:', parseError);
-          return true; // Consider invalid tokens as blacklisted
-        }
-      }
-      
-      if (!decoded?.jti) {
-        return true; // Consider tokens without JTI as blacklisted
+
+      let jti: string;
+
+      // 1️⃣ Try decode as JWT
+      const decoded = jwt.decode(tokenString) as TokenPayload | null;
+
+      if (decoded && decoded.jti) {
+        jti = decoded.jti;
+      } else {
+        // 2️⃣ If not JWT, use token string itself
+        jti = tokenString;
       }
 
-      const blacklistedToken = await TokenBlacklistModel.findOne({ 
-        jti: decoded.jti 
-      });
-      
+      const blacklistedToken = await TokenBlacklistModel.findOne({ jti });
       const isBlacklisted = !!blacklistedToken;
-      console.log('Blacklist check:', { jti: decoded.jti, isBlacklisted });
-      
+
+      console.log("Blacklist check:", { jti, isBlacklisted });
       return isBlacklisted;
     } catch (error) {
-      console.error('Error checking token blacklist:', error);
+      console.error("Error checking token blacklist:", error);
       return true; // Fail secure
     }
   }
 
+  // Cleanup expired tokens older than 3 months
   static async cleanupExpired(): Promise<void> {
     try {
       await connect();
-      
-      const now = new Date();
-      const threeMonthsAgo = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000));
-      
+
+      const threeMonthsAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+
       const result = await TokenBlacklistModel.deleteMany({
-        expiresAt: { $lt: threeMonthsAgo }
+        expiresAt: { $lt: threeMonthsAgo },
       });
-      
+
       console.log(`Cleaned up ${result.deletedCount} expired tokens`);
     } catch (error) {
-      console.error('Error cleaning up expired tokens:', error);
+      console.error("Error cleaning up expired tokens:", error);
     }
   }
 
+  // Generate a new JTI
   static generateJTI(): string {
     return randomUUID();
   }
