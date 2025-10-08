@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { tokenBlacklistMiddleware } from '../middleware/tokenBlacklist';
-import { adminMiddleware } from '../middleware/adminToken';
+import { NextRequest, NextResponse } from "next/server";
+import { tokenBlacklistMiddleware } from "./middleware/tokenBlacklist";
+import { adminMiddleware } from "./middleware/adminToken";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,7 +12,9 @@ export async function middleware(request: NextRequest) {
   if (blacklistResponse) return blacklistResponse; // Blocked
 
   // 2️⃣ Run admin middleware only for admin routes
-  if (pathname.startsWith('/api/admin') || pathname.startsWith('/roles/developers/admins') || pathname.startsWith('/auth/') ) {
+  const adminPaths = ["/api/admin", "/roles/developers/admins", "/auth/"];
+
+  if (adminPaths.some((path) => pathname.startsWith(path))) {
     const adminResponse = await adminMiddleware(request);
     if (adminResponse) return adminResponse; // Not admin
   }
@@ -21,7 +23,8 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Apply this middleware to all API routes (or adjust to your needs)
+// Apply middleware to API and roles routes
 export const config = {
-  matcher: ['/api/:path*', '/roles/:path*'],
+  matcher: ["/api/admin/:path*", "/roles/:path*"],
+  runtime: "nodejs",
 };
