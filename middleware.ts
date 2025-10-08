@@ -1,30 +1,30 @@
-import { NextRequest, NextResponse } from "next/server";
-import { tokenBlacklistMiddleware } from "./middleware/tokenBlacklist";
-import { adminMiddleware } from "./middleware/adminToken";
+import { NextRequest, NextResponse } from 'next/server';
+import { tokenBlacklistMiddleware } from './middleware/tokenBlacklist';
+import { adminMiddleware } from './middleware/adminToken';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  console.log("🧭 Root middleware triggered for:", pathname);
-
-  // 1️⃣ Run token blacklist check for all routes
   const blacklistResponse = await tokenBlacklistMiddleware(request);
-  if (blacklistResponse) return blacklistResponse; // Blocked
+  if (blacklistResponse && blacklistResponse instanceof NextResponse) return blacklistResponse;
 
-  // 2️⃣ Run admin middleware only for admin routes
-  const adminPaths = ["/api/admin", "/roles/developers/admins", "/auth/"];
-
-  if (adminPaths.some((path) => pathname.startsWith(path))) {
+  if (
+    pathname.startsWith('/api/admin') ||
+    pathname.startsWith('/roles/developers/admins') ||
+    pathname.startsWith('/api/badges') ||
+    pathname.startsWith('/api/badge-templates') ||
+    pathname.startsWith('/resources/upload')
+  ) {
     const adminResponse = await adminMiddleware(request);
-    if (adminResponse) return adminResponse; // Not admin
+    if (adminResponse && adminResponse instanceof NextResponse) return adminResponse;
   }
 
-  // 3️⃣ Continue to route if all checks passed
+  // 3) Continue if all checks passed
   return NextResponse.next();
 }
 
-// Apply middleware to API and roles routes
 export const config = {
-  matcher: ["/api/admin/:path*", "/roles/:path*"],
-  runtime: "nodejs",
+  matcher: [
+    '/((?!api/auth|_next/static|_next/image|favicon.ico).*)',
+  ],
 };
