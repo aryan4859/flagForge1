@@ -14,13 +14,31 @@ export async function POST(request: NextRequest) {
                         request.cookies.get('__Secure-next-auth.session-token')?.value;
 
     if (token && sessionToken) {
-      // Blacklist the token
-      await TokenBlacklistService.addToBlacklist(sessionToken);
-      console.log('Token blacklisted during manual signout');
+      // Calculate expiration date from token
+      const tokenExp = token.exp as number | undefined;
+      const expiresAt = tokenExp 
+        ? new Date(tokenExp * 1000) 
+        : new Date(Date.now() + 60 * 60 * 1000); // Default 1 hour
+
+      // Blacklist the token with proper arguments
+      await TokenBlacklistService.addToBlacklist(
+        sessionToken,
+        expiresAt,
+        token.sub // userId (optional)
+      );
+      
+      console.log('✅ Token blacklisted during manual signout:', {
+        userId: token.sub,
+        expiresAt: expiresAt.toISOString(),
+      });
     }
 
     // Clear all auth cookies
-    const response = NextResponse.json({ message: 'Signed out successfully' });
+    const response = NextResponse.json({ 
+      success: true,
+      message: 'Signed out successfully' 
+    });
+    
     response.cookies.delete('next-auth.session-token');
     response.cookies.delete('__Secure-next-auth.session-token');
     response.cookies.delete('next-auth.csrf-token');
@@ -30,15 +48,20 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-  console.error('Manual signout error:', error);
+    console.error('❌ Manual signout error:', error);
 
-  let message = 'Signout failed';
-  if (error instanceof Error) {
-    message = error.message;
+    let message = 'Signout failed';
+    if (error instanceof Error) {
+      message = error.message;
+    }
+
+    return NextResponse.json(
+      { 
+        success: false,
+        error: 'Signout failed', 
+        details: message 
+      },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(
-    { error: 'Signout failed', details: message },
-    { status: 500 }
-  );
-  }}
+}

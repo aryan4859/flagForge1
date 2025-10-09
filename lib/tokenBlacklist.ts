@@ -1,102 +1,126 @@
-import { randomUUID } from "crypto";
-import jwt from "jsonwebtoken";
-import TokenBlacklistModel from "@/models/tokenBlacklistSchema";
-import connect from "@/utlis/db";
+import { Redis } from '@upstash/redis';
+import { randomBytes } from 'crypto';
 
-export interface TokenPayload {
-  jti: string;
-  sub?: string;
-  exp: number;
-  iat: number;
-  [key: string]: any;
+// Initialize Redis client
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+interface BlacklistData {
+  userId?: string;
+  blacklistedAt: string;
+  expiresAt: string;
 }
 
 export class TokenBlacklistService {
-  // Add a token to blacklist
-  static async addToBlacklist(tokenString: string): Promise<void> {
+  /**
+   * Add a session token to the blacklist
+   * @param sessionToken - The NextAuth session token (plain string, not JWT)
+   * @param expiresAt - When the token expires
+   * @param userId - Optional user ID for tracking
+   */
+  static async addToBlacklist(
+    sessionToken: string, 
+    expiresAt: Date,
+    userId?: string
+  ): Promise<void> {
     try {
-      await connect();
-
-      let jti: string | undefined;
-      let userId: string | undefined;
-      let expiresAt: Date | undefined;
-
-      // 1️⃣ Try decode as JWT
-      const decoded = jwt.decode(tokenString) as TokenPayload | null;
-
-      if (decoded && decoded.jti) {
-        jti = decoded.jti;
-        userId = decoded.sub || decoded.id;
-        expiresAt = decoded.exp
-          ? new Date(decoded.exp * 1000)
-          : new Date(Date.now() + 60 * 60 * 1000);
+      const ttl = Math.floor((expiresAt.getTime() - Date.now()) / 1000);
+      
+      if (ttl > 0) {
+        const data: BlacklistData = {
+          userId,
+          blacklistedAt: new Date().toISOString(),
+          expiresAt: expiresAt.toISOString(),
+        };
+        
+        await redis.setex(
+          `blacklist:${sessionToken}`,
+          ttl,
+          JSON.stringify(data)
+        );
+        
+        console.log('✅ Token blacklisted:', { 
+          token: sessionToken.substring(0, 20) + '...', 
+          userId,
+          expiresIn: `${ttl}s`,
+          expiresAt: expiresAt.toISOString()
+        });
       } else {
-        // 2️⃣ If not JWT, treat as opaque token string
-        jti = tokenString;
-        userId = undefined;
-        expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour expiry by default
+        console.log('⏰ Token already expired, not adding to blacklist');
       }
-
-      await TokenBlacklistModel.findOneAndUpdate(
-        { jti },
-        { jti, userId, expiresAt, blacklistedAt: new Date() },
-        { upsert: true, new: true }
-      );
-
-      console.log("Token blacklisted:", { jti, userId });
+      
     } catch (error) {
-      console.error("Error adding token to blacklist:", error);
+      console.error('❌ Error adding token to blacklist:', error);
       throw error;
     }
   }
 
-  // Check if token is blacklisted
-  static async isBlacklisted(tokenString: string): Promise<boolean> {
+  static async isBlacklisted(sessionToken: string): Promise<boolean> {
     try {
-      await connect();
-
-      let jti: string;
-
-      // 1️⃣ Try decode as JWT
-      const decoded = jwt.decode(tokenString) as TokenPayload | null;
-
-      if (decoded && decoded.jti) {
-        jti = decoded.jti;
-      } else {
-        // 2️⃣ If not JWT, use token string itself
-        jti = tokenString;
+      const result = await redis.get(`blacklist:${sessionToken}`);
+      const isBlacklisted = result !== null;
+      
+      if (isBlacklisted) {
+        console.log('🚫 Token is blacklisted:', sessionToken.substring(0, 20) + '...');
       }
-
-      const blacklistedToken = await TokenBlacklistModel.findOne({ jti });
-      const isBlacklisted = !!blacklistedToken;
-
-      console.log("Blacklist check:", { jti, isBlacklisted });
+      
       return isBlacklisted;
     } catch (error) {
-      console.error("Error checking token blacklist:", error);
-      return true; // Fail secure
+      console.error('❌ Error checking token blacklist:', error);
+      return false;
     }
   }
 
-  // Cleanup expired tokens older than 3 months
-  static async cleanupExpired(): Promise<void> {
+  static async removeFromBlacklist(sessionToken: string): Promise<void> {
     try {
-      await connect();
-
-      const threeMonthsAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
-
-      const result = await TokenBlacklistModel.deleteMany({
-        expiresAt: { $lt: threeMonthsAgo },
-      });
-
-      console.log(`Cleaned up ${result.deletedCount} expired tokens`);
+      await redis.del(`blacklist:${sessionToken}`);
+      console.log('🗑️ Token removed from blacklist:', sessionToken.substring(0, 20) + '...');
     } catch (error) {
-      console.error("Error cleaning up expired tokens:", error);
+      console.error('❌ Error removing token from blacklist:', error);
+      throw error;
     }
   }
 
-  // Generate a new JTI
+  static async getBlacklistInfo(sessionToken: string): Promise<BlacklistData | null> {
+    try {
+      const data = await redis.get<string>(`blacklist:${sessionToken}`);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('❌ Error getting blacklist info:', error);
+      return null;
+    }
+  }
+
+  static async getAllBlacklisted(): Promise<string[]> {
+    try {
+      const keys = await redis.keys('blacklist:*');
+      return keys.map(key => key.replace('blacklist:', ''));
+    } catch (error) {
+      console.error('❌ Error getting all blacklisted tokens:', error);
+      return [];
+    }
+  }
+
+  static async getBlacklistCount(): Promise<number> {
+    try {
+      const keys = await redis.keys('blacklist:*');
+      return keys.length;
+    } catch (error) {
+      console.error('❌ Error getting blacklist count:', error);
+      return 0;
+    }
+  }
+
+  static async cleanupExpired(): Promise<void> {
+    console.log('✨ Redis auto-expires tokens, manual cleanup not needed');
+  }
+
+  /**
+   * Generate a unique JTI (JWT ID)
+   */
   static generateJTI(): string {
-    return randomUUID();
+    return randomBytes(16).toString('hex');
   }
 }
