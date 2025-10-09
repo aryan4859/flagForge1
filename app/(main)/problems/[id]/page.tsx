@@ -8,6 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import doubt from "@/public/doubt.png";
 import ConfettiBoom from "react-confetti-boom";
+import FloatingChat from "@/components/FloatingChat";
 
 export const runtime = "edge";
 
@@ -28,7 +29,7 @@ interface Questions {
   link: string;
   isTimeLimited: boolean;
   timeLimit: number | string;
-  timeLimitUnit: 'hours' | 'days' | 'weeks';
+  timeLimitUnit: "hours" | "days" | "weeks";
   expiryDate: string | Date | null;
   hints: Hint[];
   uploadedBy: string;
@@ -85,7 +86,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   // URL validation function
   const isValidUrl = (string: string): boolean => {
     if (!string || string.trim() === "") return false;
-    
+
     try {
       const url = new URL(string);
       return url.protocol === "http:" || url.protocol === "https:";
@@ -116,13 +117,13 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   // Format expiry date
   const formatExpiryDate = (expiryDate: string | Date) => {
     const date = new Date(expiryDate);
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZoneName: 'short'
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZoneName: "short",
     });
   };
 
@@ -130,8 +131,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     try {
       setLoading(true);
       const response = await fetch(`/api/problems/${unwrappedParams.id}`);
-      
-      if (response.status === 410) { // HTTP Gone - expired
+
+      if (response.status === 410) {
+        // HTTP Gone - expired
         const data = await response.json();
         setIsExpired(true);
         setMessage(data.message);
@@ -144,22 +146,22 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       }
 
       const data = await response.json();
-      
+
       // Handle the data structure properly
       setIsDone(data.isDone);
       setIsCorrect(data.isDone);
       setUsedHints(data.usedHints || []);
-      
+
       // Ensure we have proper hints array
       const questionData = data.question || {};
       const hints = Array.isArray(questionData.hints) ? questionData.hints : [];
-      
+
       setProblems({
         ...initialQuestion,
         ...questionData,
-        hints: hints
+        hints: hints,
       });
-      
+
       // Calculate time remaining
       let calculatedTimeRemaining = data.timeRemaining;
       if (!calculatedTimeRemaining && questionData.expiryDate) {
@@ -167,10 +169,13 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
         const currentTime = Date.now();
         calculatedTimeRemaining = Math.max(0, expiryTime - currentTime);
       }
-      
+
       setTimeRemaining(calculatedTimeRemaining);
-      setIsExpired(data.expired || (calculatedTimeRemaining !== null && calculatedTimeRemaining <= 0));
-      
+      setIsExpired(
+        data.expired ||
+          (calculatedTimeRemaining !== null && calculatedTimeRemaining <= 0)
+      );
+
       setLoading(false);
     } catch (error) {
       console.error("Error fetching problem:", error);
@@ -181,15 +186,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   // Fetch hints from backend
   const fetchHints = async () => {
     if (hintLoading || availableHints.length > 0) return;
-    
+
     try {
       setHintLoading(true);
       const response = await fetch(`/api/problems/${unwrappedParams.id}/hints`);
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch hints");
       }
-      
+
       const data = await response.json();
       setAvailableHints(data.hints || []);
       setUsedHints(data.usedHints || []);
@@ -205,26 +210,29 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   // Request a specific hint
   const requestHint = async (hintIndex: number) => {
     if (usedHints.includes(hintIndex)) return;
-    
+
     try {
       setHintLoading(true);
-      const response = await fetch(`/api/problems/${unwrappedParams.id}/hints`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ hintIndex }),
-      });
-      
+      const response = await fetch(
+        `/api/problems/${unwrappedParams.id}/hints`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ hintIndex }),
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to request hint");
       }
-      
+
       const data = await response.json();
-      setUsedHints(prev => [...prev, hintIndex]);
+      setUsedHints((prev) => [...prev, hintIndex]);
       setMessage(data.message);
-      
+
       // Update user's total score if points were deducted
       if (data.pointsDeducted > 0) {
         setTimeout(() => setMessage(null), 5000);
@@ -233,7 +241,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       }
     } catch (error) {
       console.error("Error requesting hint:", error);
-      setMessage(error instanceof Error ? error.message : "Failed to request hint");
+      setMessage(
+        error instanceof Error ? error.message : "Failed to request hint"
+      );
       setTimeout(() => setMessage(null), 3000);
     } finally {
       setHintLoading(false);
@@ -252,7 +262,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   useEffect(() => {
     if (timeRemaining && timeRemaining > 0 && !isExpired && !isDone) {
       const interval = setInterval(() => {
-        setTimeRemaining(prev => {
+        setTimeRemaining((prev) => {
           if (prev && prev > 1000) {
             return prev - 1000;
           } else {
@@ -399,7 +409,8 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
               </h1>
               <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 mb-6">
                 <p className="text-lg text-red-800 dark:text-red-200 mb-2">
-                  This time-limited challenge has expired and is no longer available.
+                  This time-limited challenge has expired and is no longer
+                  available.
                 </p>
                 {problems.expiryDate && (
                   <p className="text-sm text-red-600 dark:text-red-400">
@@ -459,6 +470,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
               </h2>
             </div>
             <div className="w-full border-b border-gray-300 dark:border-gray-700 transition-colors duration-300"></div>
+            <FloatingChat />
           </div>
 
           {/* Challenge expiry info */}
@@ -539,18 +551,22 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                     {availableHints.map((hint: Hint, index: number) => {
                       const isUsed = usedHints.includes(index);
                       return (
-                        <div key={index} className="bg-white dark:bg-gray-800 border border-rose-200 dark:border-rose-700 rounded-lg p-3">
+                        <div
+                          key={index}
+                          className="bg-white dark:bg-gray-800 border border-rose-200 dark:border-rose-700 rounded-lg p-3"
+                        >
                           <div className="flex justify-between items-start gap-3">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <span className="font-medium text-rose-800 dark:text-rose-200">
                                   Hint {index + 1}
                                 </span>
-                                {hint.pointsDeduction && Number(hint.pointsDeduction) > 0 && (
-                                  <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-2 py-1 rounded text-xs font-medium">
-                                    -{hint.pointsDeduction} pts
-                                  </div>
-                                )}
+                                {hint.pointsDeduction &&
+                                  Number(hint.pointsDeduction) > 0 && (
+                                    <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-2 py-1 rounded text-xs font-medium">
+                                      -{hint.pointsDeduction} pts
+                                    </div>
+                                  )}
                               </div>
                               {isUsed ? (
                                 <p className="text-rose-700 dark:text-rose-300">
@@ -585,7 +601,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   </div>
                 ) : (
                   <p className="text-rose-700 dark:text-rose-300">
-                    {hintLoading ? "Loading hints..." : "No hints available for this challenge."}
+                    {hintLoading
+                      ? "Loading hints..."
+                      : "No hints available for this challenge."}
                   </p>
                 )}
               </div>
@@ -619,13 +637,14 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   ? "Expired"
                   : "Submit"}
               </button>
-              
+
               {message && (
                 <div
                   className={`text-center text-lg font-bold mt-4 transition-colors duration-300 ${
                     message.includes("Right")
                       ? "text-green-600 dark:text-green-400"
-                      : message.includes("points deducted") || message.includes("Hint revealed")
+                      : message.includes("points deducted") ||
+                        message.includes("Hint revealed")
                       ? "text-orange-600 dark:text-orange-400"
                       : "text-red-600 dark:text-red-500"
                   }`}
@@ -637,13 +656,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
               {/* Time remaining display */}
               {timeRemaining && timeRemaining > 0 && !isExpired && (
                 <div className="text-center">
-                  <div className={`inline-block px-4 py-2 rounded-lg font-semibold ${
-                    timeRemaining < 3600000 // Less than 1 hour
-                      ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
-                      : timeRemaining < 86400000 // Less than 1 day
-                      ? "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800"
-                      : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800"
-                  }`}>
+                  <div
+                    className={`inline-block px-4 py-2 rounded-lg font-semibold ${
+                      timeRemaining < 3600000 // Less than 1 hour
+                        ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
+                        : timeRemaining < 86400000 // Less than 1 day
+                        ? "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800"
+                        : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800"
+                    }`}
+                  >
                     ⏰ Time Remaining: {formatTimeRemaining(timeRemaining)}
                   </div>
                 </div>
@@ -675,6 +696,6 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       )}
     </div>
   );
-};  
+};
 
 export default Page;
