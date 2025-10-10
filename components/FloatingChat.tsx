@@ -1,7 +1,8 @@
-// File: components/FloatingChat.tsx
 "use client";
-
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
+import botAvatar from "@/public/logo.png";
 
 type Msg = { id: string; role: "user" | "bot"; text: string };
 
@@ -12,179 +13,177 @@ export default function FloatingChat({
   userId?: string;
   challengeId?: string;
 }) {
+  const { data: session } = useSession();
   const [messages, setMessages] = useState<Msg[]>([]);
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [open, setOpen] = useState(false);
-  const boxRef = useRef<HTMLDivElement | null>(null);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const chatRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ x: 20, y: 20 });
+  const [dragging, setDragging] = useState(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setDragging(true);
+    dragOffset.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    };
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!dragging) return;
+    setPosition({
+      x: e.clientX - dragOffset.current.x,
+      y: e.clientY - dragOffset.current.y,
+    });
+  };
+
+  const handleMouseUp = () => setDragging(false);
 
   useEffect(() => {
-    if (boxRef.current) boxRef.current.scrollTop = boxRef.current.scrollHeight;
-  }, [messages]);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [dragging]);
 
-  async function send() {
-    if (!text.trim()) return;
-    const userMsg: Msg = { id: `u-${Date.now()}`, role: "user", text };
-    setMessages((m) => [...m, userMsg]);
-    setBusy(true);
+  async function sendMessage(msg: string) {
+    if (!msg.trim()) return;
+
+    const newUserMsg: Msg = {
+      id: Date.now().toString(),
+      role: "user",
+      text: msg,
+    };
+    setMessages((prev) => [...prev, newUserMsg]);
+    setLoading(true);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": userId || "anonymous",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: text,
+          message: msg,
+          userId,
           challengeId,
           hintLevel: "nudge",
         }),
       });
 
-      const j = await res.json();
-      const botText = j?.reply || j?.error || "No reply from server";
-      const botMsg: Msg = { id: `b-${Date.now()}`, role: "bot", text: botText };
-      setMessages((m) => [...m, botMsg]);
-    } catch {
-      setMessages((m) => [
-        ...m,
+      const data = await res.json();
+      const newBotMsg: Msg = {
+        id: Date.now().toString(),
+        role: "bot",
+        text: data.reply,
+      };
+      setMessages((prev) => [...prev, newBotMsg]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
         {
-          id: `b-${Date.now()}`,
+          id: Date.now().toString(),
           role: "bot",
-          text: "Failed to contact server",
+          text: "Error: Unable to fetch response.",
         },
       ]);
     } finally {
-      setText("");
-      setBusy(false);
-    }
-  }
-
-  function handleKey(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      send();
+      setLoading(false);
+      setInput("");
     }
   }
 
   return (
-    <>
-      {/* Floating toggle button */}
-      <button
-        onClick={() => setOpen(!open)}
-        style={{
-          position: "fixed",
-          bottom: 24,
-          right: 24,
-          width: 56,
-          height: 56,
-          borderRadius: "50%",
-          background: "#111827",
-          color: "#fff",
-          border: "none",
-          cursor: "pointer",
-          zIndex: 9999,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-        }}
-      >
-        💬
-      </button>
-
-      {/* Floating chat panel */}
-      {open && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 90,
-            right: 24,
-            width: 360,
-            border: "1px solid #e5e7eb",
-            borderRadius: 12,
-            padding: 12,
-            background: "#fff",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-            zIndex: 9998,
-            display: "flex",
-            flexDirection: "column",
-            height: 420,
-          }}
+    <div
+      ref={chatRef}
+      style={{ top: position.y, left: position.x }}
+      className="fixed z-50 cursor-move"
+      onMouseDown={handleMouseDown}
+    >
+      {/* Floating Icon */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="bg-red-500 hover:bg-red-600 text-white p-4 rounded-full shadow-lg transition-transform duration-300"
         >
-          <div
-            ref={boxRef}
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
-              paddingRight: 4,
-            }}
-          >
-            {messages.length === 0 && (
-              <div style={{ color: "#6b7280", fontSize: 13 }}>
-                Ask for a hint, FAQ, or explanation — e.g., "Hint for
-                bizlogic-001"
-              </div>
-            )}
+          💬
+        </button>
+      )}
+
+      {/* Chat Popup */}
+      {isOpen && (
+        <div className="w-80 sm:w-96 bg-gray-900 text-white p-4 rounded-2xl shadow-xl flex flex-col">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-bold text-lg">Need Help?</h3>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-300 hover:text-white font-bold"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto max-h-80 mb-3 space-y-2">
             {messages.map((m) => (
               <div
                 key={m.id}
-                style={{
-                  alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-                  maxWidth: "85%",
-                }}
+                className={`flex gap-2 items-start ${
+                  m.role === "user" ? "justify-end" : "justify-start"
+                }`}
               >
+                {m.role === "bot" && (
+                  <Image
+                    src={botAvatar}
+                    alt="Bot"
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                )}
                 <div
-                  style={{
-                    background: m.role === "user" ? "#e0f2fe" : "#f3f4f6",
-                    padding: "8px 10px",
-                    borderRadius: 8,
-                    fontSize: 14,
-                    lineHeight: 1.4,
-                  }}
+                  className={`p-2 rounded-lg max-w-[70%] break-words ${
+                    m.role === "user"
+                      ? "bg-red-500 text-white text-right"
+                      : "bg-gray-700 text-white text-left"
+                  }`}
                 >
-                  <strong
-                    style={{ display: "block", fontSize: 11, marginBottom: 4 }}
-                  >
-                    {m.role === "user" ? "You" : "Assistant"}
-                  </strong>
-                  <div style={{ whiteSpace: "pre-wrap" }}>{m.text}</div>
+                  {m.text}
                 </div>
+                {m.role === "user" && session?.user?.image && (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name || "User"}
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                  />
+                )}
               </div>
             ))}
+            {loading && (
+              <p className="text-gray-400 text-sm italic">Thinking...</p>
+            )}
           </div>
-
-          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+          <div className="flex">
             <input
-              aria-label="chat-input"
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={handleKey}
-              placeholder="Ask for a hint or FAQ..."
-              disabled={busy}
-              style={{
-                flex: 1,
-                padding: "8px 10px",
-                borderRadius: 6,
-                border: "1px solid #e5e7eb",
-              }}
+              className="flex-1 rounded-l-lg p-2 text-black"
+              placeholder="Ask for help..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage(input)}
             />
             <button
-              onClick={send}
-              disabled={busy || !text.trim()}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 6,
-                background: "#111827",
-                color: "#fff",
-              }}
+              onClick={() => sendMessage(input)}
+              disabled={loading}
+              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-r-lg text-white"
             >
               Send
             </button>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

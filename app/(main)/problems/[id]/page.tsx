@@ -61,7 +61,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const { status: sessionStatus } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [problems, setProblems] = useState<Questions>(initialQuestion);
   const [flag, setFlag] = useState<string>("");
   const [message, setMessage] = useState<string | null>(null);
@@ -470,7 +470,10 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
               </h2>
             </div>
             <div className="w-full border-b border-gray-300 dark:border-gray-700 transition-colors duration-300"></div>
-            <FloatingChat />
+            <FloatingChat
+              userId={session?.user?.id || ""}
+              challengeId={unwrappedParams.id}
+            />
           </div>
 
           {/* Challenge expiry info */}
