@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/authOptions';
-import connect from '@/utlis/db';
-import UserSchema from '@/models/userSchema';
-import QuestionModel from '@/models/qustionsSchema';
-import BadgeTemplate from '@/models/badgeTemplate';
-import UserQuestionModel from '@/models/userQuestionSchema';
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+import connect from "@/utils/db";
+import UserSchema from "@/models/userSchema";
+import QuestionModel from "@/models/qustionsSchema";
+import BadgeTemplate from "@/models/badgeTemplate";
+import UserQuestionModel from "@/models/userQuestionSchema";
 
 export const runtime = "nodejs";
 
@@ -15,11 +15,11 @@ async function isAdmin(email: string): Promise<boolean> {
     await connect();
     const adminUser = await UserSchema.findOne({
       email: email,
-      role: 'Admin'
+      role: "Admin",
     }).lean();
     return !!adminUser;
   } catch (error) {
-    console.error('Error checking admin status:', error);
+    console.error("Error checking admin status:", error);
     return false;
   }
 }
@@ -27,7 +27,7 @@ async function isAdmin(email: string): Promise<boolean> {
 export async function GET(req: NextRequest) {
   try {
     await connect();
-    
+
     const session = await getServerSession(authOptions);
     if (!session || !session.user?.email) {
       return NextResponse.json(
@@ -37,31 +37,40 @@ export async function GET(req: NextRequest) {
     }
 
     // Check if user is admin
-    if (!await isAdmin(session.user.email)) {
+    if (!(await isAdmin(session.user.email))) {
       return NextResponse.json(
-        { success: false, message: "Access denied. Admin privileges required." },
+        {
+          success: false,
+          message: "Access denied. Admin privileges required.",
+        },
         { status: 403 }
       );
     }
 
     // Get all statistics in parallel for better performance
-    const [totalQuestions, totalUsers, totalBadgeTemplates, activeBadgeTemplates, recentCompletions] = await Promise.all([
+    const [
+      totalQuestions,
+      totalUsers,
+      totalBadgeTemplates,
+      activeBadgeTemplates,
+      recentCompletions,
+    ] = await Promise.all([
       // Total challenges
       QuestionModel.countDocuments({}),
-      
+
       // Total users
       UserSchema.countDocuments({}),
-      
+
       // Total badge templates
       BadgeTemplate.countDocuments({}),
-      
+
       // Active badge templates
       BadgeTemplate.countDocuments({ isActive: true }),
-      
+
       // Recent activity (completed challenges in last 24 hours)
       UserQuestionModel.countDocuments({
-        createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
-      })
+        createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      }),
     ]);
 
     // Calculate active challenges (non-expired)
@@ -70,23 +79,23 @@ export async function GET(req: NextRequest) {
       $or: [
         { expiryDate: { $exists: false } },
         { expiryDate: null },
-        { expiryDate: { $gt: now } }
-      ]
+        { expiryDate: { $gt: now } },
+      ],
     });
 
     // Get additional insights
     const [topCategories, recentUsers] = await Promise.all([
       // Most popular categories
       QuestionModel.aggregate([
-        { $group: { _id: '$category', count: { $sum: 1 } } },
+        { $group: { _id: "$category", count: { $sum: 1 } } },
         { $sort: { count: -1 } },
-        { $limit: 5 }
+        { $limit: 5 },
       ]),
-      
+
       // Users registered in last week
       UserSchema.countDocuments({
-        createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-      })
+        createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      }),
     ]);
 
     const stats = {
@@ -98,18 +107,17 @@ export async function GET(req: NextRequest) {
       recentActivity: recentCompletions,
       newUsersThisWeek: recentUsers,
       topCategories: topCategories,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
 
     return NextResponse.json({
       success: true,
-      stats: stats
+      stats: stats,
     });
-
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
+    console.error("Error fetching dashboard stats:", error);
     return NextResponse.json(
-      { success: false, message: 'Failed to fetch dashboard statistics' },
+      { success: false, message: "Failed to fetch dashboard statistics" },
       { status: 500 }
     );
   }

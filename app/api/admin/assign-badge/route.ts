@@ -1,6 +1,6 @@
 // app/api/admin/assign-badge/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import AssignedBadgeModel from "@/models/AssignedBadge";
 import BadgeImageModel from "@/models/badgeImage";
 import UserSchema from "@/models/userSchema";

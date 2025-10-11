@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import BadgeTemplate from "@/models/badgeTemplateSchema";
 import mongoose from "mongoose";
 

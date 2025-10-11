@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import QuestionModel from "@/models/qustionsSchema";
 import { HttpStatusCode } from "axios";
 import { getServerSession } from "next-auth";

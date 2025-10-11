@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserSchema from "@/models/userSchema";
@@ -9,24 +9,21 @@ export const runtime = "nodejs";
 
 // Helper function to create error responses
 function createErrorResponse(message: string, status: number) {
-  return NextResponse.json(
-    { success: false, message },
-    { status }
-  );
+  return NextResponse.json({ success: false, message }, { status });
 }
 
 async function isAdmin(email: string): Promise<boolean> {
   try {
     await connect();
-    
+
     const adminUser = await UserSchema.findOne({
       email: email,
-      role: 'Admin'
+      role: "Admin",
     }).lean();
-    
+
     return !!adminUser;
   } catch (error) {
-    console.error('Error checking admin status:', error);
+    console.error("Error checking admin status:", error);
     return false;
   }
 }
@@ -55,25 +52,26 @@ async function getUserCompletionStats(user: any) {
 export async function GET(req: NextRequest) {
   try {
     await connect();
-    
+
     const session = await getServerSession(authOptions);
     if (!session || !session.user?.email) {
       return createErrorResponse("Unauthorized", 401);
     }
 
     // Check if user is admin (now queries database)
-    if (!await isAdmin(session.user.email)) {
-      return createErrorResponse("Access denied. Admin privileges required.", 403);
+    if (!(await isAdmin(session.user.email))) {
+      return createErrorResponse(
+        "Access denied. Admin privileges required.",
+        403
+      );
     }
 
     const users = await UserSchema.find({})
-      .select('name email image totalScore customBadges createdAt')
+      .select("name email image totalScore customBadges createdAt")
       .sort({ totalScore: -1 })
       .lean();
 
-    const usersWithStats = await Promise.all(
-      users.map(getUserCompletionStats)
-    );
+    const usersWithStats = await Promise.all(users.map(getUserCompletionStats));
 
     return NextResponse.json({
       success: true,

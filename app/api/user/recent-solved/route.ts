@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
@@ -12,7 +12,7 @@ export const runtime = "nodejs";
 export async function GET(req: NextRequest) {
   try {
     await connect();
-    
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return new Response("Unauthorized", { status: 401 });
@@ -27,31 +27,32 @@ export async function GET(req: NextRequest) {
     }
 
     // Get user's solved questions
-    const userQuestions = await UserQuestionModel.find({ userId: user.id })
-      .limit(10); // Limit to last 10 solved questions
+    const userQuestions = await UserQuestionModel.find({
+      userId: user.id,
+    }).limit(10); // Limit to last 10 solved questions
 
     if (userQuestions.length === 0) {
       return NextResponse.json([]);
     }
 
     // Get the question details for each solved question
-    const questionIds = userQuestions.map(uq => uq.questionId);
+    const questionIds = userQuestions.map((uq) => uq.questionId);
     const questions = await QuestionModel.find({ _id: { $in: questionIds } })
-      .select('title category points description createdAt') // Don't include flag
+      .select("title category points description createdAt") // Don't include flag
       .sort({ createdAt: -1 }); // Sort by when questions were created (most recent first)
 
     // Create a map for quick lookup of user question data
     const userQuestionMap = new Map();
-    userQuestions.forEach(uq => {
+    userQuestions.forEach((uq) => {
       userQuestionMap.set(uq.questionId.toString(), uq);
     });
 
     // Transform the data to match the expected format
     const recentSolved = questions
-      .map(question => {
+      .map((question) => {
         const userQuestion = userQuestionMap.get(question._id.toString());
         if (!userQuestion) return null;
-        
+
         return {
           _id: question._id,
           title: question.title,
@@ -59,13 +60,12 @@ export async function GET(req: NextRequest) {
           points: question.points,
           description: question.description,
           solvedAt: userQuestion.createdAt, // When the user solved it
-          questionCreatedAt: question.createdAt // When the question was created
+          questionCreatedAt: question.createdAt, // When the question was created
         };
       })
-      .filter(item => item !== null); // Remove null entries
+      .filter((item) => item !== null); // Remove null entries
 
     return NextResponse.json(recentSolved);
-
   } catch (error) {
     console.error("Error fetching recent solved questions:", error);
     return NextResponse.json(
