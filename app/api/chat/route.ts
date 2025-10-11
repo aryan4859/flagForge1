@@ -4,7 +4,6 @@ import Problems from "@/models/qustionsSchema";
 import type { NextRequest } from "next/server";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "YOUR_KEY_HERE";
-
 export async function POST(req: NextRequest) {
   try {
     const { message, challengeId, userId, hintLevel } = await req.json();
@@ -26,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     // Construct context
     const systemPrompt = `
-You are FlagForge's CTF assistant your name is Hintsy. 
+You are FlagForge's CTF assistant your name is Hintsye. 
 Help the user understand and solve the challenge but never reveal the flag directly. 
 Provide progressive guidance based on hints.
 
