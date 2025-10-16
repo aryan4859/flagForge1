@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import BadgeTemplate from "@/models/badgeTemplateSchema";
 import User from "@/models/userSchema";
 import mongoose from "mongoose";
@@ -14,17 +14,26 @@ export async function DELETE(request: NextRequest) {
     const { templateId } = body;
 
     if (!templateId) {
-      return NextResponse.json({ error: "Template ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Template ID is required" },
+        { status: 400 }
+      );
     }
 
     if (!mongoose.Types.ObjectId.isValid(templateId)) {
-      return NextResponse.json({ error: "Invalid template ID format" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid template ID format" },
+        { status: 400 }
+      );
     }
 
     // Check if template exists
     const template = await BadgeTemplate.findById(templateId);
     if (!template) {
-      return NextResponse.json({ error: "Badge template not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Badge template not found" },
+        { status: 404 }
+      );
     }
 
     // Check if template is being used in any assigned badges
@@ -33,11 +42,14 @@ export async function DELETE(request: NextRequest) {
     });
 
     if (usageCount > 0) {
-      return NextResponse.json({
-        error: `Cannot delete template. It is currently used by ${usageCount} assigned badge(s).`,
-        inUse: true,
-        usageCount,
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: `Cannot delete template. It is currently used by ${usageCount} assigned badge(s).`,
+          inUse: true,
+          usageCount,
+        },
+        { status: 400 }
+      );
     }
 
     // Delete the template
@@ -53,9 +65,11 @@ export async function DELETE(request: NextRequest) {
       },
       message: "Badge template deleted successfully",
     });
-
   } catch (error) {
     console.error("Badge template deletion error:", error);
-    return NextResponse.json({ error: "Failed to delete badge template" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete badge template" },
+      { status: 500 }
+    );
   }
 }

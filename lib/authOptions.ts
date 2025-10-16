@@ -1,6 +1,6 @@
 import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import UserModel from "@/models/userSchema";
 import { TokenBlacklistService } from "./tokenBlacklist";
 import { randomUUID } from "crypto";

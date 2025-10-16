@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import UserSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 

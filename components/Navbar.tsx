@@ -5,10 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/flagforge-logo.png";
 import { CgMenuRightAlt } from "react-icons/cg";
-import { NavbarData } from "@/utlis/data";
+import { NavbarData } from "@/utils/data";
 import { NavbarItems } from "@/interfaces";
 import { useSession } from "next-auth/react";
-import { signOut } from "@/utlis/auth";
+import { signOut } from "@/utils/auth";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -23,8 +23,8 @@ import { useTheme } from "@/context/ThemeContext";
 
 const NavItem = ({ href, tags, onClick, style }: NavbarItems) => (
   <li onClick={onClick}>
-    <Link 
-      href={href} 
+    <Link
+      href={href}
       className={cn(
         "block w-full rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-600 dark:hover:text-red-400 text-gray-700 dark:text-gray-300 font-medium touch-manipulation active:scale-95",
         style
@@ -47,11 +47,11 @@ const Navbar: React.FC = () => {
       <nav className="flex justify-between w-full items-center max-w-7xl mx-auto">
         <Link href="/">
           <div className="flex items-center text-xl font-bold transition-all hover:opacity-80 duration-300 p-2 -ml-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 touch-manipulation active:scale-95">
-            <Image 
-              src={logo} 
-              alt="logo" 
-              height={60} 
-              width={60} 
+            <Image
+              src={logo}
+              alt="logo"
+              height={60}
+              width={60}
               className="sm:h-[70px] sm:w-[70px]"
             />
             <span className="ml-2 text-xl sm:text-2xl text-gray-900 dark:text-gray-100">
@@ -154,7 +154,7 @@ const Navbar: React.FC = () => {
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="mt-4 space-y-2">
                         <Link
                           href="/profile"
@@ -166,7 +166,7 @@ const Navbar: React.FC = () => {
                         <button
                           onClick={() => {
                             handleMenuClick();
-                           async() => await signOut();
+                            async () => await signOut();
                           }}
                           className="flex items-center w-full px-4 py-3 text-base font-medium text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300 touch-manipulation active:scale-95"
                         >
@@ -240,7 +240,7 @@ const Navbar: React.FC = () => {
                   <DropdownMenuItem>
                     <button
                       className="w-full text-left text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400"
-                      onClick={async() => await signOut()}
+                      onClick={async () => await signOut()}
                     >
                       Sign Out
                     </button>

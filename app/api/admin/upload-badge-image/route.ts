@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import BadgeImageModel from "@/models/badgeTemplateSchema";
@@ -40,9 +40,17 @@ export async function POST(request: NextRequest) {
     const name = (formData.get("name") as string) || "unnamed";
     const uploadedBy = (formData.get("uploadedBy") as string) || "unknown";
 
-    if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    if (!file)
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
 
-    const allowedTypes = ["image/png","image/jpeg","image/jpg","image/webp","image/gif","image/svg+xml"];
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/webp",
+      "image/gif",
+      "image/svg+xml",
+    ];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
         { error: "Invalid file type. Allowed: PNG, JPG, WebP, GIF, SVG." },
@@ -52,7 +60,10 @@ export async function POST(request: NextRequest) {
 
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      return NextResponse.json({ error: "File too large. Max size: 5MB." }, { status: 400 });
+      return NextResponse.json(
+        { error: "File too large. Max size: 5MB." },
+        { status: 400 }
+      );
     }
 
     const timestamp = Date.now();
@@ -88,10 +99,12 @@ export async function POST(request: NextRequest) {
       imageId: badgeDoc._id,
       message: "Badge image uploaded successfully",
     });
-
   } catch (error) {
     console.error("❌ Badge image upload error:", error);
-    return NextResponse.json({ error: "Failed to upload badge image" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to upload badge image" },
+      { status: 500 }
+    );
   }
 }
 
@@ -104,13 +117,19 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const imagePath = searchParams.get("path");
     if (!imagePath || !imagePath.startsWith("/badges/images/")) {
-      return NextResponse.json({ error: "Invalid image path" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid image path" },
+        { status: 400 }
+      );
     }
 
     await connect();
     const badgeDoc = await BadgeImageModel.findOne({ path: imagePath });
     if (!badgeDoc) {
-      return NextResponse.json({ error: "Badge image not found in database" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Badge image not found in database" },
+        { status: 404 }
+      );
     }
 
     await badgeDoc.deleteOne();
@@ -124,9 +143,11 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: "Badge image deleted successfully",
     });
-
   } catch (error) {
     console.error("❌ Badge image deletion error:", error);
-    return NextResponse.json({ error: "Failed to delete badge image" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete badge image" },
+      { status: 500 }
+    );
   }
 }

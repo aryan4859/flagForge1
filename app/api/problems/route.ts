@@ -1,4 +1,4 @@
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
 import QuestionModel from "@/models/qustionsSchema";
 import { Questions } from "@/interfaces";
@@ -7,7 +7,7 @@ import userSchema from "@/models/userSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
-import { sendDiscordNotification } from "@/utlis/discordNotifier";
+import { sendDiscordNotification } from "@/utils/discordNotifier";
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {

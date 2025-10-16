@@ -1,6 +1,6 @@
 // api/badge-images/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";

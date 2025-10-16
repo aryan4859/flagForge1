@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import connectDB from "@/utlis/db";
+import connectDB from "@/utils/db";
 import userSchema from "@/models/userSchema";
 import ResourceModel from "@/models/Resource";
 
