@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Clock, Plus, X, Lightbulb, AlertCircle, CheckCircle } from 'lucide-react';
+import { Clock, Plus, X, Lightbulb, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import Loading from '@/components/loading';
 
 // Type definitions
@@ -18,6 +18,15 @@ interface FormData {
   timeLimit: string;
   timeLimitUnit: 'hours' | 'days' | 'weeks';
   uploadedBy: string;
+  difficulty: string;
+}
+
+interface DifficultyFactors {
+  multifacetedSkills: number;
+  complexCode: number;
+  multipleSteps: number;
+  dynamicElements: number;
+  hiddenAttackVectors: number;
 }
 
 interface Hint {
@@ -55,8 +64,154 @@ const TIME_UNITS = [
   { value: 'weeks', label: 'Weeks' }
 ];
 
-// Move InputField OUTSIDE the main component to prevent recreation
-const InputField = ({ id, type = "text", placeholder, required = false, children, formData, handleChange }: {
+// Difficulty factor descriptions
+const FACTOR_DESCRIPTIONS = {
+  multifacetedSkills: "Does this challenge require multiple skill sets? (e.g., web + crypto, forensics + reverse engineering)",
+  complexCode: "Does it involve complex code analysis, custom payloads, or advanced bypasses?",
+  multipleSteps: "Are there multiple distinct steps to solve this challenge?",
+  dynamicElements: "Does the challenge have dynamic or changing elements? (e.g., rotating flags, time-based components)",
+  hiddenAttackVectors: "Does it require finding non-obvious or hidden attack vectors?"
+};
+
+const calculateDifficulty = (factors: DifficultyFactors) => {
+  // Weighted calculation based on the GitHub calculator
+  const weights = {
+    multifacetedSkills: 0.20,
+    complexCode: 0.25,
+    multipleSteps: 0.20,
+    dynamicElements: 0.20,
+    hiddenAttackVectors: 0.15
+  };
+
+  const totalScore = (
+    factors.multifacetedSkills * weights.multifacetedSkills +
+    factors.complexCode * weights.complexCode +
+    factors.multipleSteps * weights.multipleSteps +
+    factors.dynamicElements * weights.dynamicElements +
+    factors.hiddenAttackVectors * weights.hiddenAttackVectors
+  );
+
+  // Normalize to 0-5 scale
+  const normalizedScore = totalScore;
+  
+  // Calculate points (50-250 range based on difficulty)
+  const points = Math.round(50 + (normalizedScore / 5) * 200);
+  
+  // Determine difficulty level
+  let difficulty = 'Easy';
+  let stars = 1;
+  
+  if (normalizedScore >= 4.2) {
+    difficulty = 'Expert';
+    stars = 5;
+  } else if (normalizedScore >= 3.5) {
+    difficulty = 'Hard';
+    stars = 4;
+  } else if (normalizedScore >= 2.5) {
+    difficulty = 'Medium';
+    stars = 3;
+  } else if (normalizedScore >= 1.5) {
+    difficulty = 'Easy-Medium';
+    stars = 2;
+  }
+  
+  return { points, difficulty, score: normalizedScore.toFixed(2), stars };
+};
+
+const DifficultySlider = ({ label, value, onChange, description }: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  description: string;
+}) => (
+  <div className="space-y-2">
+    <div className="flex items-center justify-between">
+      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+      <span className="text-sm font-bold text-rose-500 dark:text-rose-400">{value}</span>
+    </div>
+    <div className="group relative">
+      <input
+        type="range"
+        min="1"
+        max="5"
+        step="1"
+        value={value}
+        onChange={(e) => onChange(parseInt(e.target.value))}
+        className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-rose-500"
+      />
+      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+      </div>
+    </div>
+    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-start gap-1">
+      <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+      <span>{description}</span>
+    </p>
+  </div>
+);
+
+const DifficultyDisplay = ({ score, difficulty, points, stars }: {
+  score: string;
+  difficulty: string;
+  points: number;
+  stars: number;
+}) => {
+  const percentage = (parseFloat(score) / 5) * 100;
+  
+  return (
+    <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-rose-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 rounded-xl border-2 border-rose-200 dark:border-rose-800">
+      <div className="relative w-32 h-32 mb-4">
+        <svg className="transform -rotate-90 w-32 h-32">
+          <circle
+            cx="64"
+            cy="64"
+            r="56"
+            stroke="currentColor"
+            strokeWidth="8"
+            fill="none"
+            className="text-gray-200 dark:text-gray-600"
+          />
+          <circle
+            cx="64"
+            cy="64"
+            r="56"
+            stroke="currentColor"
+            strokeWidth="8"
+            fill="none"
+            strokeDasharray={`${2 * Math.PI * 56}`}
+            strokeDashoffset={`${2 * Math.PI * 56 * (1 - percentage / 100)}`}
+            className="text-rose-500 dark:text-rose-400 transition-all duration-500"
+            strokeLinecap="round"
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-3xl font-bold text-gray-800 dark:text-gray-200">{Math.round(percentage)}%</span>
+        </div>
+      </div>
+      
+      <div className="text-center space-y-2">
+        <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+          points: {score}/5.00
+        </p>
+        <p className="text-2xl font-bold text-rose-600 dark:text-rose-400">{difficulty}</p>
+        <div className="flex gap-1 justify-center">
+          {[...Array(5)].map((_, i) => (
+            <span key={i} className={`text-xl ${i < stars ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>
+              ★
+            </span>
+          ))}
+        </div>
+        <p className="text-3xl font-bold text-gray-800 dark:text-gray-200">{points} pts</p>
+      </div>
+    </div>
+  );
+};
+
+const InputField = ({ id, type = "text", placeholder, required = false, children, formData, handleChange, disabled = false }: {
   id: keyof FormData;
   type?: string;
   placeholder?: string;
@@ -64,6 +219,7 @@ const InputField = ({ id, type = "text", placeholder, required = false, children
   children?: React.ReactNode;
   formData: FormData;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  disabled?: boolean;
 }) => (
   <div>
     <label className={styles.label}>{children || id.charAt(0).toUpperCase() + id.slice(1)}</label>
@@ -73,21 +229,20 @@ const InputField = ({ id, type = "text", placeholder, required = false, children
       placeholder={placeholder}
       value={formData[id] as string}
       onChange={handleChange}
-      className={styles.input}
+      className={`${styles.input} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       required={required}
+      disabled={disabled}
       {...(type === "number" && { min: id === "points" ? "1" : "0" })}
     />
   </div>
 );
 
-// Move Alert outside as well
 const Alert = ({ type, message }: { type: 'error' | 'success'; message: string }) => (
   <div className={`${styles.alert} ${type === 'error' ? 'bg-white dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'}`}>
     {message}
   </div>
 );
 
-// Move DetailRow outside as well
 const DetailRow = ({ label, value, isMono = false }: { label: string; value: string; isMono?: boolean }) => (
   <div>
     <span className="font-semibold text-gray-700 dark:text-gray-300">{label}:</span>
@@ -100,7 +255,15 @@ const DetailRow = ({ label, value, isMono = false }: { label: string; value: str
 const UploadPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     title: "", flag: "", description: "", points: "", category: "All",
-    link: "", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days", uploadedBy: ""
+    link: "", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days", uploadedBy: "", difficulty: ""
+  });
+  
+  const [difficultyFactors, setDifficultyFactors] = useState<DifficultyFactors>({
+    multifacetedSkills: 2,
+    complexCode: 2,
+    multipleSteps: 2,
+    dynamicElements: 2,
+    hiddenAttackVectors: 2
   });
   
   const [hints, setHints] = useState<Hint[]>([{ id: 1, text: "", pointsDeduction: "" }]);
@@ -115,6 +278,16 @@ const UploadPage: React.FC = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  // Calculate difficulty whenever factors change
+  useEffect(() => {
+    const result = calculateDifficulty(difficultyFactors);
+    setFormData(prev => ({
+      ...prev,
+      points: result.points.toString(),
+      difficulty: result.difficulty
+    }));
+  }, [difficultyFactors]);
+
   // Authentication and admin check
   useEffect(() => {
     const checkAuthAndAdmin = async () => {
@@ -127,32 +300,24 @@ const UploadPage: React.FC = () => {
 
       try {
         setAdminCheckLoading(true);
-        console.log('Checking admin status for uploads page:', session.user.email);
-        
         const response = await fetch('/api/auth/check-admin', {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           cache: 'no-cache'
         });
         
         const data = await response.json();
-        console.log('Admin check response in uploads:', response.status, data);
         
         if (response.ok && data.isAdmin) {
-          console.log('Admin access verified for uploads page');
           setIsAuthenticated(true);
-          // Set the uploadedBy field
           const username = session.user.name || session.user.email?.split('@')[0] || 'admin';
           setFormData(prev => ({ ...prev, uploadedBy: username }));
         } else {
-          console.log('Admin access denied for uploads page:', data.message);
           router.push('/roles/developers/admins/auth');
           return;
         }
       } catch (error) {
-        console.error('Error checking admin status in uploads:', error);
+        console.error('Error checking admin status:', error);
         router.push('/roles/developers/admins/auth');
         return;
       } finally {
@@ -172,6 +337,10 @@ const UploadPage: React.FC = () => {
       ...prev, 
       [id]: type === 'checkbox' ? checked : value 
     }));
+  };
+
+  const updateDifficultyFactor = (factor: keyof DifficultyFactors, value: number) => {
+    setDifficultyFactors(prev => ({ ...prev, [factor]: value }));
   };
 
   const addHint = (): void => {
@@ -205,7 +374,14 @@ const UploadPage: React.FC = () => {
     setFormData({
       title: "", flag: "", description: "", points: "", category: "All",
       link: "", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days",
-      uploadedBy: formData.uploadedBy
+      uploadedBy: formData.uploadedBy, difficulty: ""
+    });
+    setDifficultyFactors({
+      multifacetedSkills: 2,
+      complexCode: 2,
+      multipleSteps: 2,
+      dynamicElements: 2,
+      hiddenAttackVectors: 2
     });
     setHints([{ id: 1, text: "", pointsDeduction: "" }]);
   };
@@ -297,6 +473,7 @@ const UploadPage: React.FC = () => {
                   <DetailRow label="Title" value={formData.title} />
                   <DetailRow label="Category" value={formData.category} />
                   <DetailRow label="Points" value={formData.points} />
+                  <DetailRow label="Difficulty" value={formData.difficulty} />
                   <DetailRow label="Uploaded by" value={formData.uploadedBy} />
                 </div>
                 
@@ -371,19 +548,19 @@ const UploadPage: React.FC = () => {
     );
   };
 
-  // Show loading while checking session or admin status
   if (status === 'loading' || loading || adminCheckLoading) {
     return <Loading />;
   }
 
-  // If not authenticated, don't render anything (redirect will happen)
   if (!isAuthenticated || !session?.user) {
     return null;
   }
 
+  const difficultyResult = calculateDifficulty(difficultyFactors);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-rose-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold text-rose-500 dark:text-rose-400">
             Upload CTF Challenge
@@ -396,216 +573,275 @@ const UploadPage: React.FC = () => {
           </button>
         </div>
         
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8">
-          <div className="space-y-6">
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InputField 
-                id="title" 
-                placeholder="CTF Challenge Title" 
-                required 
-                formData={formData} 
-                handleChange={handleChange}
-              >
-                Title/Heading
-              </InputField>
-              <InputField 
-                id="flag" 
-                placeholder="flag{example_flag_here}" 
-                required 
-                formData={formData} 
-                handleChange={handleChange}
-              >
-                Flag
-              </InputField>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Form - Left Side */}
+          <div className="lg:col-span-2">
+            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8">
+              <div className="space-y-6">
+                {/* Basic Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <InputField 
+                    id="title" 
+                    placeholder="CTF Challenge Title" 
+                    required 
+                    formData={formData} 
+                    handleChange={handleChange}
+                  >
+                    Title/Heading
+                  </InputField>
+                  <InputField 
+                    id="flag" 
+                    placeholder="flag{example_flag_here}" 
+                    required 
+                    formData={formData} 
+                    handleChange={handleChange}
+                  >
+                    Flag
+                  </InputField>
+                </div>
 
-            {/* Description */}
-            <div>
-              <label className={styles.label}>Description</label>
-              <textarea
-                id="description"
-                placeholder="Detailed description of the CTF challenge..."
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-                className={`${styles.input} resize-none`}
-                required
+                {/* Description */}
+                <div>
+                  <label className={styles.label}>Description</label>
+                  <textarea
+                    id="description"
+                    placeholder="Detailed description of the CTF challenge..."
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={4}
+                    className={`${styles.input} resize-none`}
+                    required
+                  />
+                </div>
+
+                {/* Category and Link */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className={styles.label}>Category</label>
+                    <select
+                      id="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      className={styles.input}
+                    >
+                      {CATEGORIES.map(cat => <option key={cat}>{cat}</option>)}
+                    </select>
+                  </div>
+                  
+                  <InputField 
+                    id="link" 
+                    type="url" 
+                    placeholder="https://example.com/resource" 
+                    formData={formData} 
+                    handleChange={handleChange}
+                  >
+                    Resource Link
+                  </InputField>
+                </div>
+
+                {/* Time Limit Section */}
+                <div className={styles.section}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Clock className="w-5 h-5 text-rose-500 dark:text-rose-400" />
+                    <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Time Limit Settings</h3>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <input
+                        id="isTimeLimited"
+                        type="checkbox"
+                        checked={formData.isTimeLimited}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-rose-600 bg-gray-100 border-gray-300 rounded focus:ring-rose-500"
+                      />
+                      <label htmlFor="isTimeLimited" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Enable time-limited room
+                      </label>
+                    </div>
+                    
+                    {formData.isTimeLimited && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <InputField 
+                          id="timeLimit" 
+                          type="number" 
+                          placeholder="1" 
+                          required={formData.isTimeLimited} 
+                          formData={formData} 
+                          handleChange={handleChange}
+                        >
+                          Duration
+                        </InputField>
+                        
+                        <div>
+                          <label className={styles.label}>Unit</label>
+                          <select
+                            id="timeLimitUnit"
+                            value={formData.timeLimitUnit}
+                            onChange={handleChange}
+                            className="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 py-3 px-4 rounded-lg focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200"
+                          >
+                            {TIME_UNITS.map(unit => (
+                              <option key={unit.value} value={unit.value}>{unit.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {formData.isTimeLimited && formData.timeLimit && calculateExpiryDate() && (
+                      <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                        <p className="text-sm text-blue-700 dark:text-blue-400">
+                          <strong>Room will expire:</strong> {calculateExpiryDate()?.toLocaleString()}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Hints Section */}
+                <div className={styles.section}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <Lightbulb className="w-5 h-5 text-rose-500 dark:text-rose-400" />
+                      <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Hints</h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={addHint}
+                      className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition duration-200"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Hint
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {hints.map((hint, index) => (
+                      <div key={hint.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Hint {index + 1}</h4>
+                          {hints.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeHint(hint.id)}
+                              className="text-red-500 hover:text-red-700 transition duration-200"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="md:col-span-2">
+                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Hint Text</label>
+                            <textarea
+                              placeholder="Enter hint text..."
+                              value={hint.text}
+                              onChange={(e) => updateHint(hint.id, 'text', e.target.value)}
+                              rows={2}
+                              className="w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 resize-none placeholder-gray-500 dark:placeholder-gray-400"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Points Deduction</label>
+                            <input
+                              type="number"
+                              placeholder="10"
+                              min="0"
+                              value={hint.pointsDeduction}
+                              onChange={(e) => updateHint(hint.id, 'pointsDeduction', e.target.value)}
+                              className="w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 placeholder-gray-500 dark:placeholder-gray-400"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Messages */}
+                {error && <Alert type="error" message={error} />}
+                {success && <Alert type="success" message={success} />}
+
+                {/* Submit Button */}
+                <div className="flex justify-center pt-6">
+                  <button
+                    type="submit"
+                    onClick={handleInitialSubmit}
+                    disabled={isSubmitting}
+                    className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 rounded-xl px-8 py-3 text-white font-bold text-lg transition duration-200 focus:outline-none focus:ring-4 focus:ring-rose-200 dark:focus:ring-rose-800 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Upload Challenge 🚀
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Difficulty Calculator - Right Side */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Difficulty Display */}
+            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 text-center">
+                Challenge Rating
+              </h2>
+              <DifficultyDisplay 
+                score={difficultyResult.score}
+                difficulty={difficultyResult.difficulty}
+                points={difficultyResult.points}
+                stars={difficultyResult.stars}
               />
             </div>
 
-            {/* Points, Category, Link */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <InputField 
-                id="points" 
-                type="number" 
-                placeholder="100" 
-                required 
-                formData={formData} 
-                handleChange={handleChange}
-              >
-                Points
-              </InputField>
-              
-              <div>
-                <label className={styles.label}>Category</label>
-                <select
-                  id="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className={styles.input}
-                >
-                  {CATEGORIES.map(cat => <option key={cat}>{cat}</option>)}
-                </select>
-              </div>
-              
-              <InputField 
-                id="link" 
-                type="url" 
-                placeholder="https://example.com/resource" 
-                formData={formData} 
-                handleChange={handleChange}
-              >
-                Resource Link
-              </InputField>
-            </div>
-
-            {/* Time Limit Section */}
-            <div className={styles.section}>
-              <div className="flex items-center gap-3 mb-4">
-                <Clock className="w-5 h-5 text-rose-500 dark:text-rose-400" />
-                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Time Limit Settings</h3>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <input
-                    id="isTimeLimited"
-                    type="checkbox"
-                    checked={formData.isTimeLimited}
-                    onChange={handleChange}
-                    className="w-4 h-4 text-rose-600 bg-gray-100 border-gray-300 rounded focus:ring-rose-500"
-                  />
-                  <label htmlFor="isTimeLimited" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Enable time-limited room
-                  </label>
-                </div>
+            {/* Difficulty Factors */}
+            <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                Difficulty Factors
+              </h2>
+              <div className="space-y-6">
+                <DifficultySlider
+                  label="Multifaceted Skills Needed"
+                  value={difficultyFactors.multifacetedSkills}
+                  onChange={(val) => updateDifficultyFactor('multifacetedSkills', val)}
+                  description={FACTOR_DESCRIPTIONS.multifacetedSkills}
+                />
                 
-                {formData.isTimeLimited && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <InputField 
-                      id="timeLimit" 
-                      type="number" 
-                      placeholder="1" 
-                      required={formData.isTimeLimited} 
-                      formData={formData} 
-                      handleChange={handleChange}
-                    >
-                      Duration
-                    </InputField>
-                    
-                    <div>
-                      <label className={styles.label}>Unit</label>
-                      <select
-                        id="timeLimitUnit"
-                        value={formData.timeLimitUnit}
-                        onChange={handleChange}
-                        className="w-full bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 py-3 px-4 rounded-lg focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200"
-                      >
-                        {TIME_UNITS.map(unit => (
-                          <option key={unit.value} value={unit.value}>{unit.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                )}
+                <DifficultySlider
+                  label="Complex Code/Payload/Bypass"
+                  value={difficultyFactors.complexCode}
+                  onChange={(val) => updateDifficultyFactor('complexCode', val)}
+                  description={FACTOR_DESCRIPTIONS.complexCode}
+                />
                 
-                {formData.isTimeLimited && formData.timeLimit && calculateExpiryDate() && (
-                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <p className="text-sm text-blue-700 dark:text-blue-400">
-                      <strong>Room will expire:</strong> {calculateExpiryDate()?.toLocaleString()}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Hints Section */}
-            <div className={styles.section}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <Lightbulb className="w-5 h-5 text-rose-500 dark:text-rose-400" />
-                  <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Hints</h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={addHint}
-                  className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition duration-200"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Hint
-                </button>
+                <DifficultySlider
+                  label="Multiple Steps of Complexity"
+                  value={difficultyFactors.multipleSteps}
+                  onChange={(val) => updateDifficultyFactor('multipleSteps', val)}
+                  description={FACTOR_DESCRIPTIONS.multipleSteps}
+                />
+                
+                <DifficultySlider
+                  label="Dynamic Elements and Updates"
+                  value={difficultyFactors.dynamicElements}
+                  onChange={(val) => updateDifficultyFactor('dynamicElements', val)}
+                  description={FACTOR_DESCRIPTIONS.dynamicElements}
+                />
+                
+                <DifficultySlider
+                  label="Hidden Attack Vectors"
+                  value={difficultyFactors.hiddenAttackVectors}
+                  onChange={(val) => updateDifficultyFactor('hiddenAttackVectors', val)}
+                  description={FACTOR_DESCRIPTIONS.hiddenAttackVectors}
+                />
               </div>
               
-              <div className="space-y-4">
-                {hints.map((hint, index) => (
-                  <div key={hint.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Hint {index + 1}</h4>
-                      {hints.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => removeHint(hint.id)}
-                          className="text-red-500 hover:text-red-700 transition duration-200"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Hint Text</label>
-                        <textarea
-                          placeholder="Enter hint text..."
-                          value={hint.text}
-                          onChange={(e) => updateHint(hint.id, 'text', e.target.value)}
-                          rows={2}
-                          className="w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 resize-none placeholder-gray-500 dark:placeholder-gray-400"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Points Deduction</label>
-                        <input
-                          type="number"
-                          placeholder="10"
-                          min="0"
-                          value={hint.pointsDeduction}
-                          onChange={(e) => updateHint(hint.id, 'pointsDeduction', e.target.value)}
-                          className="w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg py-2 px-3 focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 placeholder-gray-500 dark:placeholder-gray-400"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-xs text-blue-700 dark:text-blue-400">
+                  <strong>💡 Tip:</strong> Adjust the sliders based on the complexity of your challenge. The points and difficulty rating will automatically update.
+                </p>
               </div>
-            </div>
-
-            {/* Messages */}
-            {error && <Alert type="error" message={error} />}
-            {success && <Alert type="success" message={success} />}
-
-            {/* Submit Button */}
-            <div className="flex justify-center pt-6">
-              <button
-                type="submit"
-                onClick={handleInitialSubmit}
-                disabled={isSubmitting}
-                className="bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 rounded-xl px-8 py-3 text-white font-bold text-lg transition duration-200 focus:outline-none focus:ring-4 focus:ring-rose-200 dark:focus:ring-rose-800 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Upload Challenge 🚀
-              </button>
             </div>
           </div>
         </div>
