@@ -1,21 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
-import connect from '@/utlis/db';
-import UserSchema from '@/models/userSchema';
-import UserQuestionModel from '@/models/userQuestionSchema';
+import { NextRequest, NextResponse } from "next/server";
+import connect from "@/utils/db";
+import UserSchema from "@/models/userSchema";
+import UserQuestionModel from "@/models/userQuestionSchema";
 
 export const runtime = "nodejs";
 
-const DEFAULT_IMAGE = '/flagforge.gif';
+const DEFAULT_IMAGE = "/flagforge.gif";
 
 // Helper function to determine badge color based on score
 function getBadgeColor(totalScore: number): string {
-  if (totalScore >= 3000) return '#EAB308'; // Yellow for Flag Conqueror
-  if (totalScore >= 2000) return '#DC2626'; // Red for Forger
-  if (totalScore >= 1500) return '#EA580C'; // Orange for Cipher Hunter
-  if (totalScore >= 1000) return '#7C3AED'; // Purple for Hacker
-  if (totalScore >= 500) return '#059669'; // Green for Codebreaker
-  if (totalScore >= 200) return '#2563EB'; // Blue for Scout
-  return '#6B7280'; // Gray for Newbie
+  if (totalScore >= 3000) return "#EAB308"; // Yellow for Flag Conqueror
+  if (totalScore >= 2000) return "#DC2626"; // Red for Forger
+  if (totalScore >= 1500) return "#EA580C"; // Orange for Cipher Hunter
+  if (totalScore >= 1000) return "#7C3AED"; // Purple for Hacker
+  if (totalScore >= 500) return "#059669"; // Green for Codebreaker
+  if (totalScore >= 200) return "#2563EB"; // Blue for Scout
+  return "#6B7280"; // Gray for Newbie
 }
 
 // Helper function to calculate user level
@@ -31,26 +31,29 @@ function getLevel(score: number): string {
 
 // Helper function to validate user image URL
 function validateUserImage(userImage: any): string | null {
-  if (!userImage || 
-      typeof userImage !== 'string' || 
-      userImage.trim() === '' || 
-      userImage === 'undefined' || 
-      userImage === 'null' ||
-      userImage.toLowerCase() === 'null') {
+  if (
+    !userImage ||
+    typeof userImage !== "string" ||
+    userImage.trim() === "" ||
+    userImage === "undefined" ||
+    userImage === "null" ||
+    userImage.toLowerCase() === "null"
+  ) {
     return null;
   }
   return userImage;
 }
 
 function generateBadgeSVG(userData: any, userImage: string | null): string {
-  const { name, totalScore, rank, level, completedQuestions, customBadges } = userData;
+  const { name, totalScore, rank, level, completedQuestions, customBadges } =
+    userData;
   const badgeColor = getBadgeColor(totalScore);
   const specialBadgeCount = customBadges?.length || 0;
-  
-  const avatarContent = userImage 
+
+  const avatarContent = userImage
     ? `<image x="320" y="95" width="60" height="60" href="${userImage}" clip-path="url(#avatarClip)"/>`
     : `<image x="320" y="95" width="60" height="60" href="${DEFAULT_IMAGE}" clip-path="url(#avatarClip)"/>`;
-  
+
   return `<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -109,51 +112,53 @@ export async function GET(
 ) {
   try {
     await connect();
-    
+
     // Await the params since it's now a Promise in newer Next.js versions
     const { username } = await params;
-    
+
     // Find user by name (case-insensitive, trimmed, partial match safe)
     const user = await UserSchema.findOne({
-      name: { $regex: username.trim(), $options: 'i' }
-    }).select('name image totalScore customBadges createdAt');
-    
+      name: { $regex: username.trim(), $options: "i" },
+    }).select("name image totalScore customBadges createdAt");
+
     if (!user) {
-      return new NextResponse('User not found', { status: 404 });
+      return new NextResponse("User not found", { status: 404 });
     }
-    
+
     // Get completion stats
-    const completedQuestions = await UserQuestionModel.countDocuments({ 
-      userId: user._id 
+    const completedQuestions = await UserQuestionModel.countDocuments({
+      userId: user._id,
     });
-    
+
     // Calculate rank
-    const allUsers = await UserSchema.find({}).sort({ totalScore: -1 }).select('_id');
-    const userRank = allUsers.findIndex(u => u._id.toString() === user._id.toString()) + 1;
-    
+    const allUsers = await UserSchema.find({})
+      .sort({ totalScore: -1 })
+      .select("_id");
+    const userRank =
+      allUsers.findIndex((u) => u._id.toString() === user._id.toString()) + 1;
+
     // Validate and set user image
     const userImage = validateUserImage(user.image);
-    
+
     const userData = {
       name: user.name,
       totalScore: user.totalScore || 0,
       rank: userRank,
       level: getLevel(user.totalScore || 0),
       completedQuestions,
-      customBadges: user.customBadges || []
+      customBadges: user.customBadges || [],
     };
-    
+
     const svg = generateBadgeSVG(userData, userImage);
-    
+
     return new NextResponse(svg, {
       headers: {
-        'Content-Type': 'image/svg+xml',
-        'Cache-Control': 'public, max-age=300, s-maxage=300',
+        "Content-Type": "image/svg+xml",
+        "Cache-Control": "public, max-age=300, s-maxage=300",
       },
     });
-    
   } catch (error) {
-    console.error('Badge SVG generation error:', error);
-    return new NextResponse('Error generating badge', { status: 500 });
+    console.error("Badge SVG generation error:", error);
+    return new NextResponse("Error generating badge", { status: 500 });
   }
 }

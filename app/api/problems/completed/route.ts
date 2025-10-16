@@ -1,4 +1,4 @@
-import connect from "@/utlis/db";
+import connect from "@/utils/db";
 import { NextRequest, NextResponse } from "next/server";
 import QuestionModel from "@/models/qustionsSchema";
 import { HttpStatusCode } from "axios";
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
     // Get pagination parameters from URL
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
+    const page = parseInt(searchParams.get("page") || "1");
     const limit = 8; // Fixed to 8 items per page
     const skip = (page - 1) * limit;
 
@@ -38,30 +38,30 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total count of completed questions for pagination info
-    const totalCompletedCount = await UserQuestionModel.countDocuments({ 
-      userId: user._id 
+    const totalCompletedCount = await UserQuestionModel.countDocuments({
+      userId: user._id,
     });
 
     // Get paginated completed questions by this user, sorted by completion date (newest first)
-    const completedUserQuestions = await UserQuestionModel.find({ 
-      userId: user._id 
+    const completedUserQuestions = await UserQuestionModel.find({
+      userId: user._id,
     })
-    .sort({ createdAt: -1 }) // Sort by completion date, newest first
-    .skip(skip)
-    .limit(limit)
-    .populate({
-      path: 'questionId',
-      select: '-flag', // Exclude the flag field for security
-      model: QuestionModel
-    });
+      .sort({ createdAt: -1 }) // Sort by completion date, newest first
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "questionId",
+        select: "-flag", // Exclude the flag field for security
+        model: QuestionModel,
+      });
 
     // Extract the populated question data and add completion info
     const completedProblems = completedUserQuestions
-      .filter(userQuestion => userQuestion.questionId) // Filter out any null/undefined
-      .map(userQuestion => ({
+      .filter((userQuestion) => userQuestion.questionId) // Filter out any null/undefined
+      .map((userQuestion) => ({
         ...userQuestion.questionId.toObject(),
         completedAt: userQuestion.createdAt, // When they completed it
-        pointsEarned: userQuestion.questionId.points // Points they earned
+        pointsEarned: userQuestion.questionId.points, // Points they earned
       }));
 
     // Calculate pagination info
@@ -77,9 +77,8 @@ export async function GET(request: NextRequest) {
       totalPages,
       hasMore,
       hasPrevious,
-      itemsPerPage: limit
+      itemsPerPage: limit,
     });
-
   } catch (error: any) {
     console.error("Error fetching completed problems:", error);
     return NextResponse.json(
