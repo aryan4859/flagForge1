@@ -91,11 +91,9 @@ const calculateDifficulty = (factors: DifficultyFactors) => {
     factors.hiddenAttackVectors * weights.hiddenAttackVectors
   );
 
-  // Normalize to 0-5 scale
   const normalizedScore = totalScore;
   
-  // Calculate points (50-250 range based on difficulty)
-  const points = Math.round(50 + (normalizedScore / 5) * 200);
+  const points = Math.round(30 + (normalizedScore / 5) * 120);
   
   // Determine difficulty level
   let difficulty = 'Easy';
