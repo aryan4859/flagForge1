@@ -73,6 +73,7 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="robots" content="index, follow" />
+        <meta name="google-adsense-account" content="ca-pub-2506540900080142"></meta>
         <meta
           name="google-site-verification"
           content="your-google-verification-code"
