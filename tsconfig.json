@@ -32,8 +32,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "components/ProfileHeroBanner.tsx"  ],
+    ".next/types/**/*.ts", 
+    "components/ProfileHeroBanner.tsx"  ],
   "exclude": [
     "node_modules"
   ]

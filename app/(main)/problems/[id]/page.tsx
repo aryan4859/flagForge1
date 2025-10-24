@@ -74,6 +74,10 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const [availableHints, setAvailableHints] = useState<Hint[]>([]);
   const [hintLoading, setHintLoading] = useState<boolean>(false);
   const [usedHints, setUsedHints] = useState<number[]>([]);
+  const [chatHintStats, setChatHintStats] = useState({
+    totalPointsDeducted: 0,
+    totalHintsUsed: 0,
+  });
 
   // Duplicate prevention refs
   const lastSubmissionTime = useRef<number>(0);
@@ -256,6 +260,18 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       await fetchHints();
     }
     setShowHint(!showHint);
+  };
+
+  // Callback for chat hint usage
+  const handleChatPointsDeducted = (points: number, total: number) => {
+    setChatHintStats((prev) => ({
+      totalPointsDeducted: total,
+      totalHintsUsed: prev.totalHintsUsed + 1,
+    }));
+    
+    // Show a notification
+    setMessage(`Chat hint used! ${points} points deducted.`);
+    setTimeout(() => setMessage(null), 3000);
   };
 
   // Update time remaining every second for time-limited challenges
@@ -473,6 +489,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
             <FloatingChat
               userId={session?.user?.id || ""}
               challengeId={unwrappedParams.id}
+              onPointsDeducted={handleChatPointsDeducted}
             />
           </div>
 
@@ -488,6 +505,42 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
               <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
                 Expires on: {formatExpiryDate(problems.expiryDate)}
               </p>
+            </div>
+          )}
+
+          {/* Chat Assistant Usage Stats */}
+          {chatHintStats.totalHintsUsed > 0 && (
+            <div className="mt-6 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-orange-600 dark:text-orange-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div>
+                    <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">
+                      Chat Assistant Usage
+                    </p>
+                    <p className="text-xs text-orange-700 dark:text-orange-300">
+                      {chatHintStats.totalHintsUsed} chat hint{chatHintStats.totalHintsUsed !== 1 ? "s" : ""} requested
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-bold text-red-600 dark:text-red-400">
+                    -{chatHintStats.totalPointsDeducted}
+                  </p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">points deducted</p>
+                </div>
+              </div>
             </div>
           )}
 
@@ -647,7 +700,8 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                     message.includes("Right")
                       ? "text-green-600 dark:text-green-400"
                       : message.includes("points deducted") ||
-                        message.includes("Hint revealed")
+                        message.includes("Hint revealed") ||
+                        message.includes("Chat hint used")
                       ? "text-orange-600 dark:text-orange-400"
                       : "text-red-600 dark:text-red-500"
                   }`}

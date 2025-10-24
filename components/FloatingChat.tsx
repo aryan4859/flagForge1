@@ -4,66 +4,62 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import botAvatar from "@/public/aichatbot.png";
 
-type Msg = { id: string; role: "user" | "bot"; text: string };
+type Msg = {
+  id: string;
+  role: "user" | "bot";
+  text: string;
+  pointsDeducted?: number;
+  isHintRequest?: boolean;
+};
+
+interface FloatingChatProps {
+  userId?: string;
+  challengeId?: string;
+  onPointsDeducted?: (points: number, total: number) => void;
+}
 
 export default function FloatingChat({
   userId,
   challengeId,
-}: {
-  userId?: string;
-  challengeId?: string;
-}) {
+  onPointsDeducted,
+}: FloatingChatProps) {
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [hasGreeted, setHasGreeted] = useState(false);
+  const [totalPointsDeducted, setTotalPointsDeducted] = useState(0);
+  const [totalHintsUsed, setTotalHintsUsed] = useState(0);
 
-  const chatRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ bottom: 20, right: 20 });
-  const [dragging, setDragging] = useState(false);
-  const dragOffset = useRef({ x: 0, y: 0 });
-  const [isDragged, setIsDragged] = useState(false);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setDragging(true);
-    setIsDragged(true);
-    const rect = chatRef.current?.getBoundingClientRect();
-    if (rect) {
-      dragOffset.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
+  // Load chat stats on mount
+  useEffect(() => {
+    if (challengeId && userId) {
+      fetchChatStats();
+    }
+  }, [challengeId, userId]);
+
+  const fetchChatStats = async () => {
+    try {
+      const res = await fetch(`/api/chat/stats?challengeId=${challengeId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTotalPointsDeducted(data.totalPointsDeducted || 0);
+        setTotalHintsUsed(data.totalHintsUsed || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching chat stats:", error);
     }
   };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!dragging) return;
-    setPosition({
-      bottom: window.innerHeight - e.clientY - dragOffset.current.y,
-      right: window.innerWidth - e.clientX - dragOffset.current.x,
-    });
-  };
-
-  const handleMouseUp = () => setDragging(false);
-
-  useEffect(() => {
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [dragging]);
 
   useEffect(() => {
     if (isOpen && !hasGreeted) {
       const greetingMsg: Msg = {
         id: "greeting",
         role: "bot",
-        text: "Hi! I'm Hintsye 🐣 — your friendly challenge buddy. Ask me anything and I'll help you beat it, one step at a time!",
+        text: "Hi! I'm Hintsye 🐣 — your friendly challenge buddy. Ask me anything and I'll help you beat it, one step at a time!\n\n⚠️ Note: Asking for hints will deduct points from your score. Use wisely!",
       };
       setMessages([greetingMsg]);
       setHasGreeted(true);
@@ -83,7 +79,7 @@ export default function FloatingChat({
       text: msg,
     };
     setMessages((prev) => [...prev, newUserMsg]);
-    setInput(""); // Clear input immediately after sending
+    setInput("");
     setLoading(true);
 
     try {
@@ -99,10 +95,27 @@ export default function FloatingChat({
       });
 
       const data = await res.json();
+
+      // Update stats if points were deducted
+      if (data.pointsDeducted > 0) {
+        const newTotal = data.totalPointsDeducted || 0;
+        const newHintsUsed = data.totalChatHintsUsed || 0;
+        
+        setTotalPointsDeducted(newTotal);
+        setTotalHintsUsed(newHintsUsed);
+
+        // Notify parent component
+        if (onPointsDeducted) {
+          onPointsDeducted(data.pointsDeducted, newTotal);
+        }
+      }
+
       const newBotMsg: Msg = {
         id: Date.now().toString(),
         role: "bot",
         text: data.reply,
+        pointsDeducted: data.pointsDeducted || 0,
+        isHintRequest: data.isHintRequest || false,
       };
       setMessages((prev) => [...prev, newBotMsg]);
     } catch (error) {
@@ -120,21 +133,12 @@ export default function FloatingChat({
   }
 
   return (
-    <div
-      ref={chatRef}
-      style={{ 
-        bottom: `${position.bottom}px`, 
-        right: `${position.right}px`,
-      }}
-      className="fixed z-50"
-      onMouseDown={handleMouseDown}
-    >
+    <div className="fixed bottom-5 right-5 z-50">
       {/* Floating Icon */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer"
-          style={{ cursor: "pointer" }}
+          className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer relative"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -150,21 +154,24 @@ export default function FloatingChat({
               d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
             />
           </svg>
+          {totalHintsUsed > 0 && (
+            <span className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">
+              {totalHintsUsed}
+            </span>
+          )}
+          {totalPointsDeducted > 0 && (
+            <span className="absolute -bottom-1 -right-1 bg-orange-500 text-white text-[10px] rounded-full px-1.5 py-0.5 font-bold">
+              -{totalPointsDeducted}
+            </span>
+          )}
         </button>
       )}
 
       {/* Chat Popup */}
       {isOpen && (
-        <div 
-          className="w-96 h-[600px] bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden border border-gray-200"
-          style={{
-            position: 'absolute',
-            bottom: '70px',
-            right: '0',
-          }}
-        >
+        <div className="w-96 h-[600px] bg-white rounded-lg shadow-2xl flex flex-col overflow-hidden border border-gray-200">
           {/* Header */}
-          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 flex justify-between items-center cursor-move flex-shrink-0">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 flex justify-between items-center flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <Image
@@ -187,7 +194,6 @@ export default function FloatingChat({
             <button
               onClick={() => setIsOpen(false)}
               className="text-white hover:bg-white hover:bg-opacity-20 rounded-full w-8 h-8 flex items-center justify-center transition-all"
-              style={{ cursor: "pointer" }}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -203,6 +209,32 @@ export default function FloatingChat({
               </svg>
             </button>
           </div>
+
+          {/* Stats Bar */}
+          {totalHintsUsed > 0 && (
+            <div className="bg-yellow-50 border-b border-yellow-200 px-4 py-2 flex items-center justify-between text-xs flex-shrink-0">
+              <div className="flex items-center gap-2 text-yellow-800">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span className="font-medium">
+                  {totalHintsUsed} chat hint{totalHintsUsed !== 1 ? "s" : ""} used
+                </span>
+              </div>
+              <span className="font-semibold text-red-600">
+                -{totalPointsDeducted} pts
+              </span>
+            </div>
+          )}
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 min-h-0">
@@ -233,12 +265,31 @@ export default function FloatingChat({
                     className={`p-3 rounded-lg shadow-sm ${
                       m.role === "user"
                         ? "bg-red-600 text-white rounded-br-none"
+                        : m.isHintRequest
+                        ? "bg-yellow-50 text-gray-800 rounded-bl-none border border-yellow-300"
                         : "bg-white text-gray-800 rounded-bl-none border border-gray-200"
                     }`}
                   >
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">
                       {m.text}
                     </p>
+                    {m.pointsDeducted && m.pointsDeducted > 0 && (
+                      <div className="mt-2 pt-2 border-t border-yellow-300 flex items-center gap-1 text-xs font-semibold text-red-600">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-3 w-3"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        -{m.pointsDeducted} points
+                      </div>
+                    )}
                   </div>
                   <p
                     className={`text-xs text-gray-500 mt-1 px-1 ${
@@ -312,7 +363,6 @@ export default function FloatingChat({
                 onClick={() => sendMessage(input)}
                 disabled={loading || !input.trim()}
                 className="bg-red-600 hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed px-5 py-3 rounded-lg text-white font-medium transition-all shadow-sm hover:shadow-md flex items-center justify-center"
-                style={{ cursor: loading || !input.trim() ? "not-allowed" : "pointer" }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
