@@ -25,9 +25,9 @@ export default function Footer() {
 
   return (
     <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300 rounded-lg m-2 sm:m-4">
-      <div className="w-full max-w-screen-2xl mx-auto p-6 sm:p-4 md:py-8">
+      <div className="w-full max-w-screen-2xl mx-auto p-1">
         {/* Mobile-first layout */}
-        <div className="flex flex-col space-y-8 sm:space-y-6 md:space-y-0 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between">
           {/* Logo section */}
           <div className="flex justify-center md:justify-start">
             <Link
@@ -69,7 +69,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href="/about" 
-                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
+                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
                 >
                   About
                 </Link>
@@ -77,7 +77,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href="/resources" 
-                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
+                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
                 >
                   Resources
                 </Link>
@@ -85,7 +85,7 @@ export default function Footer() {
               <li>
                 <Link 
                   href="/contact" 
-                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
+                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
                 >
                   Contact
                 </Link>
@@ -93,7 +93,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/privacy-policy"
-                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
+                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
                 >
                   Privacy Policy
                 </Link>
@@ -101,7 +101,7 @@ export default function Footer() {
               <li className="sm:col-span-2 md:col-span-1">
                 <Link 
                   href="/licensing" 
-                  className="block py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
+                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
                 >
                   Licensing
                 </Link>
@@ -118,7 +118,7 @@ export default function Footer() {
             © Maintained By{" "}-
             <Link 
               href="https://www.linkedin.com/company/shyenasec/" 
-              className="inline-block py-1 px-2 -mx-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0"
+              className="inline-block py-1 px-2 -mx-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0"
             >
               - {""}Shyena Inc.
             </Link>
