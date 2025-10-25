@@ -43,10 +43,10 @@ const Navbar: React.FC = () => {
   const handleMenuClick = () => setOpen(!open);
 
   return (
-    <header className="bg-white dark:bg-gray-900 top-0 shadow-lg shadow-gray-100 dark:shadow-gray-800 w-full py-3 md:py-2 md:px-8 px-4 sticky z-50 transition-colors duration-300">
+    <header className="bg-white dark:bg-gray-900 top-0 shadow-lg shadow-gray-100 dark:shadow-gray-800 w-full md:py-2 md:px-8 px-4 sticky z-50 transition-colors duration-300">
       <nav className="flex justify-between w-full items-center max-w-7xl mx-auto">
         <Link href="/">
-          <div className="flex items-center text-xl font-bold transition-all hover:opacity-80 duration-300 p-2 -ml-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 touch-manipulation active:scale-95">
+          <div className="flex items-center text-xl font-bold transition-all hover:opacity-80 duration-300  -ml-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 touch-manipulation active:scale-95">
             <Image
               src={logo}
               alt="logo"
