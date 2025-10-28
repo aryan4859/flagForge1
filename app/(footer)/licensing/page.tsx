@@ -1,5 +1,35 @@
 import Link from "next/link";
 import { FaGithub } from "react-icons/fa";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Licensing Information - FlagForge CTF Platform",
+  description:
+    "FlagForge is open source software released under the GNU General Public License v3.0. Learn about your rights to use, modify, and distribute our CTF platform freely.",
+  keywords: ["GPL-3.0", "open source", "software license", "FlagForge license", "CTF open source", "free software"],
+  authors: [{ name: "FlagForge Team" }],
+  openGraph: {
+    title: "FlagForge Licensing - GPL-3.0 Open Source",
+    description:
+      "FlagForge is open source under GPL-3.0. Free to use, modify, and distribute with full source code access on GitHub.",
+    url: "https://flagforge.xyz/licensing",
+    type: "website",
+    siteName: "FlagForge",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "FlagForge Licensing - GPL-3.0 Open Source",
+    description: "Open source CTF platform under GPL-3.0. Free to use, modify, and contribute.",
+  },
+  alternates: {
+    canonical: "/licensing",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function Licensing() {
   return (

@@ -1,4 +1,34 @@
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy - FlagForge CTF Platform",
+  description:
+    "Learn how FlagForge collects, uses, and protects your personal information. We prioritize data security and never sell your information to third parties. Last updated: August 28, 2025.",
+  keywords: ["privacy policy", "data protection", "GDPR", "user privacy", "FlagForge privacy", "data security"],
+  authors: [{ name: "FlagForge Team" }],
+  openGraph: {
+    title: "FlagForge Privacy Policy",
+    description:
+      "Understand how FlagForge handles your data with transparency and security. Your privacy is our priority.",
+    url: "https://flagforge.xyz/privacy-policy",
+    type: "website",
+    siteName: "FlagForge",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "FlagForge Privacy Policy",
+    description: "Learn how we protect your data and respect your privacy on FlagForge.",
+  },
+  alternates: {
+    canonical: "/privacy-policy",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function PrivacyPolicy() {
   return (
