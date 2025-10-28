@@ -5,15 +5,28 @@ export const metadata: Metadata = {
   title: "Contact Us - FlagForge CTF Platform",
   description:
     "Get in touch with FlagForge. Contact us via email at info@flagforge.xyz, phone at +977 9828137085, or visit us in Lalitpur, Nepal. We'd love to hear from you!",
+  keywords: ["contact FlagForge", "CTF support", "cybersecurity help", "FlagForge team", "Nepal CTF"],
+  authors: [{ name: "FlagForge Team" }],
   openGraph: {
     title: "Contact FlagForge - Get in Touch",
     description:
       "Contact the FlagForge team for inquiries, support, or collaboration opportunities.",
     url: "https://flagforge.xyz/contact",
     type: "website",
+    siteName: "FlagForge",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary",
+    title: "Contact FlagForge - Get in Touch",
+    description: "Reach out to the FlagForge team for support, inquiries, or collaboration.",
   },
   alternates: {
     canonical: "/contact",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
