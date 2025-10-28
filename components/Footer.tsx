@@ -106,6 +106,22 @@ export default function Footer() {
                   Licensing
                 </Link>
               </li>
+              <li className="sm:col-span-2 md:col-span-1">
+                <Link 
+                  href="/cookie-consent" 
+                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
+                >
+                 .
+                </Link>
+              </li>
+              <li className="sm:col-span-2 md:col-span-1">
+                <Link 
+                  href="/terms-of-service" 
+                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
+                >
+                  .
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
