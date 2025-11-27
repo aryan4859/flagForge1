@@ -15,6 +15,7 @@ export const runtime = "edge";
 // Fixed interface definitions
 interface Hint {
   id?: number;
+  index?: number;
   text: string;
   pointsDeduction: number | string;
 }
@@ -177,7 +178,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       setTimeRemaining(calculatedTimeRemaining);
       setIsExpired(
         data.expired ||
-          (calculatedTimeRemaining !== null && calculatedTimeRemaining <= 0)
+        (calculatedTimeRemaining !== null && calculatedTimeRemaining <= 0)
       );
 
       setLoading(false);
@@ -268,7 +269,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       totalPointsDeducted: total,
       totalHintsUsed: prev.totalHintsUsed + 1,
     }));
-    
+
     // Show a notification
     setMessage(`Chat hint used! ${points} points deducted.`);
     setTimeout(() => setMessage(null), 3000);
@@ -605,17 +606,18 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 {availableHints.length > 0 ? (
                   <div className="space-y-3">
                     {availableHints.map((hint: Hint, index: number) => {
-                      const isUsed = usedHints.includes(index);
+                      const hintIdx = hint.index !== undefined ? hint.index : index;
+                      const isUsed = usedHints.includes(hintIdx);
                       return (
                         <div
-                          key={index}
+                          key={hintIdx}
                           className="bg-white dark:bg-gray-800 border border-rose-200 dark:border-rose-700 rounded-lg p-3"
                         >
                           <div className="flex justify-between items-start gap-3">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
                                 <span className="font-medium text-rose-800 dark:text-rose-200">
-                                  Hint {index + 1}
+                                  Hint {hintIdx + 1}
                                 </span>
                                 {hint.pointsDeduction &&
                                   Number(hint.pointsDeduction) > 0 && (
@@ -637,7 +639,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                             <div>
                               {!isUsed && (
                                 <button
-                                  onClick={() => requestHint(index)}
+                                  onClick={() => requestHint(hintIdx)}
                                   disabled={hintLoading}
                                   className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
@@ -677,34 +679,32 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 maxLength={100}
               />
               <button
-                className={`w-full sm:w-[180px] border rounded-lg px-4 py-2 text-white transition-colors duration-300 ${
-                  submitting || isCorrect || isExpired
-                    ? "bg-gray-400 border-gray-400 cursor-not-allowed"
-                    : "bg-red-400 dark:bg-red-500 border-red-500 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
-                }`}
+                className={`w-full sm:w-[180px] border rounded-lg px-4 py-2 text-white transition-colors duration-300 ${submitting || isCorrect || isExpired
+                  ? "bg-gray-400 border-gray-400 cursor-not-allowed"
+                  : "bg-red-400 dark:bg-red-500 border-red-500 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
+                  }`}
                 onClick={handleSubmit}
                 disabled={submitting || isCorrect || isExpired}
               >
                 {submitting
                   ? "Submitting..."
                   : isCorrect
-                  ? "Solved!"
-                  : isExpired
-                  ? "Expired"
-                  : "Submit"}
+                    ? "Solved!"
+                    : isExpired
+                      ? "Expired"
+                      : "Submit"}
               </button>
 
               {message && (
                 <div
-                  className={`text-center text-lg font-bold mt-4 transition-colors duration-300 ${
-                    message.includes("Right")
-                      ? "text-green-600 dark:text-green-400"
-                      : message.includes("points deducted") ||
-                        message.includes("Hint revealed") ||
-                        message.includes("Chat hint used")
+                  className={`text-center text-lg font-bold mt-4 transition-colors duration-300 ${message.includes("Right")
+                    ? "text-green-600 dark:text-green-400"
+                    : message.includes("points deducted") ||
+                      message.includes("Hint revealed") ||
+                      message.includes("Chat hint used")
                       ? "text-orange-600 dark:text-orange-400"
                       : "text-red-600 dark:text-red-500"
-                  }`}
+                    }`}
                 >
                   {message}
                 </div>
@@ -714,13 +714,12 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
               {timeRemaining && timeRemaining > 0 && !isExpired && (
                 <div className="text-center">
                   <div
-                    className={`inline-block px-4 py-2 rounded-lg font-semibold ${
-                      timeRemaining < 3600000 // Less than 1 hour
-                        ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
-                        : timeRemaining < 86400000 // Less than 1 day
+                    className={`inline-block px-4 py-2 rounded-lg font-semibold ${timeRemaining < 3600000 // Less than 1 hour
+                      ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
+                      : timeRemaining < 86400000 // Less than 1 day
                         ? "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800"
                         : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800"
-                    }`}
+                      }`}
                   >
                     ⏰ Time Remaining: {formatTimeRemaining(timeRemaining)}
                   </div>

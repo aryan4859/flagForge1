@@ -61,8 +61,8 @@ function isHintRequest(message: string): boolean {
 
 // Calculate progressive penalty based on number of chat hints used
 function calculateChatHintPenalty(previousHints: number): number {
-  // Progressive penalty: 5 points for first hint, increases by 3 for each subsequent hint
-  return 5 + previousHints * 3;
+  // Fixed penalty: 0.5 points for each hint
+  return 0.5;
 }
 
 export async function POST(req: NextRequest) {
@@ -206,9 +206,12 @@ Respond in a helpful, encouraging tone.
       chatHint.updatedAt = new Date();
       await chatHint.save();
 
-      // Deduct points from user's total score
+      // Deduct points from user's total score ensuring it doesn't go below 0
+      const currentScore = user.totalScore || 0;
+      const newScore = Math.max(0, currentScore - pointsToDeduct);
+
       await userSchema.findByIdAndUpdate(user._id, {
-        $inc: { totalScore: -pointsToDeduct },
+        totalScore: newScore,
       });
 
       // Add warning to reply

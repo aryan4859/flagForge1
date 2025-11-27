@@ -94,6 +94,49 @@ export default function PrivacyPolicy() {
 
         <div>
           <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-100 mb-4">
+            Advertising and Third-Party Services
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            We may use third-party advertising services, including Google AdSense, to display advertisements on our platform. These services may use cookies and similar technologies to serve ads based on your prior visits to our website or other websites.
+          </p>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            <strong>Google AdSense:</strong> Google uses cookies to serve ads based on a user's prior visits to our website or other websites. You may opt out of personalized advertising by visiting{" "}
+            <a
+              href="https://www.google.com/settings/ads"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-red-500 dark:text-red-400 hover:underline"
+            >
+              Google's Ads Settings
+            </a>.
+          </p>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            Third-party vendors, including Google, use cookies to serve ads based on your past visits to our website. These vendors may collect information about your online activities over time and across different websites.
+          </p>
+          <p className="text-gray-600 dark:text-gray-300">
+            You can control cookies through your browser settings and opt-out of interest-based advertising through the{" "}
+            <a
+              href="http://www.aboutads.info/choices/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-red-500 dark:text-red-400 hover:underline"
+            >
+              Digital Advertising Alliance
+            </a>{" "}
+            or{" "}
+            <a
+              href="http://www.networkadvertising.org/choices/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-red-500 dark:text-red-400 hover:underline"
+            >
+              Network Advertising Initiative
+            </a>.
+          </p>
+        </div>
+
+        <div>
+          <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-100 mb-4">
             Children's Privacy
           </h2>
           <p className="text-gray-600 dark:text-gray-300">

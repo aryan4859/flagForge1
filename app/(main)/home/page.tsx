@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
+import OnboardingGuide from "@/components/OnboardingGuide";
 import Image from "next/image";
 import FlagForge from "../../../public/flagforge.gif";
 import Link from "next/link";
@@ -180,6 +181,11 @@ const Home = () => {
 
   if (sessionStatus === "unauthenticated") {
     return <AuthError />;
+  }
+
+  // Show onboarding guide for new users with no completed challenges
+  if (userStats && userStats.completedQuestions === 0) {
+    return <OnboardingGuide />;
   }
 
   return (

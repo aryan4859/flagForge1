@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Linkedin, Instagram, Github } from "lucide-react";
-import logo from "/public/flagforge-logo.png";
+import logo from "@/public/flagforge-logo.png";
 
 export default function Footer() {
   const socialLinks = [
@@ -67,24 +67,24 @@ export default function Footer() {
           <nav className="flex justify-center md:justify-end">
             <ul className="grid grid-cols-1 gap-3 w-full max-w-xs sm:grid-cols-2 sm:gap-4 sm:max-w-none md:flex md:flex-wrap md:items-center md:gap-0 text-base sm:text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300">
               <li>
-                <Link 
-                  href="/about" 
+                <Link
+                  href="/about"
                   className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
                 >
                   About
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/resources" 
+                <Link
+                  href="/resources"
                   className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
                 >
                   Resources
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/contact" 
+                <Link
+                  href="/contact"
                   className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
                 >
                   Contact
@@ -99,24 +99,24 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="sm:col-span-2 md:col-span-1">
-                <Link 
-                  href="/licensing" 
+                <Link
+                  href="/licensing"
                   className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
                 >
                   Licensing
                 </Link>
               </li>
               <li className="sm:col-span-2 md:col-span-1">
-                <Link 
-                  href="/cookie-consent" 
+                <Link
+                  href="/cookie-consent"
                   className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
                 >
-                 .
+                  .
                 </Link>
               </li>
               <li className="sm:col-span-2 md:col-span-1">
-                <Link 
-                  href="/terms-of-service" 
+                <Link
+                  href="/terms-of-service"
                   className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
                 >
                   .
@@ -127,13 +127,13 @@ export default function Footer() {
         </div>
 
         <hr className="my-8 sm:my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-8 transition-colors duration-300" />
-        
+
         {/* Copyright section */}
         <div className="text-center">
           <span className="block text-base sm:text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 leading-relaxed">
             © Maintained By{" "}-
-            <Link 
-              href="https://www.linkedin.com/company/shyenasec/" 
+            <Link
+              href="https://www.linkedin.com/company/shyenasec/"
               className="inline-block py-1 px-2 -mx-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0"
             >
               - {""}Shyena Inc.
