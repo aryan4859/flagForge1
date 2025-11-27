@@ -1,4 +1,9 @@
+# *
 User-agent: *
 Allow: /
 
+# Host
+Host: https://flagforge.xyz
+
+# Sitemaps
 Sitemap: https://flagforge.xyz/sitemap.xml
