@@ -7,7 +7,14 @@ module.exports = {
   priority: 0.7,
   autoLastmod: true,
   exclude: [
-    '/roles/developers/admins/*',
+    '/roles/developers/*',
+    '/roles/developers',
+    '/resources/*',
+    '/resources',
+    '/profile',
+    '/problems',
+    '/leaderboard',
+    '/home',
     '/unauthorized',
     '/authentication',
   ],
@@ -16,7 +23,7 @@ module.exports = {
     let priority = config.priority;
     if (path === '/') {
       priority = 1.0;
-    } else if (['/about', '/contact', '/problems', '/leaderboard', '/blogs', '/resources'].includes(path)) {
+    } else if (['/about', '/contact', '/blogs'].includes(path)) {
       priority = 0.9;
     }
 

@@ -21,7 +21,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        # Removed cache: 'npm' to avoid requiring package-lock.json
         
     - name: Install dependencies
       run: npm install
@@ -35,8 +35,8 @@ jobs:
       env:
         # Add necessary build-time environment variables here
         NEXT_PUBLIC_SITE_URL: https://flagforge.xyz
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        MONGO_URL: ${{ secrets.MONGO_URL || 'mongodb://localhost:27017/flagforge' }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'placeholder-secret' }}
         NEXTAUTH_URL: https://flagforge.xyz
-        NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
-        NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        NOTION_API_KEY: ${{ secrets.NOTION_API_KEY || 'placeholder-key' }}
+        NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID || 'placeholder-id' }}
