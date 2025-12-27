@@ -210,9 +210,9 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <div className="pt-8 sm:pt-16 md:pt-20 px-4 sm:px-8 md:px-12 flex flex-col gap-12 sm:gap-20 md:gap-24 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300 pb-16">
+    <section className="pt-8 sm:pt-16 md:pt-20 px-4 sm:px-8 md:px-12 flex flex-col gap-12 sm:gap-20 md:gap-24 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300 pb-16">
       {/* Hero Section */}
-      <div className="flex flex-col gap-6 sm:gap-10 md:gap-12">
+      <header className="flex flex-col gap-6 sm:gap-10 md:gap-12">
         <h1 className="w-full sm:w-[90%] md:w-[80%] mx-auto text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-center text-gray-600 dark:text-gray-100 leading-tight sm:leading-tight md:leading-tight tracking-tight transition-colors duration-300">
           Welcome to
           <span className="text-red-500 dark:text-red-500 font-extrabold">
@@ -246,10 +246,10 @@ const Hero: React.FC = () => {
             </button>
           </Link>
         </div>
-      </div>
+      </header>
 
       {/* Stats Section */}
-      <div className="w-full mx-auto">
+      <div className="w-full mx-auto" aria-label="Key Statistics">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {stats.map((stat, index) => (
             <div
@@ -268,7 +268,7 @@ const Hero: React.FC = () => {
       </div>
 
       {/* What We Provide Section */}
-      <div className="w-full mx-auto">
+      <section className="w-full mx-auto">
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
             What We Provide
@@ -279,24 +279,24 @@ const Hero: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {features.map((feature, index) => (
-            <div
+            <article
               key={index}
               className="bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-6 sm:p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-xl"
             >
-              <div className="text-4xl sm:text-5xl mb-4">{feature.icon}</div>
+              <div className="text-4xl sm:text-5xl mb-4" aria-hidden="true">{feature.icon}</div>
               <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
                 {feature.title}
               </h3>
               <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                 {feature.description}
               </p>
-            </div>
+            </article>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* Challenge Categories Section */}
-      <div className="w-full mx-auto">
+      <section className="w-full mx-auto">
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
             Challenge Categories
@@ -307,11 +307,11 @@ const Hero: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {categories.map((category, index) => (
-            <div
+            <article
               key={index}
               className="bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-6 sm:p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-xl group"
             >
-              <div className="text-4xl sm:text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="text-4xl sm:text-5xl mb-4 group-hover:scale-110 transition-transform duration-300" aria-hidden="true">
                 {category.icon}
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
@@ -320,13 +320,13 @@ const Hero: React.FC = () => {
               <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
                 {category.description}
               </p>
-            </div>
+            </article>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* How It Works Section */}
-      <div className="w-full mx-auto">
+      <section className="w-full mx-auto">
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
             How It Works
@@ -355,14 +355,14 @@ const Hero: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* Why Choose FlagForge */}
-      <div className="w-full mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-8 px-2 sm:px-4 md:px-6">
+      <section className="w-full mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-8 px-2 sm:px-4 md:px-6">
         <div className="flex flex-col gap-2 sm:gap-3 justify-center shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border-gray-200/80 dark:border-gray-700 border p-4 sm:p-5 md:p-7 rounded-xl bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] transition-all duration-300 hover:scale-105">
-          <h2 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
+          <h3 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
             Innovative Challenges 🧿
-          </h2>
+          </h3>
           <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
             <span className="text-red-500 dark:text-red-500 font-bold">
               FlagForge
@@ -373,9 +373,9 @@ const Hero: React.FC = () => {
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:gap-3 justify-center p-4 sm:p-5 md:p-5 rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] border-gray-200/80 dark:border-gray-700 border transition-all duration-300 hover:scale-105">
-          <h2 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
+          <h3 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
             Beginner-Friendly 🌐
-          </h2>
+          </h3>
           <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
             <span className="text-red-500 dark:text-red-500 font-extrabold">
               FlagForge{" "}
@@ -386,9 +386,9 @@ const Hero: React.FC = () => {
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:gap-3 justify-center p-4 sm:p-5 md:p-5 rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] border-gray-200/80 dark:border-gray-700 border transition-all duration-300 hover:scale-105">
-          <h2 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
+          <h3 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
             Continuous Improvement 🎁
-          </h2>
+          </h3>
           <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
             <span className="text-red-500 dark:text-red-500 font-extrabold">
               FlagForge
@@ -398,13 +398,13 @@ const Hero: React.FC = () => {
             engaging.
           </p>
         </div>
-      </div>
+      </section>
 
       {/* Testimonial Carousel */}
-      <div className="w-full mx-auto">
+      <section className="w-full mx-auto" aria-labelledby="testimonials-title">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-6 sm:mb-8 md:mb-12">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
+            <h2 id="testimonials-title" className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
               Trusted by Cybersecurity Experts
             </h2>
           </div>
@@ -529,12 +529,12 @@ const Hero: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* FAQ Section */}
-      <div className="w-full mx-auto max-w-4xl">
+      <section className="w-full mx-auto max-w-4xl" aria-labelledby="faq-title">
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
+          <h2 id="faq-title" className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
             Frequently Asked Questions
           </h2>
           <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
@@ -549,6 +549,7 @@ const Hero: React.FC = () => {
             >
               <button
                 onClick={() => toggleFaq(index)}
+                aria-expanded={openFaqIndex === index}
                 className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors duration-200"
               >
                 <span className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100 pr-4">
@@ -560,6 +561,7 @@ const Hero: React.FC = () => {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -580,10 +582,10 @@ const Hero: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* Final CTA Section */}
-      <div className="w-full mx-auto max-w-4xl">
+      <section className="w-full mx-auto max-w-4xl">
         <div className="bg-gradient-to-r from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 rounded-2xl p-8 sm:p-12 md:p-16 shadow-2xl text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 sm:mb-6">
             Ready to Start Your Journey?
@@ -600,8 +602,8 @@ const Hero: React.FC = () => {
             </button>
           </Link>
         </div>
-      </div>
-    </div>
+      </section>
+    </section>
   );
 };
 

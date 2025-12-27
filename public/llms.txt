@@ -1,0 +1,32 @@
+# FlagForge
+
+FlagForge is a premier Capture The Flag (CTF) platform designed to host, manage, and participate in cybersecurity challenges. It provides an intuitive interface for participants to solve challenges, submit flags, and track their progress through a real-time leaderboard and badge system.
+
+> [!NOTE]
+> FlagForge is a dynamic and engaging platform dedicated to promoting cybersecurity awareness and fostering a passion for security research among participants.
+
+## Key Features
+
+- **CTF Challenges**: Multi-category challenges including Web Exploitation, Cryptography, Reverse Engineering, Forensics, and Binary Exploitation.
+- **Real-time Leaderboard**: Competitive tracking of user scores and global rankings.
+- **Badge System**: Achievement-based recognition for solving challenges and skills development.
+- **Profile Management**: Detailed user statistics, progress history, and earned badges.
+- **Blog Section**: Community tutorials, guides, and project updates.
+- **Resources**: Curated cybersecurity learning materials and tools.
+- **Smart Hint System**: Intelligent hints to help solve difficult challenges.
+
+## Important Links
+
+- [Home](https://flagforge.xyz/): Landing page and overview.
+- [Challenges](https://flagforge.xyz/problems): List of available CTF challenges.
+- [Leaderboard](https://flagforge.xyz/leaderboard): Global rankings.
+- [Blogs](https://flagforge.xyz/blogs): Cybersecurity tutorials and news.
+- [Resources](https://flagforge.xyz/resources): Educational materials and tools.
+- [About](https://flagforge.xyz/about): Information about FlagForge.
+- [Contact](https://flagforge.xyz/contact): Support and inquiries.
+
+## Documentation & Legal
+
+- [Terms of Service](https://flagforge.xyz/terms-of-service)
+- [Privacy Policy](https://flagforge.xyz/privacy-policy)
+- [Licensing](https://flagforge.xyz/licensing)
