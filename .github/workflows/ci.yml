@@ -7,29 +7,52 @@ on:
     branches: [ "main", "mainv2"]
 
 jobs:
-  build:
+  quality-checks:
+    name: Lint & Security
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
-    
     - name: Use Node.js Latest
       uses: actions/setup-node@v4
       with:
         node-version: 'latest'
-        # Removed cache: 'npm' to avoid requiring package-lock.json
-        
     - name: Install dependencies
       run: npm install
-      
     - name: Lint check
       run: npm run lint
-      continue-on-error: true # Allow build to continue even if lint fails, as it's often a separate concern
-      
+      continue-on-error: true
+    - name: Security audit
+      run: npm audit --audit-level=critical
+      continue-on-error: true
+
+  type-check:
+    name: TypeScript Types
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js Latest
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'latest'
+    - name: Install dependencies
+      run: npm install
+    - name: Type check
+      run: npx tsc --noEmit
+
+  build-check:
+    name: Production Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js Latest
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'latest'
+    - name: Install dependencies
+      run: npm install
     - name: Build project
       run: npm run build
       env:
-        # Add necessary build-time environment variables here
         NEXT_PUBLIC_SITE_URL: https://flagforge.xyz
         MONGO_URL: ${{ secrets.MONGO_URL || 'mongodb://localhost:27017/flagforge' }}
         NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'placeholder-secret' }}
