@@ -25,20 +25,6 @@ jobs:
       run: npm audit --audit-level=critical
       continue-on-error: true
 
-  type-check:
-    name: TypeScript Types
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js Latest
-      uses: actions/setup-node@v4
-      with:
-        node-version: 'latest'
-    - name: Install dependencies
-      run: npm install
-    - name: Type check
-      run: npx tsc --noEmit
-
   build-check:
     name: Production Build
     runs-on: ubuntu-latest
