@@ -1,0 +1,42 @@
+name: CI Build Check
+
+on:
+  push:
+    branches: [ "main", "mainv2"]
+  pull_request:
+    branches: [ "main", "mainv2"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Lint check
+      run: npm run lint
+      continue-on-error: true # Allow build to continue even if lint fails, as it's often a separate concern
+      
+    - name: Build project
+      run: npm run build
+      env:
+        # Add necessary build-time environment variables here
+        NEXT_PUBLIC_SITE_URL: https://flagforge.xyz
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        NEXTAUTH_URL: https://flagforge.xyz
+        NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+        NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
