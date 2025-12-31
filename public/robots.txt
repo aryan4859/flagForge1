@@ -1,6 +1,7 @@
 # *
 User-agent: *
 Allow: /
+Allow: /llms.txt
 
 # Host
 Host: https://flagforge.xyz
