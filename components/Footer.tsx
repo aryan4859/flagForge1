@@ -9,137 +9,122 @@ export default function Footer() {
     {
       name: "LinkedIn",
       url: "https://www.linkedin.com/company/flagforge/",
-      icon: <Linkedin className="w-6 h-6 text-[#0077B5]" />, // LinkedIn blue
+      icon: <Linkedin className="w-5 h-5 pointer-events-none" />,
+      color: "hover:text-[#0077b5] dark:hover:text-[#38b6ff]", // Lighter blue for dark mode visibility
+      bg: "hover:bg-[#0077b5]/10 dark:hover:bg-[#38b6ff]/15",
     },
     {
       name: "Instagram",
       url: "https://www.instagram.com/flag.forge/",
-      icon: <Instagram className="w-6 h-6 text-[#E4405F]" />, // Instagram pink
+      icon: <Instagram className="w-5 h-5 pointer-events-none" />,
+      color: "hover:text-[#e4405f] dark:hover:text-[#ff4d6d]", // Lighter pink for dark mode visibility
+      bg: "hover:bg-[#e4405f]/10 dark:hover:bg-[#ff4d6d]/15",
     },
     {
       name: "GitHub",
       url: "https://github.com/FlagForgeCTF/",
-      icon: <Github className="w-6 h-6 text-[#181717] dark:text-[#ffffff]" />, // GitHub black/white
+      icon: <Github className="w-5 h-5" />,
+      color: "hover:text-gray-950 dark:hover:text-white",
+      bg: "hover:bg-gray-950/10 dark:hover:bg-white/10",
     },
   ];
 
+  const footerLinks = [
+    { name: "About", href: "/about" },
+    { name: "Resources", href: "/resources" },
+    { name: "Contact", href: "/contact" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Licensing", href: "/licensing" },
+  ];
+
   return (
-    <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300 rounded-lg m-2 sm:m-4">
-      <div className="w-full max-w-screen-2xl mx-auto p-1">
-        {/* Mobile-first layout */}
-        <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between">
-          {/* Logo section */}
-          <div className="flex justify-center md:justify-start">
-            <Link
-              href="/"
-              className="flex items-center space-x-3 rtl:space-x-reverse p-2 sm:p-0 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-300"
-            >
-              <Image src={logo} alt="logo" height={60} width={60} className="sm:h-[70px] sm:w-[70px]" />
-              <span className="self-center text-xl sm:text-2xl font-semibold whitespace-nowrap text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <footer className="bg-white dark:bg-[#050505] border-t border-gray-100 dark:border-white/5 transition-colors duration-500 overflow-hidden">
+      <div className="w-[92%] lg:w-[80%] mx-auto py-10 md:py-14">
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+
+          {/* Left: Brand Identity */}
+          <div className="flex flex-col items-center lg:items-start gap-4">
+            <Link href="/" className="group flex items-center gap-3 transition-transform hover:scale-[1.02] active:scale-95 outline-none">
+              <div className="relative">
+                <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Image
+                  src={logo}
+                  alt="FlagForge Logo"
+                  height={48}
+                  width={48}
+                  className="relative h-10 w-10 md:h-12 md:w-12 object-contain transition-all duration-500 group-hover:rotate-6"
+                />
+              </div>
+              <span className="text-xl md:text-2xl font-black tracking-tighter text-gray-950 dark:text-white">
                 FlagForge
               </span>
             </Link>
+            <p className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 text-center lg:text-left leading-relaxed max-w-[280px]">
+              Forging excellence in cybersecurity, one flag at a time.
+            </p>
           </div>
 
-          {/* Social Media Icons - centered on mobile, middle on desktop */}
-          <div className="flex justify-center md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
-            <div className="flex space-x-4 sm:space-x-6">
+          {/* Center: Connect Section */}
+          <div className="flex flex-col items-center gap-4">
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-600">
+              CONNECT
+            </span>
+            <div className="flex items-center gap-3">
               {socialLinks.map((social) => (
                 <Link
                   key={social.name}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-4 sm:p-3 rounded-xl sm:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 touch-manipulation active:scale-95"
-                  aria-label={`Visit our ${social.name} page`}
+                  className={`w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 transition-all duration-300 text-gray-500 dark:text-gray-400 ${social.color} ${social.bg} hover:shadow-lg hover:-translate-y-1 active:scale-95`}
+                  aria-label={`Join our ${social.name}`}
                 >
-                  <div className="w-7 h-7 sm:w-6 sm:h-6">
-                    {React.cloneElement(social.icon, {
-                      className: social.icon.props.className.replace('w-6 h-6', 'w-7 h-7 sm:w-6 sm:h-6')
-                    })}
-                  </div>
+                  {social.icon}
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Navigation Links - stacked on mobile, horizontal on desktop */}
-          <nav className="flex justify-center md:justify-end">
-            <ul className="grid grid-cols-1 gap-3 w-full max-w-xs sm:grid-cols-2 sm:gap-4 sm:max-w-none md:flex md:flex-wrap md:items-center md:gap-0 text-base sm:text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors duration-300">
-              <li>
-                <Link
-                  href="/about"
-                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/resources"
-                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
-                >
-                  Resources
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy-policy"
-                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:me-4 md:py-0 md:px-0 md:rounded-none"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li className="sm:col-span-2 md:col-span-1">
-                <Link
-                  href="/licensing"
-                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
-                >
-                  Licensing
-                </Link>
-              </li>
-              <li className="sm:col-span-2 md:col-span-1">
-                <Link
-                  href="/cookie-consent"
-                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
-                >
-                  .
-                </Link>
-              </li>
-              <li className="sm:col-span-2 md:col-span-1">
-                <Link
-                  href="/terms-of-service"
-                  className="block text-lg py-3 px-4 sm:py-2 sm:px-3 text-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0 md:rounded-none"
-                >
-                  .
-                </Link>
-              </li>
-            </ul>
-          </nav>
+          {/* Right: Navigation */}
+          <div className="flex flex-col items-center lg:items-end gap-6">
+            <nav>
+              <ul className="flex flex-wrap justify-center lg:justify-end gap-x-6 gap-y-3">
+                {footerLinks.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="text-[13px] font-bold text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-500 transition-colors uppercase tracking-tight relative group/link"
+                    >
+                      {link.name}
+                      <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-red-600 transition-all duration-300 group-hover/link:w-full" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
         </div>
 
-        <hr className="my-8 sm:my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-8 transition-colors duration-300" />
+        {/* Global Footer Bottom */}
+        <div className="mt-12 pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2.5 text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.5)]" />
+            © {new Date().getFullYear()} FLAGFORGE. ALL RIGHTS RESERVED.
+          </div>
 
-        {/* Copyright section */}
-        <div className="text-center">
-          <span className="block text-base sm:text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300 leading-relaxed">
-            © Maintained By{" "}-
+          <div className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
+            <span>MAINTAINED BY</span>
             <Link
               href="https://www.linkedin.com/company/shyenasec/"
-              className="inline-block py-1 px-2 -mx-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-700 dark:hover:text-red-600 transition-all duration-300 touch-manipulation active:scale-95 md:hover:bg-transparent md:dark:hover:bg-transparent md:hover:underline md:py-0 md:px-0"
+              className="text-red-600 font-black hover:text-red-500 transition-colors ml-0.5"
             >
-              - {""}Shyena Inc.
+              SHYENA
             </Link>
-          </span>
+          </div>
         </div>
+
       </div>
     </footer>
   );

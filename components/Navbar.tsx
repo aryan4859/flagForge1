@@ -10,7 +10,7 @@ import { NavbarItems } from "@/interfaces";
 import { useSession } from "next-auth/react";
 import { signOut } from "@/utils/auth";
 import { cn } from "@/lib/utils";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +20,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/context/ThemeContext";
+import {
+  Home,
+  Terminal,
+  Trophy,
+  BookText,
+  LogIn,
+  LogOut,
+  User as UserIcon,
+  ShieldCheck,
+  LayoutDashboard,
+  ArrowRight
+} from "lucide-react";
 
 const NavItem = ({ href, tags, onClick, style }: NavbarItems) => (
   <li onClick={onClick}>
@@ -43,89 +55,188 @@ const Navbar: React.FC = () => {
   const handleMenuClick = () => setOpen(!open);
 
   return (
-    <header className="bg-white dark:bg-gray-900 top-0 shadow-lg shadow-gray-100 dark:shadow-gray-800 w-full md:py-2 md:px-8 px-4 sticky z-50 transition-colors duration-300">
-      <nav className="flex justify-between w-full items-center max-w-7xl mx-auto">
-        <Link href="/">
-          <div className="flex items-center text-xl font-bold transition-all hover:opacity-80 duration-300  -ml-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 touch-manipulation active:scale-95">
-            <Image
-              src={logo}
-              alt="logo"
-              height={60}
-              width={60}
-              className="sm:h-[70px] sm:w-[70px]"
-            />
-            <span className="ml-2 text-xl sm:text-2xl text-gray-900 dark:text-gray-100">
+    <header className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-50 w-full transition-all duration-500">
+      <nav className="flex justify-between items-center w-[92%] lg:w-[80%] mx-auto h-20 md:h-24 transition-all duration-300">
+        <Link href="/" className="group outline-none">
+          <div className="flex items-center gap-3 transition-transform duration-300 group-hover:scale-[1.02] active:scale-95">
+            <div className="relative">
+              <div className="absolute inset-0 bg-red-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Image
+                src={logo}
+                alt="logo"
+                height={50}
+                width={50}
+                className="relative h-10 w-10 md:h-12 md:w-12 object-contain"
+              />
+            </div>
+            <span className="text-xl md:text-2xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors">
               FlagForge
             </span>
           </div>
         </Link>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden flex items-center gap-3">
-          {/* Theme toggle for mobile */}
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-8 lg:gap-12">
+          <ul className="flex items-center gap-1 lg:gap-2">
+            {session.status === "authenticated" ? (
+              NavbarData.map(({ href, tags }: NavbarItems) => (
+                <NavItem
+                  key={href}
+                  href={href}
+                  tags={tags}
+                  style="px-5 py-2.5 text-sm font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all"
+                />
+              ))
+            ) : (
+              <li>
+                <Link
+                  href="/blogs"
+                  className="px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:text-red-500 transition-colors"
+                >
+                  Blogs
+                </Link>
+              </li>
+            )}
+          </ul>
+
+          <div className="flex items-center gap-4 lg:gap-6 ml-4 pl-4 border-l border-gray-100 dark:border-white/10">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 active:scale-90"
+              aria-label="Toggle dark mode"
+            >
+              {theme === "dark" ? (
+                <SunIcon className="h-5 w-5" />
+              ) : (
+                <MoonIcon className="h-5 w-5" />
+              )}
+            </button>
+
+            {session.status === "authenticated" ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="outline-none">
+                  <div className="group flex items-center gap-3 p-1.5 pr-4 rounded-full bg-gray-50/50 dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-red-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-red-500/5 hover:-translate-y-0.5">
+                    <div className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white dark:border-gray-800 shadow-sm ring-1 ring-red-500/10 group-hover:ring-red-500/30 transition-all">
+                      <Image
+                        src={session.data?.user?.image ?? logo}
+                        alt="Profile"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col items-start leading-none shrink-0 group">
+                      <span className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-red-500 transition-colors">
+                        {session.data?.user?.name ?? "Arena User"}
+                      </span>
+                      <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tight">Active Seeker</span>
+                    </div>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="mt-3 w-56 p-2 rounded-2xl border-gray-100 dark:border-white/5 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in duration-200" align="end">
+                  <DropdownMenuLabel className="px-3 py-2 text-xs font-black uppercase tracking-widest text-gray-400">Account Control</DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-gray-100 dark:bg-white/5 my-1" />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 transition-all cursor-pointer">
+                      Profile Workspace
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/" className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 transition-all cursor-pointer">
+                      Main Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-gray-100 dark:bg-white/5 my-1" />
+                  <DropdownMenuItem
+                    onClick={async () => await signOut()}
+                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-500 rounded-xl hover:bg-red-500 dark:hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                  >
+                    Terminate Session
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                href="/authentication"
+                className="group relative inline-flex items-center justify-center px-8 py-3.5 font-bold text-white transition-all duration-300 ease-in-out"
+              >
+                <div className="absolute inset-0 bg-red-600 rounded-2xl shadow-[0_10px_20px_-5px_rgba(220,38,38,0.3)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_15px_30px_-5px_rgba(220,38,38,0.4)] active:scale-95" />
+                <span className="relative z-10 text-sm md:text-base tracking-tight">Sign in / Sign up</span>
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Navigation Toggle */}
+        <div className="md:hidden flex items-center gap-4">
           <button
             onClick={toggleTheme}
-            className="p-3 rounded-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500 transition-all duration-300 touch-manipulation active:scale-95"
-            aria-label="Toggle dark mode"
+            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all active:scale-90"
           >
-            {theme === "dark" ? (
-              <SunIcon className="h-6 w-6" />
-            ) : (
-              <MoonIcon className="h-6 w-6" />
-            )}
+            {theme === "dark" ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
           </button>
 
           <Sheet>
-            <SheetTrigger onClick={handleMenuClick}>
-              <div className="p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 touch-manipulation active:scale-95">
-                <CgMenuRightAlt className="text-3xl transition-transform hover:scale-110 duration-300 text-gray-900 dark:text-gray-100" />
-              </div>
+            <SheetTrigger asChild>
+              <button className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 active:scale-90 transition-all">
+                <CgMenuRightAlt className="text-3xl text-gray-900 dark:text-white" />
+              </button>
             </SheetTrigger>
-            <SheetContent className="w-full">
+            <SheetContent side="right" className="w-[85vw] sm:w-[400px] border-none p-0 bg-white dark:bg-gray-950">
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+              <SheetDescription className="sr-only">
+                Access site navigation links, user profile, and session controls.
+              </SheetDescription>
               <div className="flex flex-col h-full">
-                {/* Mobile menu header */}
-                <div className="flex items-center justify-center py-6 border-b border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center">
-                    <Image src={logo} alt="logo" height={50} width={50} />
-                    <span className="ml-3 text-xl font-bold text-gray-900 dark:text-gray-100">
-                      FlagForge
-                    </span>
-                  </div>
+                <div className="p-8 border-b border-gray-100 dark:border-white/5 flex items-center gap-3">
+                  <Image src={logo} alt="logo" height={40} width={40} />
+                  <span className="text-2xl font-black text-gray-950 dark:text-white tracking-tighter">FlagForge</span>
                 </div>
 
-                {/* Navigation items */}
-                <nav className="flex-1 py-6">
-                  <ul className="flex flex-col gap-2">
+                <nav className="flex-1 p-6">
+                  <ul className="space-y-4">
                     {session.status === "authenticated" ? (
-                      NavbarData.map(({ href, tags }: NavbarItems) => (
-                        <li key={href}>
-                          <Link
-                            href={href}
-                            onClick={handleMenuClick}
-                            className="flex items-center w-full px-6 py-4 text-lg font-medium text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300 touch-manipulation active:scale-95"
-                          >
-                            {tags}
-                          </Link>
-                        </li>
-                      ))
+                      NavbarData.map(({ href, tags }: NavbarItems) => {
+                        const getIcon = (tag: string) => {
+                          switch (tag.toLowerCase()) {
+                            case "home": return <Home className="w-5 h-5" />;
+                            case "problems": return <Terminal className="w-5 h-5" />;
+                            case "leaderboard": return <Trophy className="w-5 h-5" />;
+                            case "blogs": return <BookText className="w-5 h-5" />;
+                            default: return <Terminal className="w-5 h-5" />;
+                          }
+                        };
+                        return (
+                          <li key={href}>
+                            <Link
+                              href={href}
+                              className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 transition-all border border-transparent hover:border-red-500/10"
+                            >
+                              <span className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10 transition-colors">
+                                {getIcon(tags)}
+                              </span>
+                              {tags}
+                            </Link>
+                          </li>
+                        );
+                      })
                     ) : (
                       <>
                         <li>
-                          <Link
-                            href="/blogs"
-                            onClick={handleMenuClick}
-                            className="flex items-center w-full px-6 py-4 text-lg font-medium text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300 touch-manipulation active:scale-95"
-                          >
+                          <Link href="/blogs" className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-100 dark:hover:border-white/10">
+                            <span className="p-2 rounded-xl bg-gray-50 dark:bg-white/5">
+                              <BookText className="w-5 h-5" />
+                            </span>
                             Blogs
                           </Link>
                         </li>
-                        <li className="px-6 py-2">
-                          <Link
-                            onClick={handleMenuClick}
-                            href="/authentication"
-                            className="flex items-center justify-center w-full bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-xl px-6 py-4 text-lg font-semibold text-white transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 touch-manipulation shadow-lg"
-                          >
-                            Sign in / Sign up
+                        <li className="pt-6">
+                          <Link href="/authentication" className="group relative flex items-center justify-center w-full py-5 overflow-hidden rounded-2xl transition-all active:scale-[0.98]">
+                            <div className="absolute inset-0 bg-red-600 transition-transform group-hover:scale-105" />
+                            <div className="relative flex items-center gap-3 font-black text-lg text-white">
+                              <LogIn className="w-6 h-6" />
+                              <span>Sign in / Sign up</span>
+                            </div>
                           </Link>
                         </li>
                       </>
@@ -133,135 +244,42 @@ const Navbar: React.FC = () => {
                   </ul>
                 </nav>
 
-                {/* User profile section for authenticated users */}
                 {session.status === "authenticated" && (
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6 pb-4">
-                    <div className="px-6">
-                      <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                        <Image
-                          src={session.data?.user?.image ?? logo}
-                          alt="Profile"
-                          height={40}
-                          width={40}
-                          className="rounded-full shadow-lg"
-                        />
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            {session.data?.user?.name ?? "User"}
-                          </h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {session.data?.user?.email}
-                          </p>
-                        </div>
+                  <div className="p-8 bg-gray-50/50 dark:bg-white/[0.02] border-t border-gray-100 dark:border-white/5">
+                    <div className="flex items-center gap-4 mb-8">
+                      <div className="relative">
+                        <div className="absolute -inset-1 bg-red-500/20 blur-md rounded-2xl" />
+                        <Image src={session.data?.user?.image ?? logo} alt="P" height={56} width={56} className="relative rounded-2xl border-2 border-white dark:border-gray-800 object-cover" />
+                        <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white dark:border-gray-950" />
                       </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-gray-950 dark:text-white truncate">{session.data?.user?.name}</h4>
+                        <p className="text-xs text-gray-500 truncate">{session.data?.user?.email}</p>
+                      </div>
+                    </div>
 
-                      <div className="mt-4 space-y-2">
-                        <Link
-                          href="/profile"
-                          onClick={handleMenuClick}
-                          className="flex items-center w-full px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 touch-manipulation active:scale-95"
-                        >
-                          Profile Settings
-                        </Link>
-                        <button
-                          onClick={() => {
-                            handleMenuClick();
-                            async () => await signOut();
-                          }}
-                          className="flex items-center w-full px-4 py-3 text-base font-medium text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300 touch-manipulation active:scale-95"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
+                    <div className="space-y-3">
+                      <Link href="/profile" className="flex items-center justify-between w-full p-4 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-red-500/20 transition-all group">
+                        <div className="flex items-center gap-3">
+                          <LayoutDashboard className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" />
+                          <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Workspace</span>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-gray-300 group-hover:translate-x-1 transition-all" />
+                      </Link>
+
+                      <button
+                        onClick={async () => await signOut()}
+                        className="flex items-center justify-center gap-3 w-full py-4 text-sm font-black uppercase tracking-widest text-red-500 bg-red-50 dark:bg-red-500/10 border-2 border-red-500/20 rounded-2xl hover:bg-red-500 hover:text-white transition-all group"
+                      >
+                        <LogOut className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                        Terminate
+                      </button>
                     </div>
                   </div>
                 )}
               </div>
             </SheetContent>
           </Sheet>
-        </div>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-4">
-          <ul className="flex gap-2 items-center">
-            {session.status === "authenticated" ? (
-              NavbarData.map(({ href, tags }: NavbarItems) => (
-                <NavItem key={href} href={href} tags={tags} style="px-3 py-2" />
-              ))
-            ) : (
-              <>
-                <li>
-                  <Link
-                    href="/blogs"
-                    className="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-600 dark:hover:text-red-400 transition-all duration-300"
-                  >
-                    Blogs
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/authentication"
-                    className="bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-lg px-5 py-3 text-white font-medium transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
-                  >
-                    Sign in / Sign up
-                  </Link>
-                </li>
-              </>
-            )}
-            {session.status === "authenticated" && (
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <div className="flex gap-2 font-bold text-red-500 items-center justify-center cursor-pointer transition-all duration-300 hover:text-red-700 dark:hover:text-red-400 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <Image
-                      src={session.data?.user?.image ?? logo}
-                      alt="Profile"
-                      height={32}
-                      width={32}
-                      className="rounded-full shadow-xl transition-all duration-300 hover:scale-110"
-                    />
-                    <h3 className="tracking-tight text-lg">
-                      {session.data?.user?.name ?? "User"}
-                    </h3>
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="mt-3 w-48">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link className="block w-full text-sm" href="/profile">
-                      Profile Settings
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link className="block w-full text-sm" href="/">
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <button
-                      className="w-full text-left text-sm text-red-500 hover:text-red-700 dark:hover:text-red-400"
-                      onClick={async () => await signOut()}
-                    >
-                      Sign Out
-                    </button>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </ul>
-
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500 transition-all duration-300 active:scale-95"
-            aria-label="Toggle dark mode"
-          >
-            {theme === "dark" ? (
-              <SunIcon className="h-5 w-5" />
-            ) : (
-              <MoonIcon className="h-5 w-5" />
-            )}
-          </button>
         </div>
       </nav>
     </header>

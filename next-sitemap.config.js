@@ -36,8 +36,15 @@ module.exports = {
     };
   },
   robotsTxtOptions: {
+    policies: [
+      {
+        userAgent: '*',
+        allow: ['/', '/sitemap.xml', '/llms.txt'],
+      },
+    ],
     additionalSitemaps: [
       'https://flagforge.xyz/sitemap.xml',
+      'https://flagforge.xyz/llms.txt',
     ],
   },
 };
