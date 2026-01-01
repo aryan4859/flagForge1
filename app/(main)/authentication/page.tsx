@@ -75,7 +75,7 @@ const AuthPage = () => {
 
           <div className="space-y-4">
             <h1 className="text-6xl md:text-8xl font-black text-gray-950 dark:text-white leading-[0.9] tracking-tighter">
-              Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-orange-500">FlagForge.</span>
+              Join <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-red-500 to-orange-500">FlagForge.</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium tracking-tight leading-snug">
               The premier arena for cybersecurity <br className="hidden md:block" />
