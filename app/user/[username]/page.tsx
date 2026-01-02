@@ -60,6 +60,9 @@ const BADGE_CONFIG = [
   },
 ];
 
+const BADGE_IMAGE_CLASS =
+  "drop-shadow-[0_6px_12px_rgba(15,23,42,0.25)] dark:drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]";
+
 const CATEGORY_ICONS: { [key: string]: string } = {
   Web: "🌐",
   Crypto: "🔐",
@@ -176,7 +179,7 @@ const PublicUserPage = () => {
           alt="Newbie"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 500)
@@ -186,7 +189,7 @@ const PublicUserPage = () => {
           alt="Scout"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 1000)
@@ -196,7 +199,7 @@ const PublicUserPage = () => {
           alt="Codebreaker"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 1500)
@@ -206,7 +209,7 @@ const PublicUserPage = () => {
           alt="Hacker"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 2000)
@@ -216,7 +219,7 @@ const PublicUserPage = () => {
           alt="Cipher Hunter"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 3000)
@@ -226,7 +229,7 @@ const PublicUserPage = () => {
           alt="Forger"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     return (
@@ -235,7 +238,7 @@ const PublicUserPage = () => {
         alt="Flag Conqueror"
         width={size}
         height={size}
-        className="drop-shadow-sm"
+        className={BADGE_IMAGE_CLASS}
       />
     );
   };
@@ -460,13 +463,13 @@ const PublicUserPage = () => {
                           const earned = (profileData?.totalScore || 0) >= badge.threshold;
                           const current = getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
                           return (
-                            <div
+                                <div
                               key={badge.name}
                               className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 ${earned
                                   ? current
                                     ? `bg-gradient-to-br ${badge.color} shadow-[0_20px_40px_rgba(220,38,38,0.2)] border-red-500 text-white`
-                                    : "bg-white/60 dark:bg-white/[0.02] border-white dark:border-white/10 hover:translate-y-[-5px] hover:shadow-2xl dark:hover:bg-white/5"
-                                  : "bg-gray-50/50 dark:bg-black/20 border-gray-100 dark:border-white/5 opacity-40 grayscale blur-[1px]"
+                                    : "bg-white/80 dark:bg-white/[0.02] border-gray-100/80 dark:border-white/10 hover:translate-y-[-5px] hover:shadow-2xl dark:hover:bg-white/5"
+                                  : "bg-gray-100/70 dark:bg-black/20 border-gray-200 dark:border-white/5 opacity-70 dark:opacity-40 grayscale blur-0 dark:blur-[1px]"
                                 }`}
                             >
                               {current && (

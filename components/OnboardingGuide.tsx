@@ -22,6 +22,7 @@ import {
     Puzzle,
 } from "lucide-react";
 
+
 const OnboardingGuide: React.FC = () => {
     const [activeTab, setActiveTab] = useState<"overview" | "categories" | "howto" | "example">("overview");
 
@@ -228,36 +229,49 @@ const OnboardingGuide: React.FC = () => {
     };
 
     return (
-        <div className="w-full bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div
+            className={`w-full min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-x-hidden`}
+        >
+            <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.2),rgba(248,113,113,0))] blur-3xl" />
+            <div className="pointer-events-none absolute top-24 left-10 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.18),rgba(251,146,60,0))] blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.16),rgba(244,63,94,0))] blur-3xl" />
+
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 text-white py-12 px-6">
-                <div className="max-w-4xl mx-auto text-center">
-                    <div className="flex justify-center mb-6">
-                        <div className="p-4 bg-white/20 rounded-full backdrop-blur-sm">
-                            <Shield className="h-16 w-16" />
+            <div className="relative z-10 px-4 pt-10 sm:px-6 sm:pt-12">
+                <div className="max-w-7xl mx-auto">
+                    <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[2.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(15,23,42,0.45)] px-6 py-10 sm:px-8 sm:py-12 md:px-12 md:py-16 text-center">
+                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.18),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.14),rgba(2,6,23,0))]" />
+                        <div className="relative">
+                            <div className="flex justify-center mb-6">
+                                <div className="p-4 bg-red-500/10 text-red-600 rounded-2xl backdrop-blur-sm border border-red-500/20">
+                                    <Shield className="h-16 w-16" />
+                                </div>
+                            </div>
+                            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 dark:text-gray-100">
+                                Welcome to Your CTF Journey! dYZ_
+                            </h1>
+                            <p
+                                className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-6"
+                            >
+                                You're about to embark on an exciting adventure in cybersecurity. Let's get you started with everything you need to know!
+                            </p>
+                            <div className="flex justify-center gap-4 flex-wrap">
+                                <Link href="/problems">
+                                    <button className="bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-3 sm:px-8 rounded-2xl transition-all duration-300 md:hover:scale-105 shadow-lg shadow-red-500/20 flex items-center gap-2">
+                                        <Target className="h-5 w-5" />
+                                        Start First Challenge
+                                    </button>
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4">
-                        Welcome to Your CTF Journey! 🎯
-                    </h1>
-                    <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-6">
-                        You're about to embark on an exciting adventure in cybersecurity. Let's get you started with everything you need to know!
-                    </p>
-                    <div className="flex justify-center gap-4 flex-wrap">
-                        <Link href="/problems">
-                            <button className="bg-white text-red-600 hover:bg-gray-100 font-bold px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2">
-                                <Target className="h-5 w-5" />
-                                Start First Challenge
-                            </button>
-                        </Link>
                     </div>
                 </div>
             </div>
 
             {/* Tab Navigation */}
-            <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 sticky top-0 z-10 transition-colors duration-300">
-                <div className="max-w-6xl mx-auto px-6">
-                    <div className="flex gap-2 overflow-x-auto">
+            <div className="sticky top-0 z-10 transition-colors duration-300 backdrop-blur-xl">
+                <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-6">
+                    <div className="flex gap-2 overflow-x-auto rounded-2xl sm:rounded-full bg-white/80 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 p-1.5 sm:p-2 shadow-lg">
                         {[
                             { id: "overview", label: "Overview", icon: <BookOpen className="h-4 w-4" /> },
                             { id: "categories", label: "Categories", icon: <Puzzle className="h-4 w-4" /> },
@@ -267,9 +281,9 @@ const OnboardingGuide: React.FC = () => {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`flex items-center gap-2 px-6 py-4 font-semibold border-b-2 transition-all duration-300 whitespace-nowrap ${activeTab === tab.id
-                                        ? "border-red-500 text-red-600 dark:text-red-500"
-                                        : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                                className={`flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 font-semibold rounded-full border transition-all duration-300 whitespace-nowrap ${activeTab === tab.id
+                                    ? "border-red-500 bg-red-500 text-white shadow-lg shadow-red-500/20"
+                                    : "border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/60 dark:hover:bg-white/[0.08]"
                                     }`}
                             >
                                 {tab.icon}
@@ -281,26 +295,26 @@ const OnboardingGuide: React.FC = () => {
             </div>
 
             {/* Content */}
-            <div className="max-w-6xl mx-auto px-6 py-12">
+            <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 sm:py-12">
                 {/* Overview Tab */}
                 {activeTab === "overview" && (
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 What is a CTF Challenge?
                             </h2>
-                            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                            <p className={`text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-4`}>
                                 CTF (Capture The Flag) challenges are cybersecurity exercises where you solve problems to find hidden "flags" -
                                 special strings that prove you've successfully completed the challenge. Think of it as a treasure hunt for hackers!
                             </p>
-                            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <p className={`text-lg text-gray-700 dark:text-gray-300 leading-relaxed`}>
                                 Each challenge tests different skills: finding vulnerabilities in web applications, breaking encryption,
                                 analyzing files, reverse engineering programs, and more. You'll earn points for each solved challenge and
                                 climb the leaderboard!
                             </p>
                         </div>
 
-                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6">
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-5 sm:p-6">
                             <div className="flex items-start gap-4">
                                 <div className="p-3 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
                                     <Lightbulb className="h-6 w-6 text-blue-600 dark:text-blue-400" />
@@ -314,13 +328,13 @@ const OnboardingGuide: React.FC = () => {
                                     </p>
                                     <div className="space-y-2 font-mono text-sm">
                                         <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                            <code className="text-red-600 dark:text-red-400">flag{"{this_is_a_sample_flag}"}</code>
+                                            <code className="text-red-600 dark:text-red-400 break-words">flag{"{this_is_a_sample_flag}"}</code>
                                         </div>
                                         <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                            <code className="text-red-600 dark:text-red-400">FLAG{"{ANOTHER_EXAMPLE_123}"}</code>
+                                            <code className="text-red-600 dark:text-red-400 break-words">FLAG{"{ANOTHER_EXAMPLE_123}"}</code>
                                         </div>
                                         <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                            <code className="text-red-600 dark:text-red-400">CTF{"{y0u_f0und_m3!}"}</code>
+                                            <code className="text-red-600 dark:text-red-400 break-words">CTF{"{y0u_f0und_m3!}"}</code>
                                         </div>
                                     </div>
                                 </div>
@@ -328,14 +342,14 @@ const OnboardingGuide: React.FC = () => {
                         </div>
 
                         <div>
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
                                 Essential Tips for Success
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {tips.map((tip, index) => (
                                     <div
                                         key={index}
-                                        className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-5 hover:shadow-lg transition-all duration-300"
+                                        className="bg-white/80 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 rounded-2xl p-4 sm:p-5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
                                     >
                                         <div className="flex items-start gap-3">
                                             <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400">
@@ -361,10 +375,10 @@ const OnboardingGuide: React.FC = () => {
                 {activeTab === "categories" && (
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 Challenge Categories
                             </h2>
-                            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
+                            <p className={`text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8`}>
                                 Explore different domains of cybersecurity. Each category tests unique skills and requires different approaches.
                             </p>
                         </div>
@@ -375,7 +389,7 @@ const OnboardingGuide: React.FC = () => {
                                 return (
                                     <div
                                         key={index}
-                                        className={`${colors.bg} ${colors.border} border rounded-xl p-6 transition-all duration-300 ${colors.hover} hover:shadow-xl`}
+                                        className={`${colors.bg} ${colors.border} border rounded-2xl p-5 sm:p-6 transition-all duration-300 ${colors.hover} hover:shadow-2xl backdrop-blur-sm`}
                                     >
                                         <div className="flex items-start gap-4 mb-4">
                                             <div className={`p-3 bg-white dark:bg-gray-800 rounded-lg ${colors.text}`}>
@@ -416,10 +430,10 @@ const OnboardingGuide: React.FC = () => {
                 {activeTab === "howto" && (
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 How to Solve CTF Challenges
                             </h2>
-                            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
+                            <p className={`text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8`}>
                                 Follow this systematic approach to tackle any CTF challenge. Practice makes perfect!
                             </p>
                         </div>
@@ -428,7 +442,7 @@ const OnboardingGuide: React.FC = () => {
                             {solvingSteps.map((step, index) => (
                                 <div
                                     key={index}
-                                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-lg transition-all duration-300"
+                                    className="bg-white/80 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 rounded-2xl p-5 sm:p-6 hover:shadow-2xl transition-all duration-300"
                                 >
                                     <div className="flex items-start gap-4">
                                         <div className="flex-shrink-0">
@@ -448,7 +462,7 @@ const OnboardingGuide: React.FC = () => {
                                             <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
                                                 {step.description}
                                             </p>
-                                            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                            <div className="bg-white/70 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 rounded-2xl p-4">
                                                 <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                                     💡 Tips:
                                                 </h4>
@@ -481,7 +495,7 @@ const OnboardingGuide: React.FC = () => {
                 {activeTab === "example" && (
                     <div className="space-y-8">
                         <div>
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 {exampleWalkthrough.title}
                             </h2>
                             <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -495,7 +509,7 @@ const OnboardingGuide: React.FC = () => {
                                     {exampleWalkthrough.points} Points
                                 </span>
                             </div>
-                            <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <p className={`$text-lg text-gray-700 dark:text-gray-300 leading-relaxed`}>
                                 Let's walk through a complete example of solving a beginner-friendly web challenge.
                                 This demonstrates the thought process and techniques used in real CTF competitions.
                             </p>
@@ -505,7 +519,7 @@ const OnboardingGuide: React.FC = () => {
                             {exampleWalkthrough.steps.map((step, index) => (
                                 <div
                                     key={index}
-                                    className="bg-white dark:bg-gray-800 border-l-4 border-red-500 rounded-lg p-6 shadow-md"
+                                    className="bg-white/85 dark:bg-white/[0.04] border-l-4 border-red-500 rounded-2xl p-5 sm:p-6 shadow-xl"
                                 >
                                     <div className="flex items-start gap-4">
                                         <div className="flex-shrink-0 w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-bold">
@@ -527,7 +541,7 @@ const OnboardingGuide: React.FC = () => {
                                                             <h4 className="font-semibold text-blue-900 dark:text-blue-300 mb-1">
                                                                 Action:
                                                             </h4>
-                                                            <p className="text-sm text-blue-800 dark:text-blue-400">
+                                                            <p className="text-sm text-blue-800 dark:text-blue-400 break-words">
                                                                 {step.action}
                                                             </p>
                                                         </div>
@@ -543,7 +557,7 @@ const OnboardingGuide: React.FC = () => {
                                                             <h4 className="font-semibold text-green-900 dark:text-green-300 mb-1">
                                                                 Discovery:
                                                             </h4>
-                                                            <p className="text-sm text-green-800 dark:text-green-400 font-mono">
+                                                            <p className="text-sm text-green-800 dark:text-green-400 font-mono break-all">
                                                                 {step.discovery}
                                                             </p>
                                                         </div>
@@ -598,23 +612,23 @@ const OnboardingGuide: React.FC = () => {
             </div>
 
             {/* Bottom CTA */}
-            <div className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-12 px-6 transition-colors duration-300">
-                <div className="max-w-4xl mx-auto text-center">
+            <div className="px-4 py-10 sm:px-6 sm:py-12 transition-colors duration-300">
+                <div className="max-w-6xl mx-auto text-center bg-white/80 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 rounded-[2.5rem] py-10 px-4 sm:py-12 sm:px-6 shadow-[0_30px_60px_-40px_rgba(15,23,42,0.4)]">
                     <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                         Ready to Start Your First Challenge?
                     </h2>
-                    <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
+                    <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 mb-6 sm:mb-8">
                         Put your knowledge into practice. Start with beginner challenges and work your way up!
                     </p>
                     <div className="flex justify-center gap-4 flex-wrap">
                         <Link href="/problems">
-                            <button className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2">
+                            <button className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-2xl transition-all duration-300 md:hover:scale-105 shadow-lg shadow-red-500/20 flex items-center gap-2">
                                 <Flag className="h-5 w-5" />
                                 Browse Challenges
                             </button>
                         </Link>
                         <Link href="/leaderboard">
-                            <button className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-bold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center gap-2">
+                            <button className="bg-white/80 hover:bg-white dark:bg-white/[0.06] dark:hover:bg-white/[0.12] text-gray-900 dark:text-gray-100 font-bold px-6 py-3 sm:px-8 sm:py-4 rounded-2xl transition-all duration-300 md:hover:scale-105 shadow-lg flex items-center gap-2">
                                 <Trophy className="h-5 w-5" />
                                 View Leaderboard
                             </button>

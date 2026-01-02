@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Space_Grotesk, Poppins } from "next/font/google";
 import Loading from "@/components/loading";
 import JsonLd from "@/components/JsonLd";
 
@@ -19,15 +18,6 @@ interface BlogPost {
   thumbnail: string | null;
 }
 
-const displayFont = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const bodyFont = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-});
 
 export default function BlogsPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -64,7 +54,7 @@ export default function BlogsPage() {
   if (loading) {
     return (
       <div
-        className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
+        className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
       >
         <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
@@ -78,7 +68,7 @@ export default function BlogsPage() {
   if (error) {
     return (
       <div
-        className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300 relative overflow-hidden px-4`}
+        className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300 relative overflow-hidden px-4`}
       >
         <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
@@ -87,7 +77,7 @@ export default function BlogsPage() {
             Error Loading Posts
           </h2>
           <p
-            className={`${bodyFont.className} text-gray-700 dark:text-gray-300 transition-colors duration-300`}
+            className={` text-gray-700 dark:text-gray-300 transition-colors duration-300`}
           >
             {error}
           </p>
@@ -104,7 +94,7 @@ export default function BlogsPage() {
 
   return (
     <div
-      className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
+      className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
     >
       <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.2),rgba(248,113,113,0))] blur-3xl" />
       <div className="pointer-events-none absolute top-24 left-10 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
@@ -133,7 +123,7 @@ export default function BlogsPage() {
               Blog Posts
             </h1>
             <p
-              className={`${bodyFont.className} text-lg text-gray-700 dark:text-gray-300 transition-colors duration-300 max-w-2xl`}
+              className={` text-lg text-gray-700 dark:text-gray-300 transition-colors duration-300 max-w-2xl`}
             >
               Discover insights, tutorials, and stories from our team
             </p>
@@ -147,7 +137,7 @@ export default function BlogsPage() {
               No posts found
             </h3>
             <p
-              className={`${bodyFont.className} text-gray-600 dark:text-gray-400 transition-colors duration-300`}
+              className={` text-gray-600 dark:text-gray-400 transition-colors duration-300`}
             >
               Check back later for new content!
             </p>
@@ -195,7 +185,7 @@ export default function BlogsPage() {
 
                   {post.excerpt && (
                     <p
-                      className={`${bodyFont.className} text-gray-700 dark:text-gray-300 mb-6 line-clamp-3 transition-colors duration-300`}
+                      className={` text-gray-700 dark:text-gray-300 mb-6 line-clamp-3 transition-colors duration-300`}
                     >
                       {post.excerpt}
                     </p>

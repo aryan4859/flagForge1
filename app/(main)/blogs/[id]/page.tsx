@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Space_Grotesk, Poppins } from "next/font/google";
 import { ArrowLeft, ArrowUp, ChevronRight, Sparkles, Tag } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -46,16 +45,6 @@ interface Block {
   type: string;
   [key: string]: any;
 }
-
-const displayFont = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const bodyFont = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-});
 
 export default function BlogPostPage() {
   const params = useParams();
@@ -232,14 +221,14 @@ export default function BlogPostPage() {
     const blockComponents = {
       paragraph: (
         <p
-          className={`${bodyFont.className} mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-[1.05rem] transition-colors duration-300`}
+          className={` mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-[1.05rem] transition-colors duration-300`}
         >
           {renderRichText(value.rich_text || [])}
         </p>
       ),
       heading_1: (
         <h1
-          className={`${displayFont.className} text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 mt-12 first:mt-0 tracking-tight transition-colors duration-300`}
+          className={`text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 mt-12 first:mt-0 tracking-tight transition-colors duration-300`}
         >
           {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
             ""}
@@ -247,7 +236,7 @@ export default function BlogPostPage() {
       ),
       heading_2: (
         <h2
-          className={`${displayFont.className} text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-5 mt-10 tracking-tight transition-colors duration-300`}
+          className={`text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-5 mt-10 tracking-tight transition-colors duration-300`}
         >
           {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
             ""}
@@ -255,7 +244,7 @@ export default function BlogPostPage() {
       ),
       heading_3: (
         <h3
-          className={`${displayFont.className} text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4 mt-8 tracking-tight transition-colors duration-300`}
+          className={`text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4 mt-8 tracking-tight transition-colors duration-300`}
         >
           {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
             ""}
@@ -263,14 +252,14 @@ export default function BlogPostPage() {
       ),
       bulleted_list_item: (
         <li
-          className={`${bodyFont.className} mb-2 text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
+          className={` mb-2 text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
         >
           {renderRichText(value.rich_text || [])}
         </li>
       ),
       numbered_list_item: (
         <li
-          className={`${bodyFont.className} mb-2 text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
+          className={` mb-2 text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
         >
           {renderRichText(value.rich_text || [])}
         </li>
@@ -286,7 +275,7 @@ export default function BlogPostPage() {
       ),
       quote: (
         <blockquote
-          className={`${bodyFont.className} border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-[1.05rem] bg-white/70 dark:bg-white/[0.03] py-5 rounded-r-2xl transition-colors duration-300`}
+          className={` border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-[1.05rem] bg-white/70 dark:bg-white/[0.03] py-5 rounded-r-2xl transition-colors duration-300`}
         >
           {renderRichText(value.rich_text || [])}
         </blockquote>
@@ -342,56 +331,56 @@ export default function BlogPostPage() {
           // Custom component styling
           h1: ({ children }) => (
             <h1
-              className={`${displayFont.className} text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 mt-12 first:mt-0 tracking-tight transition-colors duration-300`}
+              className={`text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 mt-12 first:mt-0 tracking-tight transition-colors duration-300`}
             >
               {children}
             </h1>
           ),
           h2: ({ children }) => (
             <h2
-              className={`${displayFont.className} text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-5 mt-10 tracking-tight transition-colors duration-300`}
+              className={`text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-5 mt-10 tracking-tight transition-colors duration-300`}
             >
               {children}
             </h2>
           ),
           h3: ({ children }) => (
             <h3
-              className={`${displayFont.className} text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4 mt-8 tracking-tight transition-colors duration-300`}
+              className={`text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4 mt-8 tracking-tight transition-colors duration-300`}
             >
               {children}
             </h3>
           ),
           p: ({ children }) => (
             <p
-              className={`${bodyFont.className} mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-[1.05rem] transition-colors duration-300`}
+              className={` mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-[1.05rem] transition-colors duration-300`}
             >
               {children}
             </p>
           ),
           ul: ({ children }) => (
             <ul
-              className={`${bodyFont.className} list-disc list-inside mb-6 space-y-2 pl-4`}
+              className={` list-disc list-inside mb-6 space-y-2 pl-4`}
             >
               {children}
             </ul>
           ),
           ol: ({ children }) => (
             <ol
-              className={`${bodyFont.className} list-decimal list-inside mb-6 space-y-2 pl-4`}
+              className={` list-decimal list-inside mb-6 space-y-2 pl-4`}
             >
               {children}
             </ol>
           ),
           li: ({ children }) => (
             <li
-              className={`${bodyFont.className} text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
+              className={` text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
             >
               {children}
             </li>
           ),
           blockquote: ({ children }) => (
             <blockquote
-              className={`${bodyFont.className} border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-[1.05rem] bg-white/70 dark:bg-white/[0.03] py-5 rounded-r-2xl transition-colors duration-300`}
+              className={` border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-[1.05rem] bg-white/70 dark:bg-white/[0.03] py-5 rounded-r-2xl transition-colors duration-300`}
             >
               {children}
             </blockquote>
@@ -511,7 +500,7 @@ export default function BlogPostPage() {
   if (loading) {
     return (
       <div
-        className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
+        className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
       >
         <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
@@ -525,7 +514,7 @@ export default function BlogPostPage() {
   if (error) {
     return (
       <div
-        className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300 relative overflow-hidden px-4`}
+        className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300 relative overflow-hidden px-4`}
       >
         <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
@@ -547,7 +536,7 @@ export default function BlogPostPage() {
   if (!post) {
     return (
       <div
-        className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300`}
+        className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300`}
       >
         <div className="text-gray-600 dark:text-gray-400 text-lg transition-colors duration-300">
           Post not found.
@@ -568,7 +557,7 @@ export default function BlogPostPage() {
 
   return (
     <div
-      className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
+      className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
     >
       <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.2),rgba(248,113,113,0))] blur-3xl" />
       <div className="pointer-events-none absolute top-20 left-10 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.18),rgba(251,146,60,0))] blur-3xl" />
@@ -650,7 +639,7 @@ export default function BlogPostPage() {
               </h1>
               {post.excerpt && (
                 <p
-                  className={`${bodyFont.className} text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed`}
+                  className={` text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed`}
                 >
                   {post.excerpt}
                 </p>
@@ -693,7 +682,7 @@ export default function BlogPostPage() {
         </header>
 
         <article
-          className={`${bodyFont.className} mt-12 bg-white/70 dark:bg-white/[0.02] border border-white/60 dark:border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-[0_30px_60px_-40px_rgba(15,23,42,0.4)]`}
+          className={` mt-12 bg-white/70 dark:bg-white/[0.02] border border-white/60 dark:border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-[0_30px_60px_-40px_rgba(15,23,42,0.4)]`}
         >
           {heroImage && (
             <div className="mb-10 overflow-hidden rounded-2xl border border-white/60 dark:border-white/10 shadow-2xl">
@@ -772,7 +761,7 @@ export default function BlogPostPage() {
                     </h3>
                     {item.excerpt && (
                       <p
-                        className={`${bodyFont.className} text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-6`}
+                        className={` text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-6`}
                       >
                         {item.excerpt}
                       </p>
