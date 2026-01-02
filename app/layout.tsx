@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -10,7 +10,7 @@ import { Analytics } from "@vercel/analytics/react";
 const dmSans = DM_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FlagForge",
+  title: "FlagForge - The Ultimate CTF Platform",
   description:
     "Join FlagForge, the premier Capture The Flag (CTF) platform designed to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
   metadataBase: new URL("https://flagforge.xyz"),
@@ -36,6 +36,24 @@ export const metadata: Metadata = {
     "Online CTF Competitions",
   ],
   authors: [{ name: "@Aryanstha", url: "https://github.com/aryan4859" }],
+  publisher: "FlagForge",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "your-google-verification-code",
+  },
+  other: {
+    "google-adsense-account": "ca-pub-2506540900080142",
+  },
   openGraph: {
     title: "FlagForge - The Ultimate CTF Platform",
     description:
@@ -44,7 +62,7 @@ export const metadata: Metadata = {
     siteName: "FlagForge",
     images: [
       {
-        url: "https://flagforge.xyz/flagforge.gif",
+        url: "/flagforge.gif",
         width: 1200,
         height: 630,
         alt: "FlagForge - Capture The Flag Platform",
@@ -59,8 +77,20 @@ export const metadata: Metadata = {
     title: "FlagForge - The Ultimate CTF Platform",
     description:
       "Join FlagForge, the leading Capture The Flag platform to enhance your cybersecurity skills. Compete and learn with exciting CTF challenges.",
-    images: ["https://flagforge.xyz"],
+    images: ["/flagforge.gif"],
   },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({
@@ -70,16 +100,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="robots" content="index, follow" />
-        <meta name="google-adsense-account" content="ca-pub-2506540900080142"></meta>
-        <meta
-          name="google-site-verification"
-          content="your-google-verification-code"
-        />
-        <link rel="icon" href="/favicon.ico" />
-      </head>
       <body
         className={`${dmSans.className} antialiased transition-colors duration-300 bg-white dark:bg-gray-900`}
       >

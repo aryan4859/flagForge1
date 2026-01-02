@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Loading from "@/components/loading";
+import JsonLd from "@/components/JsonLd";
 
 interface BlogPost {
   id: string;
@@ -76,6 +77,22 @@ export default function BlogsPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          name: "FlagForge Blog",
+          description: "Discover insights, tutorials, and stories from our team at FlagForge.",
+          url: "https://flagforge.xyz/blogs",
+          blogPost: posts.map((post) => ({
+            "@type": "BlogPosting",
+            headline: post.title,
+            url: `https://flagforge.xyz/blogs/${post.id}`,
+            datePublished: post.created,
+            description: post.excerpt,
+          })),
+        }}
+      />
       <div className="max-w-6xl mx-auto px-4 py-5">
         {/* Header */}
         <div className="mb-12">

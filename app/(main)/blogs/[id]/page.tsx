@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize from "rehype-sanitize";
 import Loading from "@/components/loading";
+import JsonLd from "@/components/JsonLd";
 
 // Types
 interface BlogPost {
@@ -198,7 +199,7 @@ export default function BlogPostPage() {
 
     // Limit content length as a security measure
     const maxLength = 100000; // 100KB limit
-    const sanitizedContent = content.length > maxLength 
+    const sanitizedContent = content.length > maxLength
       ? content.substring(0, maxLength) + '\n\n*[Content truncated for security]*'
       : content;
 
@@ -254,7 +255,7 @@ export default function BlogPostPage() {
           code: ({ children, className }) => {
             // Check if it's inline code (no language class) or block code
             const isInline = !className || !className.startsWith('language-');
-            
+
             return isInline ? (
               <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-300">
                 {children}
@@ -400,6 +401,35 @@ export default function BlogPostPage() {
         >
           ← Back to blogs
         </Link>
+
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            headline: post.title,
+            description: post.excerpt,
+            image: post.cover || post.thumbnail || post.image || "https://flagforge.xyz/flagforge-logo.png",
+            datePublished: post.created,
+            dateModified: post.updated,
+            author: {
+              "@type": "Organization",
+              name: "FlagForge",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "FlagForge",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://flagforge.xyz/flagforge-logo.png",
+              },
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `https://flagforge.xyz/blogs/${post.id}`,
+            },
+            keywords: post.tags.join(", "),
+          }}
+        />
 
         <header className="mb-12">
           <h1 className="text-5xl font-bold text-black dark:text-white mb-6 leading-tight transition-colors duration-300">

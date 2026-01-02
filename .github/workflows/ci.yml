@@ -1,0 +1,47 @@
+name: CI Build Check
+
+on:
+  push:
+    branches: [ "main", "mainv2"]
+  pull_request:
+    branches: [ "main", "mainv2"]
+
+jobs:
+  quality-checks:
+    name: Lint & Security
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js Latest
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'latest'
+    - name: Install dependencies
+      run: npm install
+    - name: Lint check
+      run: npm run lint
+      continue-on-error: true
+    - name: Security audit
+      run: npm audit --audit-level=critical
+      continue-on-error: true
+
+  build-check:
+    name: Production Build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js Latest
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'latest'
+    - name: Install dependencies
+      run: npm install
+    - name: Build project
+      run: npm run build
+      env:
+        NEXT_PUBLIC_SITE_URL: https://flagforge.xyz
+        MONGO_URL: ${{ secrets.MONGO_URL || 'mongodb://localhost:27017/flagforge' }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'placeholder-secret' }}
+        NEXTAUTH_URL: https://flagforge.xyz
+        NOTION_API_KEY: ${{ secrets.NOTION_API_KEY || 'placeholder-key' }}
+        NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID || 'placeholder-id' }}
