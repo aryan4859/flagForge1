@@ -7,7 +7,6 @@ import OnboardingGuide from "@/components/OnboardingGuide";
 import Image from "next/image";
 import FlagForge from "../../../public/flagforge.gif";
 import Link from "next/link";
-import { Space_Grotesk, Crimson_Text } from "next/font/google";
 import {
   Flag,
   LayoutDashboard,
@@ -23,15 +22,7 @@ import {
   Star,
 } from "lucide-react";
 
-const displayFont = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
 
-const bodyFont = Crimson_Text({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-});
 
 interface UserStats {
   totalScore: number;
@@ -201,7 +192,7 @@ const Home = () => {
 
   return (
     <div
-      className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
+      className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
     >
       <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.2),rgba(248,113,113,0))] blur-3xl" />
       <div className="pointer-events-none absolute top-20 left-10 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.18),rgba(251,146,60,0))] blur-3xl" />
@@ -251,7 +242,7 @@ const Home = () => {
                     </h1>
                   </div>
                   <p
-                    className={`${bodyFont.className} text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed mb-6 transition-colors duration-300`}
+                    className={` text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed mb-6 transition-colors duration-300`}
                   >
                     Master cybersecurity through hands-on CTF challenges and compete
                     with hackers worldwide
@@ -370,7 +361,7 @@ const Home = () => {
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 transition-colors duration-300">
                     Welcome to the Forge!
                   </h2>
-                  <p className={`${bodyFont.className} text-gray-600 dark:text-gray-300 mb-4 transition-colors duration-300`}>
+                  <p className={` text-gray-600 dark:text-gray-300 mb-4 transition-colors duration-300`}>
                     Ready to test your cybersecurity skills? Practice with realistic
                     scenarios and showcase your abilities in our gamified
                     environment.
@@ -456,7 +447,7 @@ const Home = () => {
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500 transition-colors">
                         {latestRoom.title}
                       </h3>
-                      <p className={`${bodyFont.className} text-sm text-gray-600 dark:text-gray-400 mt-1 transition-colors duration-300`}>
+                      <p className={` text-sm text-gray-600 dark:text-gray-400 mt-1 transition-colors duration-300`}>
                         {latestRoom.description.substring(0, 100)}...
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 transition-colors duration-300">
