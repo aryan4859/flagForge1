@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Space_Grotesk, Poppins } from "next/font/google";
+import { ArrowLeft, ArrowUp, ChevronRight, Sparkles, Tag } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -45,12 +47,25 @@ interface Block {
   [key: string]: any;
 }
 
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
+const bodyFont = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+});
+
 export default function BlogPostPage() {
   const params = useParams();
   const router = useRouter();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [suggestedPosts, setSuggestedPosts] = useState<BlogPost[]>([]);
+  const [suggestedLoading, setSuggestedLoading] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Fetch post data
   useEffect(() => {
@@ -72,6 +87,15 @@ export default function BlogPostPage() {
     fetchPost();
   }, [params?.id]);
 
+  useEffect(() => {
+    const onScroll = () => {
+      setShowBackToTop(window.scrollY > 500);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   // Utility functions
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -80,6 +104,96 @@ export default function BlogPostPage() {
       day: "numeric",
     });
   };
+
+  const normalizeText = (text: string) =>
+    text.toLowerCase().replace(/[^a-z0-9\s]/g, " ");
+
+  const toTokens = (text: string) =>
+    normalizeText(text)
+      .split(/\s+/)
+      .filter((token) => token.length > 2);
+
+  const overlapCount = (a: Set<string>, b: Set<string>) => {
+    let count = 0;
+    a.forEach((token) => {
+      if (b.has(token)) count += 1;
+    });
+    return count;
+  };
+
+  const getRecommendationScore = (candidate: BlogPost, current: BlogPost) => {
+    const currentTags = new Set(current.tags || []);
+    const candidateTags = new Set(candidate.tags || []);
+    let tagMatches = 0;
+    candidateTags.forEach((tag) => {
+      if (currentTags.has(tag)) tagMatches += 1;
+    });
+
+    const currentTerms = new Set(
+      toTokens(`${current.title} ${current.excerpt || ""}`)
+    );
+    const candidateTerms = new Set(
+      toTokens(`${candidate.title} ${candidate.excerpt || ""}`)
+    );
+    const termMatches = overlapCount(candidateTerms, currentTerms);
+
+    const currentTime = new Date(current.created).getTime();
+    const candidateTime = new Date(candidate.created).getTime();
+    const dayDiff = Math.abs(currentTime - candidateTime) / 86400000;
+    const recencyBoost = Math.max(0, 30 - dayDiff) / 30;
+    const statusBoost =
+      candidate.status && candidate.status === current.status ? 1 : 0;
+
+    return tagMatches * 5 + termMatches * 2 + recencyBoost + statusBoost;
+  };
+
+  const getPostPlainText = (value: BlogPost) => {
+    if (value.content) return value.content;
+    if (!value.blocks?.length) return "";
+    return value.blocks
+      .map((block) => {
+        const blockValue = block[block.type];
+        if (!blockValue?.rich_text) return "";
+        return blockValue.rich_text
+          .map((text: RichText) => text.plain_text)
+          .join(" ");
+      })
+      .join(" ");
+  };
+
+  useEffect(() => {
+    if (!post) return;
+    let active = true;
+    const fetchSuggested = async () => {
+      setSuggestedLoading(true);
+      try {
+        const response = await fetch("/api/blogs");
+        if (!response.ok) throw new Error("Failed to fetch posts");
+        const data = await response.json();
+        const allPosts: BlogPost[] = Array.isArray(data.posts)
+          ? data.posts
+          : [];
+        const ranked = allPosts
+          .filter((item) => item.id !== post.id)
+          .map((item) => ({
+            post: item,
+            score: getRecommendationScore(item, post),
+          }))
+          .sort((a, b) => b.score - a.score)
+          .map((item) => item.post)
+          .slice(0, 3);
+        if (active) setSuggestedPosts(ranked);
+      } catch (err) {
+        if (active) setSuggestedPosts([]);
+      } finally {
+        if (active) setSuggestedLoading(false);
+      }
+    };
+    fetchSuggested();
+    return () => {
+      active = false;
+    };
+  }, [post]);
 
   const getTextStyles = (annotations?: RichText["annotations"]) => {
     if (!annotations) return "";
@@ -117,41 +231,53 @@ export default function BlogPostPage() {
 
     const blockComponents = {
       paragraph: (
-        <p className="mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-lg transition-colors duration-300">
+        <p
+          className={`${bodyFont.className} mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-[1.05rem] transition-colors duration-300`}
+        >
           {renderRichText(value.rich_text || [])}
         </p>
       ),
       heading_1: (
-        <h1 className="text-4xl font-extrabold text-black dark:text-white mb-6 mt-12 first:mt-0 transition-colors duration-300">
+        <h1
+          className={`${displayFont.className} text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 mt-12 first:mt-0 tracking-tight transition-colors duration-300`}
+        >
           {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
             ""}
         </h1>
       ),
       heading_2: (
-        <h2 className="text-3xl font-extrabold text-black dark:text-white mb-5 mt-10 transition-colors duration-300">
+        <h2
+          className={`${displayFont.className} text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-5 mt-10 tracking-tight transition-colors duration-300`}
+        >
           {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
             ""}
         </h2>
       ),
       heading_3: (
-        <h3 className="text-2xl font-extrabold text-black dark:text-white mb-4 mt-8 transition-colors duration-300">
+        <h3
+          className={`${displayFont.className} text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4 mt-8 tracking-tight transition-colors duration-300`}
+        >
           {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
             ""}
         </h3>
       ),
       bulleted_list_item: (
-        <li className="mb-2 text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300">
+        <li
+          className={`${bodyFont.className} mb-2 text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
+        >
           {renderRichText(value.rich_text || [])}
         </li>
       ),
       numbered_list_item: (
-        <li className="mb-2 text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300">
+        <li
+          className={`${bodyFont.className} mb-2 text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
+        >
           {renderRichText(value.rich_text || [])}
         </li>
       ),
       code: (
-        <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6 overflow-x-auto border border-gray-200 dark:border-gray-700 transition-colors duration-300">
-          <code className="text-sm text-gray-800 dark:text-gray-300 font-mono transition-colors duration-300">
+        <pre className="bg-[#0f172a] dark:bg-[#0b1120] p-5 rounded-2xl mb-6 overflow-x-auto border border-white/10 shadow-lg shadow-slate-900/20 transition-colors duration-300">
+          <code className="text-[0.95rem] text-slate-100 font-mono transition-colors duration-300">
             {value.rich_text
               ?.map((text: RichText) => text.plain_text)
               .join("") || ""}
@@ -159,12 +285,14 @@ export default function BlogPostPage() {
         </pre>
       ),
       quote: (
-        <blockquote className="border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-lg bg-gray-50 dark:bg-gray-800/50 py-4 rounded-r-lg transition-colors duration-300">
+        <blockquote
+          className={`${bodyFont.className} border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-[1.05rem] bg-white/70 dark:bg-white/[0.03] py-5 rounded-r-2xl transition-colors duration-300`}
+        >
           {renderRichText(value.rich_text || [])}
         </blockquote>
       ),
       divider: (
-        <hr className="my-12 border-gray-300 dark:border-gray-700 transition-colors duration-300" />
+        <hr className="my-12 border-gray-200 dark:border-white/10 transition-colors duration-300" />
       ),
       image: (
         <div className="my-8">
@@ -174,7 +302,7 @@ export default function BlogPostPage() {
               alt={value.caption?.[0]?.plain_text || "Blog image"}
               width={800}
               height={400}
-              className="rounded-lg w-full h-auto shadow-lg"
+              className="rounded-2xl w-full h-auto shadow-2xl border border-white/30 dark:border-white/10"
             />
           )}
           {value.caption?.length > 0 && (
@@ -213,42 +341,58 @@ export default function BlogPostPage() {
         components={{
           // Custom component styling
           h1: ({ children }) => (
-            <h1 className="text-4xl font-extrabold text-black dark:text-white mb-6 mt-12 first:mt-0 transition-colors duration-300">
+            <h1
+              className={`${displayFont.className} text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 mt-12 first:mt-0 tracking-tight transition-colors duration-300`}
+            >
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-3xl font-extrabold text-black dark:text-white mb-5 mt-10 transition-colors duration-300">
+            <h2
+              className={`${displayFont.className} text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-5 mt-10 tracking-tight transition-colors duration-300`}
+            >
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-2xl font-extrabold text-black dark:text-white mb-4 mt-8 transition-colors duration-300">
+            <h3
+              className={`${displayFont.className} text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-4 mt-8 tracking-tight transition-colors duration-300`}
+            >
               {children}
             </h3>
           ),
           p: ({ children }) => (
-            <p className="mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-lg transition-colors duration-300">
+            <p
+              className={`${bodyFont.className} mb-6 text-gray-800 dark:text-gray-300 leading-relaxed text-[1.05rem] transition-colors duration-300`}
+            >
               {children}
             </p>
           ),
           ul: ({ children }) => (
-            <ul className="list-disc list-inside mb-6 space-y-2 pl-4">
+            <ul
+              className={`${bodyFont.className} list-disc list-inside mb-6 space-y-2 pl-4`}
+            >
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal list-inside mb-6 space-y-2 pl-4">
+            <ol
+              className={`${bodyFont.className} list-decimal list-inside mb-6 space-y-2 pl-4`}
+            >
               {children}
             </ol>
           ),
           li: ({ children }) => (
-            <li className="text-gray-800 dark:text-gray-300 text-lg leading-relaxed transition-colors duration-300">
+            <li
+              className={`${bodyFont.className} text-gray-800 dark:text-gray-300 text-[1.05rem] leading-relaxed transition-colors duration-300`}
+            >
               {children}
             </li>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-lg bg-gray-50 dark:bg-gray-800/50 py-4 rounded-r-lg transition-colors duration-300">
+            <blockquote
+              className={`${bodyFont.className} border-l-4 border-red-500 dark:border-red-500 pl-6 my-8 italic text-gray-700 dark:text-gray-400 text-[1.05rem] bg-white/70 dark:bg-white/[0.03] py-5 rounded-r-2xl transition-colors duration-300`}
+            >
               {children}
             </blockquote>
           ),
@@ -257,22 +401,24 @@ export default function BlogPostPage() {
             const isInline = !className || !className.startsWith('language-');
 
             return isInline ? (
-              <code className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-300">
+              <code className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
                 {children}
               </code>
             ) : (
-              <code className={`block bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto border border-gray-200 dark:border-gray-700 transition-colors duration-300 text-sm font-mono text-gray-800 dark:text-gray-300 ${className}`}>
+              <code
+                className={`block bg-[#0f172a] dark:bg-[#0b1120] p-5 rounded-2xl overflow-x-auto border border-white/10 shadow-lg shadow-slate-900/20 transition-colors duration-300 text-[0.95rem] font-mono text-slate-100 ${className}`}
+              >
                 {children}
               </code>
             );
           },
           pre: ({ children }) => (
-            <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-6 overflow-x-auto border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+            <pre className="bg-[#0f172a] dark:bg-[#0b1120] p-5 rounded-2xl mb-6 overflow-x-auto border border-white/10 shadow-lg shadow-slate-900/20 transition-colors duration-300">
               {children}
             </pre>
           ),
           hr: () => (
-            <hr className="my-12 border-gray-300 dark:border-gray-700 transition-colors duration-300" />
+            <hr className="my-12 border-gray-200 dark:border-white/10 transition-colors duration-300" />
           ),
           img: ({ src, alt }) => (
             <div className="my-8">
@@ -281,7 +427,7 @@ export default function BlogPostPage() {
                 alt={alt || "Blog image"}
                 width={800}
                 height={400}
-                className="rounded-lg w-full h-auto shadow-lg"
+                className="rounded-2xl w-full h-auto shadow-2xl border border-white/30 dark:border-white/10"
               />
             </div>
           ),
@@ -362,18 +508,34 @@ export default function BlogPostPage() {
     );
   };
 
-  if (loading) return <Loading />;
+  if (loading) {
+    return (
+      <div
+        className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
+      >
+        <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
+        <div className="relative z-10 flex min-h-screen items-center justify-center">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
-        <div className="text-center">
-          <p className="text-red-400 dark:text-red-500 text-lg mb-4 transition-colors duration-300">
+      <div
+        className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300 relative overflow-hidden px-4`}
+      >
+        <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
+        <div className="text-center bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-2xl rounded-[2.5rem] p-10 max-w-md w-full relative z-10">
+          <p className="text-red-500 text-lg mb-4 transition-colors duration-300">
             Error: {error}
           </p>
           <button
             onClick={() => router.push("/blogs")}
-            className="text-red-400 dark:text-red-500 underline hover:text-red-800 dark:hover:text-red-600 transition-colors duration-300"
+            className="text-red-500 underline underline-offset-4 hover:text-red-700 transition-colors duration-300"
           >
             Back to Blogs
           </button>
@@ -384,7 +546,9 @@ export default function BlogPostPage() {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
+      <div
+        className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300`}
+      >
         <div className="text-gray-600 dark:text-gray-400 text-lg transition-colors duration-300">
           Post not found.
         </div>
@@ -392,117 +556,257 @@ export default function BlogPostPage() {
     );
   }
 
+  const heroImage = post.cover || post.thumbnail || null;
+  const seoText = getPostPlainText(post);
+  const wordCount = seoText
+    ? seoText.split(/\s+/).filter(Boolean).length
+    : undefined;
+  const seoImage =
+    heroImage ||
+    post.image ||
+    "https://flagforge.xyz/flagforge-logo.png";
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div
+      className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
+    >
+      <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.2),rgba(248,113,113,0))] blur-3xl" />
+      <div className="pointer-events-none absolute top-20 left-10 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.18),rgba(251,146,60,0))] blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.18),rgba(244,63,94,0))] blur-3xl" />
+
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.excerpt,
+          image: [seoImage],
+          datePublished: post.created,
+          dateModified: post.updated,
+          inLanguage: "en-US",
+          wordCount,
+          isAccessibleForFree: true,
+          articleSection: post.tags,
+          author: {
+            "@type": "Organization",
+            name: "FlagForge",
+          },
+          publisher: {
+            "@type": "Organization",
+            name: "FlagForge",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://flagforge.xyz/flagforge-logo.png",
+            },
+          },
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `https://flagforge.xyz/blogs/${post.id}`,
+          },
+          keywords: post.tags?.join(", ") || "",
+          isPartOf: {
+            "@type": "Blog",
+            name: "FlagForge Blog",
+            url: "https://flagforge.xyz/blogs",
+          },
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Blogs",
+              item: "https://flagforge.xyz/blogs",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: post.title,
+              item: `https://flagforge.xyz/blogs/${post.id}`,
+            },
+          ],
+        }}
+      />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-4 pb-20 pt-10 scroll-smooth">
         <Link
           href="/blogs"
-          className="inline-flex items-center text-red-600 dark:text-red-500 mb-8 hover:text-red-800 dark:hover:text-red-600 transition-colors duration-300"
+          className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 transition-colors duration-300 text-sm font-semibold uppercase tracking-[0.2em]"
         >
-          ← Back to blogs
+          <ArrowLeft className="w-4 h-4" />
+          Back to blogs
         </Link>
 
-        <JsonLd
-          data={{
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post.title,
-            description: post.excerpt,
-            image: post.cover || post.thumbnail || post.image || "https://flagforge.xyz/flagforge-logo.png",
-            datePublished: post.created,
-            dateModified: post.updated,
-            author: {
-              "@type": "Organization",
-              name: "FlagForge",
-            },
-            publisher: {
-              "@type": "Organization",
-              name: "FlagForge",
-              logo: {
-                "@type": "ImageObject",
-                url: "https://flagforge.xyz/flagforge-logo.png",
-              },
-            },
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": `https://flagforge.xyz/blogs/${post.id}`,
-            },
-            keywords: post.tags.join(", "),
-          }}
-        />
-
-        <header className="mb-12">
-          <h1 className="text-5xl font-bold text-black dark:text-white mb-6 leading-tight transition-colors duration-300">
-            {post.title}
-          </h1>
-
-          {/* Meta info */}
-          <div className="flex items-center gap-4 text-sm mb-8">
-            <time className="text-red-600 dark:text-red-500 font-medium transition-colors duration-300">
-              {formatDate(post.created)}
-            </time>
-            {post.updated !== post.created && (
-              <span className="text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                Updated: {formatDate(post.updated)}
-              </span>
-            )}
+        <header className="relative overflow-hidden rounded-[2.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(15,23,42,0.45)] mt-6">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.16),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.12),rgba(2,6,23,0))]" />
+          <div className="relative grid gap-10 lg:grid-cols-[1.2fr_0.8fr] p-8 md:p-12">
+            <div className="space-y-6">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight">
+                {post.title}
+              </h1>
+              {post.excerpt && (
+                <p
+                  className={`${bodyFont.className} text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed`}
+                >
+                  {post.excerpt}
+                </p>
+              )}
+              {post.tags?.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-2 px-3 py-1 bg-red-100/80 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-semibold uppercase tracking-widest"
+                    >
+                      <Tag className="w-3.5 h-3.5" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="space-y-6">
+              <div className="rounded-2xl border border-white/60 dark:border-white/20 bg-white/80 dark:bg-white/[0.08] p-6 shadow-xl dark:shadow-[0_20px_40px_-20px_rgba(0,0,0,0.6)]">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 dark:text-gray-300 mb-2">
+                  Published
+                </p>
+                <time className="text-red-600 font-semibold text-lg">
+                  {formatDate(post.created)}
+                </time>
+                {post.updated !== post.created && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                    Updated: {formatDate(post.updated)}
+                  </p>
+                )}
+                {post.status && (
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-green-100 dark:bg-green-900/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-green-700 dark:text-green-400">
+                    {post.status}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+        </header>
 
-          {/* Thumbnail - only shown once after date */}
-          {post.thumbnail && (
-            <div className="mb-8">
+        <article
+          className={`${bodyFont.className} mt-12 bg-white/70 dark:bg-white/[0.02] border border-white/60 dark:border-white/10 rounded-[2.5rem] p-8 md:p-12 shadow-[0_30px_60px_-40px_rgba(15,23,42,0.4)]`}
+        >
+          {heroImage && (
+            <div className="mb-10 overflow-hidden rounded-2xl border border-white/60 dark:border-white/10 shadow-2xl">
               <Image
-                src={post.thumbnail}
+                src={heroImage}
                 alt={post.title}
-                width={800}
-                height={400}
-                className="rounded-lg w-full h-auto shadow-lg"
+                width={960}
+                height={540}
+                className="w-full h-auto object-cover"
+                priority
               />
             </div>
           )}
-
-          {/* Excerpt */}
-          {post.excerpt && (
-            <p className="mt-6 text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-light transition-colors duration-300">
-              {post.excerpt}
-            </p>
-          )}
-        </header>
-
-        {/* Tags */}
-        {post.tags?.length > 0 && (
-          <div className="mb-8">
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-500 rounded-full text-sm font-medium transition-colors duration-300"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Content */}
-        <article className="prose prose-lg max-w-none dark:prose-invert">
           {renderContent()}
         </article>
 
-        {/* Image from ImageURL at the end */}
-        {post.image && (
+        {post.image && post.image !== heroImage && (
           <div className="mt-12">
             <Image
               src={post.image}
               alt={post.title}
-              width={800}
-              height={400}
-              className="rounded-lg w-full h-auto shadow-lg"
+              width={900}
+              height={500}
+              className="rounded-2xl w-full h-auto shadow-2xl border border-white/30 dark:border-white/10"
             />
           </div>
         )}
+
+        <section className="mt-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 rounded-xl bg-red-500/10 text-red-600">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+              Suggested Blogs
+            </h2>
+          </div>
+          {suggestedLoading ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="animate-pulse rounded-[2rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] p-6 shadow-lg"
+                >
+                  <div className="h-32 rounded-xl bg-gray-200 dark:bg-white/10 mb-5" />
+                  <div className="h-4 bg-gray-200 dark:bg-white/10 rounded w-2/3 mb-3" />
+                  <div className="h-3 bg-gray-200 dark:bg-white/10 rounded w-full mb-2" />
+                  <div className="h-3 bg-gray-200 dark:bg-white/10 rounded w-3/4" />
+                </div>
+              ))}
+            </div>
+          ) : suggestedPosts.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {suggestedPosts.map((item) => (
+                <article
+                  key={item.id}
+                  className="group h-full rounded-[2rem] border border-white/60 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl shadow-lg hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col"
+                >
+                  <div className="relative h-40 bg-[linear-gradient(120deg,rgba(248,113,113,0.15),rgba(251,146,60,0.08),rgba(255,255,255,0))] dark:bg-[linear-gradient(120deg,rgba(248,113,113,0.2),rgba(251,146,60,0.08),rgba(2,6,23,0))]">
+                    {item.thumbnail && (
+                      <Image
+                        src={item.thumbnail}
+                        alt={item.title}
+                        fill
+                        sizes="(min-width: 1024px) 300px, 90vw"
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <time className="text-xs uppercase tracking-[0.2em] text-red-500 font-semibold">
+                      {formatDate(item.created)}
+                    </time>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mt-3 mb-3 group-hover:text-red-500 transition-colors duration-300 line-clamp-2">
+                      <Link href={`/blogs/${item.id}`}>{item.title}</Link>
+                    </h3>
+                    {item.excerpt && (
+                      <p
+                        className={`${bodyFont.className} text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-6`}
+                      >
+                        {item.excerpt}
+                      </p>
+                    )}
+                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100 dark:border-white/5">
+                      <Link
+                        href={`/blogs/${item.id}`}
+                        className="inline-flex items-center gap-2 text-red-600 font-semibold text-sm hover:text-red-700 transition-colors duration-300"
+                      >
+                        Read more
+                        <ChevronRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="text-gray-600 dark:text-gray-400 text-sm">
+              No related posts available yet.
+            </div>
+          )}
+        </section>
       </div>
+
+      {showBackToTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-50 rounded-full bg-red-600 text-white p-3 shadow-2xl shadow-red-600/30 hover:bg-red-700 transition-all duration-300 active:scale-95"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 }
