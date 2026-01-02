@@ -26,13 +26,11 @@ const nextConfig = {
             key: "X-Frame-Options",
             value: "DENY",
           },
-          /*
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://lh3.googleusercontent.com;",
+              "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https://lh3.googleusercontent.com https://prod-files-secure.s3.us-west-2.amazonaws.com data:; font-src 'self'; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';",
           },
-          */
           {
             key: "X-Content-Type-Options",
             value: "nosniff",
@@ -60,10 +58,6 @@ const nextConfig = {
           {
             key: "Server",
             value: "",
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
           },
         ],
       },
