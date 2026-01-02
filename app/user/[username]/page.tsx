@@ -264,15 +264,15 @@ const PublicUserPage = () => {
   
   if (error) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white flex items-center justify-center p-6 overflow-x-hidden">
-        <div className="max-w-md w-full bg-white/60 dark:bg-white/[0.03] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem] p-10 text-center shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)]">
-          <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-8 text-center border border-gray-200 dark:border-gray-700">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
             <User className="w-8 h-8 text-gray-600 dark:text-gray-400" />
           </div>
-          <h1 className="text-xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
             {error}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mb-2">
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
             The user profile you're looking for doesn't exist.
           </p>
         </div>
@@ -288,62 +288,50 @@ const PublicUserPage = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white pb-20 overflow-x-hidden">
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[120px] animate-pulse" />
-          <div className="absolute bottom-[-5%] right-[-2%] w-[30%] h-[30%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[100px]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] dark:opacity-[0.05] pointer-events-none" />
-        </div>
-
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
         {/* Hero Section */}
-        <section className="relative z-30 pt-16 pb-12 border-b border-gray-100 dark:border-white/5">
-          <div className="w-[92%] lg:w-[80%] mx-auto">
-            <div className="flex flex-col lg:flex-row items-center gap-12">
-              <div className="flex-shrink-0 relative group">
-                <div className="absolute -inset-4 bg-gradient-to-br from-red-600 to-orange-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
-                <div className="relative w-40 h-40 lg:w-48 lg:h-48 rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-[#0f0f0f] shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] group-hover:rotate-2">
-                  <Image
-                    src={profileData.image || Flagforge}
-                    alt={`${profileData.name} Profile Picture`}
-                    width={192}
-                    height={192}
-                    className="w-full h-full object-cover"
-                    unoptimized
-                    priority
-                  />
-                </div>
+        <div className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
+              <div className="flex-shrink-0">
+                <Image
+                  src={profileData.image || Flagforge}
+                  alt={`${profileData.name} Profile Picture`}
+                  width={120}
+                  height={120}
+                  className="w-30 h-30 rounded-full object-cover ring-4 ring-red-500 shadow-xl"
+                  unoptimized
+                  priority
+                />
               </div>
-
-              <div className="flex-grow text-center lg:text-left space-y-8">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
-                  <div className="space-y-4">
-                    <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.1] lg:leading-[0.9] text-gray-900 dark:text-white">
+              
+              <div className="flex-grow text-center lg:text-left">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
+                  <div className="mb-6 lg:mb-0">
+                    <h1 className="text-4xl lg:text-5xl font-bold mb-3 text-gray-900 dark:text-white">
                       {profileData.name}
                     </h1>
-                    <p className="text-lg lg:text-xl font-bold text-red-600 dark:text-red-500">
+                    <p className="text-xl text-red-600 dark:text-red-500 mb-4 font-medium">
                       {profileData.level}
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-gray-500 dark:text-gray-400">
-                      <div className="flex items-center justify-center lg:justify-start gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span className="text-sm sm:text-base">
+                    <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-gray-600 dark:text-gray-300">
+                      <div className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        <span className="text-sm">
                           Member since {profileData.memberSince}
                         </span>
                       </div>
                     </div>
                   </div>
-
-                  <div className="relative group">
-                    <div className="absolute -inset-2 bg-gradient-to-br from-red-600/20 to-orange-500/20 blur-xl opacity-40 transition-opacity" />
-                    <div className="relative bg-white/60 dark:bg-white/[0.03] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem] p-8 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)]">
-                      <div className="flex justify-center">
-                        {getBadgeComponent(profileData.totalScore, 88)}
-                      </div>
+                  
+                  <div className="relative">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+                      {getBadgeComponent(profileData.totalScore, 80)}
                     </div>
                   </div>
                 </div>
-
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mt-8">
                   {[
                     {
                       icon: Trophy,
@@ -372,72 +360,71 @@ const PublicUserPage = () => {
                   ].map((stat, index) => (
                     <div
                       key={index}
-                      className="bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[2rem] p-6 text-center transition-all hover:translate-y-[-4px] hover:shadow-2xl"
+                      className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl p-4 lg:p-6 text-center transition-all hover:bg-white dark:hover:bg-gray-800 hover:scale-105 shadow-lg"
                     >
-                      <stat.icon className={`w-6 h-6 lg:w-8 lg:h-8 ${stat.color} mx-auto mb-3`} />
-                      <p className="text-[10px] lg:text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">
+                      <stat.icon className={`w-6 h-6 lg:w-8 lg:h-8 ${stat.color} mx-auto mb-2 lg:mb-3`} />
+                      <p className="text-xs lg:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                         {stat.label}
                       </p>
-                      <p className={`text-xl lg:text-2xl font-black ${stat.color}`}>
+                      <p className={`text-lg lg:text-2xl font-bold ${stat.color}`}>
                         {stat.value}
                       </p>
                     </div>
                   ))}
                 </div>
               </div>
+            </div>
           </div>
         </div>
-        </section>
 
         {/* Tabs Section */}
-        <section className="relative z-10 py-12">
-          <div className="w-[92%] lg:w-[80%] mx-auto">
-            <div className="bg-white/60 dark:bg-white/[0.02] backdrop-blur-3xl rounded-[3rem] shadow-sm border border-white dark:border-white/10">
-              {/* Tab Navigation */}
-              <div className="p-8 pb-0">
-                <div className="border-b border-gray-100 dark:border-white/10">
-                  <nav className="flex flex-wrap gap-6">
-                    {[
-                      { id: "overview", label: "Overview", icon: User },
-                      { id: "badges", label: "Badge Collection", icon: Award },
-                      { id: "completed", label: "Completed Problems", icon: CheckCircle },
-                    ].map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`border-b-2 py-4 px-1 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 transition-all ${
-                          activeTab === tab.id
-                            ? "border-red-600 text-gray-900 dark:text-gray-100"
-                            : "border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600"
-                        }`}
-                      >
-                        <tab.icon className="w-4 h-4" />
-                        {tab.label}
-                      </button>
-                    ))}
-                  </nav>
-                </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+            {/* Tab Navigation */}
+            <div className="p-6 pb-0">
+              <div className="border-b border-gray-200 dark:border-gray-700">
+                <nav className="flex space-x-8">
+                  {[
+                    { id: "overview", label: "Overview", icon: User },
+                    { id: "badges", label: "Badge Collection", icon: Award },
+                    { id: "completed", label: "Completed Problems", icon: CheckCircle },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center transition-all ${
+                        activeTab === tab.id
+                          ? "border-red-600 text-gray-900 dark:text-gray-100"
+                          : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600"
+                      }`}
+                    >
+                      <tab.icon className="w-4 h-4 mr-2" />
+                      {tab.label}
+                    </button>
+                  ))}
+                </nav>
               </div>
+            </div>
 
-              {/* Tab Content */}
-              <div className="p-8 lg:p-12">
+            {/* Tab Content */}
+            <div className="p-6">
               {activeTab === "overview" && (
-                <div className="text-center py-10 px-6 lg:px-10 bg-white/60 dark:bg-white/[0.02] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem]">
-                  <h3 className="text-3xl lg:text-4xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-4">
+                <div className="text-center py-12">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                     {profileData.name}'s Profile
                   </h3>
-                  <p className="text-gray-500 dark:text-gray-400 mb-8 font-medium">
+                  <p className="text-gray-600 dark:text-gray-400 mb-6">
                     Current Level: {getCurrentBadgeName(profileData.totalScore)} with {profileData.totalScore.toLocaleString()} points
                   </p>
                   <div className="max-w-md mx-auto">
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="bg-white/60 dark:bg-white/[0.03] border border-white dark:border-white/10 rounded-2xl p-6">
-                        <p className="text-2xl font-black text-red-500">{profileData.completedQuestions}</p>
-                        <p className="text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">Problems Solved</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <p className="text-2xl font-bold text-red-500">{profileData.completedQuestions}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Problems Solved</p>
                       </div>
-                      <div className="bg-white/60 dark:bg-white/[0.03] border border-white dark:border-white/10 rounded-2xl p-6">
-                        <p className="text-2xl font-black text-yellow-500">#{profileData.rank}</p>
-                        <p className="text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">Global Rank</p>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <p className="text-2xl font-bold text-yellow-500">#{profileData.rank}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Global Rank</p>
                       </div>
                     </div>
                   </div>
@@ -447,33 +434,33 @@ const PublicUserPage = () => {
               {activeTab === "badges" && (
                 <div>
                   {/* System Badges Section */}
-                  <div className="mb-16">
-                    <div className="text-center mb-12">
-                      <h3 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-3">
+                  <div className="mb-12">
+                    <div className="text-center mb-10">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                         System Badge Collection
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium">
+                      <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                         Badges earned through accumulated points from completed cybersecurity challenges.
                       </p>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                       {BADGE_CONFIG.map((badge) => {
                         const earned = (profileData?.totalScore || 0) >= badge.threshold;
                         const current = getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
                         return (
                           <div
                             key={badge.name}
-                            className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 ${
+                            className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
                               earned
                                 ? current
-                                  ? `bg-gradient-to-br ${badge.color} shadow-[0_20px_40px_rgba(220,38,38,0.2)] border-red-500 text-white`
-                                  : "bg-white/60 dark:bg-white/[0.02] border-white dark:border-white/10 hover:translate-y-[-5px] hover:shadow-2xl dark:hover:bg-white/5"
-                                : "bg-gray-50/50 dark:bg-black/20 border-gray-100 dark:border-white/5 opacity-40 grayscale blur-[1px]"
+                                  ? `border-red-500 bg-gradient-to-br ${badge.color} shadow-lg ring-2 ring-red-300 dark:ring-red-700 text-white`
+                                  : "border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20 hover:shadow-md hover:border-green-400 dark:hover:border-green-500"
+                                : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
                             }`}
                           >
                             {current && (
                               <div className="absolute -top-2 -right-2">
-                                <div className="bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest shadow-lg">
+                                <div className="bg-red-600 text-white text-xs px-2 py-1 rounded-full font-medium">
                                   Current
                                 </div>
                               </div>
@@ -481,21 +468,21 @@ const PublicUserPage = () => {
                             <div className={`mb-4 flex justify-center ${earned ? "" : "opacity-40 grayscale"}`}>
                               {getBadgeComponent(badge.threshold, 72)}
                             </div>
-                            <h4 className={`text-sm font-black uppercase tracking-widest text-center mb-2 ${
+                            <h4 className={`font-bold text-center mb-2 text-lg ${
                                 earned
                                   ? current
                                     ? "text-white"
-                                    : "text-gray-900 dark:text-gray-100"
+                                    : "text-green-800 dark:text-green-400"
                                   : "text-gray-500 dark:text-gray-400"
                               }`}
                             >
                               {badge.name}
                             </h4>
-                            <p className={`text-[10px] font-bold uppercase tracking-widest text-center ${
+                            <p className={`text-sm text-center ${
                                 earned
                                   ? current
                                     ? "text-red-100"
-                                    : "text-gray-400 dark:text-gray-500"
+                                    : "text-green-600 dark:text-green-400"
                                   : "text-gray-400 dark:text-gray-500"
                               }`}
                             >
@@ -503,7 +490,7 @@ const PublicUserPage = () => {
                             </p>
                             {earned && !current && (
                               <div className="mt-3 text-center">
-                                <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-[9px] rounded-full font-black uppercase tracking-widest border border-green-200 dark:border-green-700">
+                                <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs rounded-full font-medium border border-green-200 dark:border-green-700">
                                   <CheckCircle className="w-3 h-3 inline mr-1" />
                                   Earned
                                 </span>
@@ -518,36 +505,36 @@ const PublicUserPage = () => {
                   {/* Custom Badges Section */}
                   {profileData?.customBadges && profileData.customBadges.length > 0 && (
                     <div>
-                      <div className="text-center mb-12">
-                        <h3 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-3 flex items-center justify-center">
+                      <div className="text-center mb-10">
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center justify-center">
                           <Crown className="w-6 h-6 mr-2 text-yellow-500" />
                           Special Achievement Badges
                         </h3>
-                        <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium">
+                        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                           Exclusive badges awarded for exceptional contributions and achievements.
                         </p>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {profileData.customBadges.map((badge, index) => (
                           <div
                             key={index}
-                            className="relative p-8 rounded-[2.5rem] border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/10 dark:to-amber-900/10 shadow-xl hover:shadow-2xl transition-all duration-300 ring-4 ring-yellow-400/10 hover:translate-y-[-5px]"
+                            className="relative p-6 rounded-xl border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 shadow-lg hover:shadow-xl transition-all duration-300 ring-2 ring-yellow-200 dark:ring-yellow-600"
                             onMouseEnter={() => setShowCustomBadgeTooltip(badge.name)}
                             onMouseLeave={() => setShowCustomBadgeTooltip(null)}
                           >
-                            <div className="absolute -top-3 -right-3">
-                              <div className="bg-yellow-500 text-white text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest flex items-center shadow-lg">
+                            <div className="absolute -top-2 -right-2">
+                              <div className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium flex items-center">
                                 <Gift className="w-3 h-3 mr-1" />
                                 Special
                               </div>
                             </div>
-                            <div className="mb-6 flex justify-center">
-                              <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-yellow-400 shadow-2xl ring-4 ring-yellow-400/20">
+                            <div className="mb-4 flex justify-center">
+                              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-yellow-400 shadow-lg ring-2 ring-yellow-200 dark:ring-yellow-600">
                                 <Image
                                   src={badge.icon}
                                   alt={badge.name}
-                                  width={96}
-                                  height={96}
+                                  width={80}
+                                  height={80}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
                                     e.currentTarget.src = '/api/placeholder/80/80';
@@ -555,36 +542,36 @@ const PublicUserPage = () => {
                                 />
                               </div>
                             </div>
-                            <h4 className="font-black text-center mb-2 text-lg text-yellow-800 dark:text-yellow-500 uppercase tracking-tight">
+                            <h4 className="font-bold text-center mb-2 text-lg text-yellow-800 dark:text-yellow-400">
                               {badge.name}
                             </h4>
-                            <p className="text-sm text-center text-yellow-700 dark:text-yellow-600/80 mb-6 leading-relaxed">
+                            <p className="text-sm text-center text-yellow-700 dark:text-yellow-500 mb-3">
                               {badge.description}
                             </p>
-                            <div className="pt-6 border-t border-yellow-400/20 text-center space-y-1">
-                              <div className="text-[10px] font-black uppercase tracking-widest text-yellow-600 dark:text-yellow-500">
+                            <div className="text-center space-y-1">
+                              <div className="text-xs text-yellow-600 dark:text-yellow-400">
                                 Awarded by: <span className="font-semibold">Flagforge</span>
                               </div>
-                              <div className="text-[9px] font-bold text-yellow-600/60 dark:text-yellow-500/50">
+                              <div className="text-xs text-yellow-600 dark:text-yellow-400">
                                 {formatDate(badge.assignedAt)}
                               </div>
                             </div>
 
                             {/* Custom Badge Tooltip */}
                             {showCustomBadgeTooltip === badge.name && (
-                              <div className="absolute bottom-full mb-4 left-1/2 transform -translate-x-1/2 bg-[#0a0a0a]/95 backdrop-blur-xl text-white text-[11px] rounded-2xl px-4 py-3 z-20 shadow-2xl border border-white/10 w-64">
+                              <div className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap z-20 shadow-lg">
                                 <div className="text-center">
                                   <div className="font-semibold text-yellow-300">{badge.name}</div>
                                   <div className="text-gray-300">{badge.description}</div>
                                   <div className="text-gray-400 mt-1">
                                     By: {badge.assignedBy}
                                   </div>
-                                  <div className="text-gray-400 text-[10px]">
+                                  <div className="text-gray-400 text-xs">
                                     {formatDate(badge.assignedAt)}
                                   </div>
                                 </div>
                                 {/* Tooltip Arrow */}
-                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-[#0a0a0a]"></div>
+                                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black"></div>
                               </div>
                             )}
                           </div>
@@ -595,14 +582,14 @@ const PublicUserPage = () => {
 
                   {/* No Custom Badges Message */}
                   {(!profileData?.customBadges || profileData.customBadges.length === 0) && (
-                    <div className="mt-12 text-center py-20 bg-yellow-500/[0.02] border border-yellow-500/10 rounded-[3rem]">
-                      <div className="w-20 h-20 bg-yellow-500/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
-                        <Crown className="w-10 h-10 text-yellow-500/40" />
+                    <div className="mt-12 text-center py-12 border-t border-gray-200 dark:border-gray-700">
+                      <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Crown className="w-8 h-8 text-yellow-500" />
                       </div>
-                      <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                         No Special Badges Yet
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto font-medium">
+                      <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
                         This user hasn't received any special badges from administrators yet.
                       </p>
                     </div>
@@ -613,37 +600,37 @@ const PublicUserPage = () => {
               {activeTab === "completed" && (
                 <div>
                   {profileData.completedProblems && profileData.completedProblems.length > 0 ? (
-                    <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                    <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
                       {profileData.completedProblems.map((problem, index) => {
                         const diffStyle = getDifficultyStyle(problem.difficulty || 'Easy');
                         return (
                           <div
                             key={index}
-                            className="group bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[2.5rem] p-8 transition-all hover:shadow-2xl dark:hover:bg-white/[0.04]"
+                            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600"
                           >
                             <div className="flex items-start justify-between mb-4">
-                              <h3 className="font-black text-lg text-gray-900 dark:text-gray-100 leading-tight uppercase tracking-tight">
+                              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 leading-tight">
                                 {problem.title}
                               </h3>
-                              <span className="font-black uppercase tracking-widest text-white bg-red-500 px-3 py-1 rounded-full text-[10px] ml-3 flex-shrink-0">
+                              <span className="font-bold text-white bg-red-500 px-3 py-1 rounded-full text-sm ml-3 flex-shrink-0">
                                 +{problem.points || 0}
                               </span>
                             </div>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 line-clamp-2 leading-relaxed">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 leading-relaxed">
                               {problem.description}
                             </p>
                             <div className="flex items-center justify-between">
                               <span
-                                className={`text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${diffStyle.color} ${diffStyle.darkColor} ${diffStyle.bg} ${diffStyle.darkBg} border ${diffStyle.border} ${diffStyle.darkBorder}`}
+                                className={`text-sm font-medium px-3 py-1 rounded-full ${diffStyle.color} ${diffStyle.darkColor} ${diffStyle.bg} ${diffStyle.darkBg} border ${diffStyle.border} ${diffStyle.darkBorder}`}
                               >
                                 {problem.difficulty || 'Easy'}
                               </span>
                               <div className="flex gap-2">
-                                <span className="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[9px] rounded-full border border-green-200 dark:border-green-700 font-black uppercase tracking-widest">
+                                <span className="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-full border border-green-200 dark:border-green-700">
                                   <CheckCircle className="w-3 h-3 inline mr-1" />
                                   Completed
                                 </span>
-                                <span className="px-3 py-1 bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-gray-300 text-[9px] rounded-full border border-gray-200 dark:border-white/10 font-black uppercase tracking-widest">
+                                <span className="px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full border border-gray-200 dark:border-gray-600">
                                   {getCategoryIcon(problem.category)} {problem.category}
                                 </span>
                               </div>
@@ -653,29 +640,29 @@ const PublicUserPage = () => {
                       })}
                     </div>
                   ) : profileData.completedQuestions > 0 ? (
-                    <div className="text-center py-20 bg-white/60 dark:bg-white/[0.02] border border-white dark:border-white/10 rounded-[3rem]">
-                      <div className="w-20 h-20 bg-blue-500/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle className="w-10 h-10 text-blue-500" />
+                    <div className="text-center py-16">
+                      <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-blue-500" />
                       </div>
-                      <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                         {profileData.completedQuestions} Problems Completed!
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6 font-medium">
+                      <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-4">
                         This user has successfully completed {profileData.completedQuestions} cybersecurity challenges.
                       </p>
-                      <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-8 py-4 rounded-2xl inline-block font-black uppercase tracking-widest text-[11px]">
+                      <div className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-lg inline-block font-semibold">
                         🏆 {profileData.totalScore.toLocaleString()} Total Points Earned
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center py-20 bg-white/60 dark:bg-white/[0.02] border border-white dark:border-white/10 rounded-[3rem]">
-                      <div className="w-20 h-20 bg-gray-50 dark:bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
-                        <CheckCircle className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                    <div className="text-center py-16">
+                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                       </div>
-                      <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
                         No Problems Completed Yet
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto font-medium">
+                      <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
                         This user hasn't completed any challenges yet.
                       </p>
                     </div>
@@ -685,7 +672,6 @@ const PublicUserPage = () => {
             </div>
           </div>
         </div>
-        </section>
       </div>
     </>
   );
