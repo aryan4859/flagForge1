@@ -1184,50 +1184,64 @@ const ProfilePage = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="bg-gray-50 dark:bg-white/[0.03] rounded-2xl p-4 flex flex-col items-center border border-gray-100 dark:border-white/5">
-                  <div className="scale-90 mb-2">
-                    {getBadgeComponent(profileData?.totalScore || 0, 72)}
-                  </div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-red-600">Current Standing</p>
-                  <p className="text-lg font-black tracking-tight text-gray-900 dark:text-white">{getCurrentBadgeName(profileData?.totalScore || 0)}</p>
-                </div>
+                {(() => {
+                  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://flagforge.xyz';
+                  const slug = (profileData?.name || "").replace(/\s+/g, "-");
+                  const profileUrl = `${currentDomain}/user/${encodeURIComponent(slug)}`;
+                  const badgeSvgUrl = `${currentDomain}/api/badge/${encodeURIComponent(slug)}/svg`;
 
-                <div className="space-y-3">
-                  {[
-                    {
-                      label: "Direct Link",
-                      value: `${window.location.origin}/user/${encodeURIComponent(profileData?.name || '')}`,
-                      icon: ExternalLink
-                    },
-                    {
-                      label: "Markdown",
-                      value: `[![${profileData?.name || ''}'s FlagForge Badge](${window.location.origin}/api/badge/${encodeURIComponent(profileData?.name || '')}/svg)](${window.location.origin}/user/${encodeURIComponent(profileData?.name || '')})`,
-                      icon: Terminal
-                    },
-                    {
-                      label: "HTML Snippet",
-                      value: `<a href="${window.location.origin}/user/${encodeURIComponent(profileData?.name || '')}"><img src="${window.location.origin}/api/badge/${encodeURIComponent(profileData?.name || '')}/svg" alt="${profileData?.name || ''}'s FlagForge Badge" /></a>`,
-                      icon: Lock
-                    }
-                  ].map((item, idx) => (
-                    <div key={idx} className="space-y-1.5">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 pl-1">{item.label}</label>
-                      <div className="flex gap-2">
-                        <div className="flex-1 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-3 py-2 text-[11px] font-medium text-gray-500 truncate">
-                          {item.value}
+                  return (
+                    <>
+                      <div className="bg-gray-50 dark:bg-white/[0.03] rounded-2xl p-4 flex flex-col items-center border border-gray-100 dark:border-white/5">
+                        <div className="w-full overflow-hidden rounded-lg shadow-sm mb-2">
+                          <img
+                            src={badgeSvgUrl}
+                            alt={`${profileData?.name}'s Stat Badge`}
+                            className="w-full h-auto object-contain"
+                          />
                         </div>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(item.value);
-                          }}
-                          className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all active:scale-90 shadow-lg shadow-red-600/20"
-                        >
-                          <Copy className="w-3.5 h-3.5" />
-                        </button>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-red-600">Live Status Protocol</p>
                       </div>
-                    </div>
-                  ))}
-                </div>
+
+                      <div className="space-y-3">
+                        {[
+                          {
+                            label: "Direct Link",
+                            value: profileUrl,
+                            icon: ExternalLink
+                          },
+                          {
+                            label: "Markdown",
+                            value: `[![${profileData?.name || ''}'s FlagForge Badge](${badgeSvgUrl})](${profileUrl})`,
+                            icon: Terminal
+                          },
+                          {
+                            label: "HTML Snippet",
+                            value: `<a href="${profileUrl}"><img src="${badgeSvgUrl}" alt="${profileData?.name || ''}'s FlagForge Badge" /></a>`,
+                            icon: Lock
+                          }
+                        ].map((item, idx) => (
+                          <div key={idx} className="space-y-1.5">
+                            <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 pl-1">{item.label}</label>
+                            <div className="flex gap-2">
+                              <div className="flex-1 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-3 py-2 text-[11px] font-medium text-gray-500 truncate">
+                                {item.value}
+                              </div>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(item.value);
+                                }}
+                                className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all active:scale-90 shadow-lg shadow-red-600/20"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
 
                 <button
                   onClick={() => setShowShareModal(false)}
