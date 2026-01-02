@@ -101,7 +101,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.className} antialiased transition-colors duration-300 bg-white dark:bg-gray-900`}
+        className={`${dmSans.className} antialiased transition-colors duration-300 bg-white dark:bg-gray-900 overflow-x-hidden sm:overflow-x-visible`}
       >
         <ThemeProvider>
           <Authprovider>

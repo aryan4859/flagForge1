@@ -97,6 +97,9 @@ const BADGE_CONFIG = [
   },
 ];
 
+const BADGE_IMAGE_CLASS =
+  "drop-shadow-[0_6px_12px_rgba(15,23,42,0.25)] dark:drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]";
+
 const CATEGORY_ICONS: { [key: string]: string } = {
   Web: "🌐",
   Crypto: "🔐",
@@ -194,7 +197,7 @@ const ProfilePage = () => {
           alt="Newbie"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 500)
@@ -204,7 +207,7 @@ const ProfilePage = () => {
           alt="Scout"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 1000)
@@ -214,7 +217,7 @@ const ProfilePage = () => {
           alt="Codebreaker"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 1500)
@@ -224,7 +227,7 @@ const ProfilePage = () => {
           alt="Hacker"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 2000)
@@ -234,7 +237,7 @@ const ProfilePage = () => {
           alt="Cipher Hunter"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     if (score < 3000)
@@ -244,7 +247,7 @@ const ProfilePage = () => {
           alt="Forger"
           width={size}
           height={size}
-          className="drop-shadow-sm"
+          className={BADGE_IMAGE_CLASS}
         />
       );
     return (
@@ -253,7 +256,7 @@ const ProfilePage = () => {
         alt="Flag Conqueror"
         width={size}
         height={size}
-        className="drop-shadow-sm"
+        className={BADGE_IMAGE_CLASS}
       />
     );
   }, []);
@@ -933,8 +936,8 @@ const ProfilePage = () => {
                       const active = getCurrentBadgeName(profileData?.totalScore || 0) === b.name;
                       return (
                         <div key={b.name} className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 ${earned
-                          ? (active ? 'bg-red-600 shadow-[0_20px_40px_rgba(220,38,38,0.2)] border-red-500 text-white' : 'bg-white/60 dark:bg-white/[0.02] dark:border-white/10 border-white hover:bg-white dark:hover:bg-white/5 hover:translate-y-[-5px]')
-                          : 'bg-gray-50/50 dark:bg-black/20 border-gray-100 dark:border-white/5 opacity-40 grayscale blur-[1px]'}`}>
+                          ? (active ? 'bg-red-600 shadow-[0_20px_40px_rgba(220,38,38,0.2)] border-red-500 text-white' : 'bg-white/80 dark:bg-white/[0.02] dark:border-white/10 border-gray-100/80 hover:bg-white dark:hover:bg-white/5 hover:translate-y-[-5px]')
+                          : 'bg-gray-100/70 dark:bg-black/20 border-gray-200 dark:border-white/5 opacity-70 dark:opacity-40 grayscale blur-0 dark:blur-[1px]'}`}>
 
                           {active && (
                             <div className="absolute top-4 right-4 animate-bounce">
