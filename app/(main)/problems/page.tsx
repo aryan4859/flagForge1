@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import QustionCards from "@/components/QustionCards";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
-import { IoFilter, IoChevronDown } from "react-icons/io5";
+import { IoFilter, IoChevronDown, IoSearch } from "react-icons/io5";
 import { useSession } from "next-auth/react";
 import { Questions } from "@/interfaces";
 
@@ -183,31 +183,31 @@ const StatsSection: React.FC<{
   showFilterDropdown: boolean;
   onToggleFilter: () => void;
 }> = ({ score, questionDone, showFilterDropdown, onToggleFilter }) => (
-  <div className="flex justify-between items-center w-full">
-    <div className="flex justify-between items-center w-full">
-      <h2 className="text-center text-xl sm:text-xl font-medium text-gray-600 dark:text-white transition-colors duration-300">
+  <div className="w-full rounded-2xl border border-red-100/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 sm:px-6 py-4 shadow-[0_16px_45px_-30px_rgba(15,23,42,0.6)] flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between w-full">
+      <h2 className="text-center text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-100 tracking-tight transition-colors duration-300">
         Score: &nbsp;
-        <span className="text-red-400 dark:text-red-500 font-extrabold transition-colors duration-300">
+        <span className="text-red-500 dark:text-red-400 font-extrabold transition-colors duration-300">
           {score}
         </span>
       </h2>
 
-      <p className="text-center text-xl sm:text-xl font-medium text-gray-600 dark:text-gray-300 transition-colors duration-300">
+      <p className="text-center text-lg sm:text-xl font-semibold text-gray-600 dark:text-gray-300 tracking-tight transition-colors duration-300">
         Total Question Solved:&nbsp;
-        <span className="text-red-400 dark:text-red-500 font-extrabold transition-colors duration-300">
+        <span className="text-red-500 dark:text-red-400 font-extrabold transition-colors duration-300">
           {questionDone?.length || 0}
         </span>
       </p>
     </div>
 
     {/* Mobile Filter Button */}
-    <div className="flex gap-2 items-center justify-center text-center text-xl sm:hidden font-medium text-gray-600">
+    <div className="flex gap-2 items-center justify-center text-center sm:hidden font-medium text-gray-600 dark:text-gray-300">
       <button
         onClick={onToggleFilter}
-        className="flex items-center gap-1"
+        className="flex items-center gap-2 rounded-full border border-red-100/70 dark:border-white/10 bg-red-50/80 dark:bg-white/10 px-3 py-2 text-base shadow-sm transition-colors duration-300 hover:bg-red-100/80 dark:hover:bg-white/20"
         aria-label="Toggle filter dropdown"
       >
-        <IoFilter className="text-2xl" />
+        <IoFilter className="text-xl" />
       </button>
     </div>
   </div>
@@ -224,24 +224,24 @@ const DesktopFilter: React.FC<{
   selectedCategory,
   onCategoryChange,
 }) => (
-  <div className="hidden sm:flex items-center gap-4 justify-end mb-4">
+  <div className="hidden sm:flex items-center justify-between gap-4 w-full rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 py-3 mb-4 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.45)] flex-wrap">
     <div className="flex items-center gap-2">
-      <IoFilter className="text-xl text-gray-600 dark:text-gray-300" />
-      <span className="text-gray-600 dark:text-gray-300 font-medium">
+      <IoFilter className="text-xl text-gray-500 dark:text-gray-300" />
+      <span className="text-gray-600 dark:text-gray-300 font-semibold">
         Filter by Category:
       </span>
     </div>
 
     <div className="relative">
       {categoriesLoading ? (
-        <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-gray-500">
+        <div className="bg-white/80 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-full px-4 py-2 text-gray-500">
           Loading categories...
         </div>
       ) : (
         <select
           value={selectedCategory}
           onChange={(e) => onCategoryChange(e.target.value)}
-          className="appearance-none bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 pr-8 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-300"
+          className="appearance-none bg-white/90 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-full px-4 py-2 pr-10 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-colors duration-300 shadow-sm"
         >
           {categories.map((category) => (
             <option key={category} value={category}>
@@ -250,13 +250,13 @@ const DesktopFilter: React.FC<{
           ))}
         </select>
       )}
-      <IoChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
+      <IoChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
     </div>
 
     {selectedCategory !== "All" && (
       <button
         onClick={() => onCategoryChange("All")}
-        className="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors duration-300"
+        className="text-sm bg-red-500/90 hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-sm transition-colors duration-300"
       >
         Clear Filter
       </button>
@@ -281,8 +281,8 @@ const MobileFilter: React.FC<{
 
   return (
     <div className="sm:hidden mb-4">
-      <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4">
-        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">
+      <div className="bg-white/80 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg p-4 backdrop-blur-xl">
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">
           Filter by Category
         </h3>
         {categoriesLoading ? (
@@ -295,10 +295,10 @@ const MobileFilter: React.FC<{
               <button
                 key={category}
                 onClick={() => onCategoryChange(category)}
-                className={`px-3 py-2 text-sm rounded-lg transition-colors duration-300 ${
+                className={`px-3 py-2 text-sm rounded-xl transition-colors duration-300 ${
                   selectedCategory === category
-                    ? "bg-red-500 text-white"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    ? "bg-red-500 text-white shadow-sm"
+                    : "bg-gray-100/90 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-gray-700"
                 }`}
               >
                 {category}
@@ -311,15 +311,54 @@ const MobileFilter: React.FC<{
   );
 };
 
+const SearchBar: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+  loading?: boolean;
+}> = ({ value, onChange, loading = false }) => (
+  <div className="w-full rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 py-3 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.45)]">
+    <div className="relative flex items-center">
+      <IoSearch
+        className={`absolute left-4 text-gray-500 ${
+          loading ? "animate-spin" : ""
+        }`}
+      />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Search challenges..."
+        aria-label="Search challenges"
+        className="w-full rounded-full border border-gray-200/80 dark:border-white/10 bg-white/90 dark:bg-gray-900/70 py-2.5 pl-11 pr-4 text-sm text-gray-700 dark:text-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-colors duration-300"
+      />
+    </div>
+  </div>
+);
+
 const FilterResultsInfo: React.FC<{
   selectedCategory: string;
   problemsCount: number;
   currentPage: number;
   totalPages: number;
-}> = ({ selectedCategory, problemsCount, currentPage, totalPages }) => (
-  <div className="flex justify-between items-center mb-4">
-    <div className="text-sm text-gray-600 dark:text-gray-400">
-      {selectedCategory !== "All" ? (
+  searchQuery: string;
+  isSearching: boolean;
+}> = ({
+  selectedCategory,
+  problemsCount,
+  currentPage,
+  totalPages,
+  searchQuery,
+  isSearching,
+}) => (
+  <div className="flex justify-between items-center mb-4 w-full">
+    <div className="text-xs uppercase tracking-wide text-gray-600 dark:text-gray-400">
+      {searchQuery.trim() ? (
+        <span>
+          {isSearching
+            ? "Searching..."
+            : `Showing ${problemsCount} matching challenges`}
+        </span>
+      ) : selectedCategory !== "All" ? (
         <span>
           Showing {problemsCount} challenges in "{selectedCategory}" (Page{" "}
           {currentPage} of {totalPages})
@@ -343,8 +382,10 @@ const ExpiryOverlay: React.FC<{
   return (
     <>
       <div
-        className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-medium ${
-          expired ? "bg-red-500 text-white" : "bg-yellow-500 text-black"
+        className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-semibold shadow-sm backdrop-blur ${
+          expired
+            ? "bg-red-500/90 text-white"
+            : "bg-yellow-400/90 text-black"
         }`}
       >
         {expired
@@ -355,7 +396,7 @@ const ExpiryOverlay: React.FC<{
       </div>
 
       {expired && (
-        <div className="absolute inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center rounded-lg">
+        <div className="absolute inset-0 bg-gray-900/40 flex items-center justify-center rounded-2xl">
           {/* Expired overlay without text to avoid duplication */}
         </div>
       )}
@@ -368,7 +409,7 @@ const NoProblemsMessage: React.FC<{
   onShowAll: () => void;
 }> = ({ selectedCategory, onShowAll }) => (
   <div className="col-span-full text-center py-12">
-    <div className="text-gray-500 dark:text-gray-400">
+    <div className="text-gray-500 dark:text-gray-400 rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-white/60 dark:bg-gray-900/40 backdrop-blur-xl px-6 py-10">
       <IoFilter className="mx-auto text-4xl mb-4 opacity-50" />
       <p className="text-lg font-medium">No challenges found</p>
       <p className="text-sm">
@@ -394,14 +435,14 @@ const PaginationControls: React.FC<{
   onPrevious: () => void;
   onNext: () => void;
 }> = ({ currentPage, hasNextPage, onPrevious, onNext }) => (
-  <div className="flex justify-end gap-4 w-full">
+  <div className="flex justify-center sm:justify-end gap-3 w-full">
     <button
       onClick={onPrevious}
       disabled={currentPage === 1}
-      className={`font-medium text-base rounded-lg px-4 py-2 text-white transition-colors duration-300 ${
+      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${
         currentPage === 1
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-red-400 hover:bg-red-800"
+          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+          : "bg-red-500/90 hover:bg-red-600"
       }`}
     >
       Previous
@@ -409,10 +450,10 @@ const PaginationControls: React.FC<{
     <button
       onClick={onNext}
       disabled={!hasNextPage}
-      className={`font-medium text-base rounded-lg px-4 py-2 text-white transition-colors duration-300 ${
+      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${
         !hasNextPage
-          ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
-          : "bg-red-400 dark:bg-red-500 hover:bg-red-800 dark:hover:bg-red-600"
+          ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
+          : "bg-red-500/90 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600"
       }`}
     >
       Next
@@ -425,6 +466,9 @@ const Page: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<QuestionWithExpiry[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const { categories, loading: categoriesLoading } = useCategories();
   const {
@@ -436,6 +480,89 @@ const Page: React.FC = () => {
     hasNextPage,
     totalPages,
   } = useProblems(currentPage, selectedCategory, categoriesLoading);
+
+  const fetchAllProblems = useCallback(
+    async (category: string) => {
+      let page = 1;
+      let hasNext = true;
+      const allProblems: QuestionWithExpiry[] = [];
+
+      while (hasNext) {
+        let apiUrl = `/api/problems?page=${page}&limit=1000`;
+        if (category && category !== "All") {
+          apiUrl += `&category=${encodeURIComponent(category)}`;
+        }
+
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error("Failed to fetch problems");
+        }
+
+        const { data, pagination }: ApiResponse = await response.json();
+        const sanitizedData = sanitizeProblems(data);
+        allProblems.push(...sanitizedData);
+
+        hasNext = Boolean(pagination?.hasNext);
+        page += 1;
+
+        if (!pagination || data.length === 0) {
+          hasNext = false;
+        }
+      }
+
+      return allProblems;
+    },
+    []
+  );
+
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (!query) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const allProblems = await fetchAllProblems(selectedCategory);
+        if (cancelled) return;
+        const normalizedQuery = query.toLowerCase();
+        const filtered = allProblems.filter((problem) => {
+          const title = problem.title?.toLowerCase() || "";
+          const description = problem.description?.toLowerCase() || "";
+          const category = problem.category?.toLowerCase() || "";
+          return (
+            title.includes(normalizedQuery) ||
+            description.includes(normalizedQuery) ||
+            category.includes(normalizedQuery)
+          );
+        });
+        setSearchResults(filtered);
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Failed to search problems:", error);
+          setSearchResults([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setSearchLoading(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [fetchAllProblems, searchQuery, selectedCategory]);
+
+  const isSearchActive = searchQuery.trim().length > 0;
+  const visibleProblems = isSearchActive ? searchResults : problems;
+  const shouldShowNoProblems =
+    visibleProblems.length === 0 && !searchLoading;
 
   // Handle category filter change
   const handleCategoryChange = useCallback((category: string) => {
@@ -499,8 +626,8 @@ const Page: React.FC = () => {
   const shouldShowPagination = problems.length > 0 || currentPage > 1;
 
   return (
-    <div className="flex flex-col justify-center items-center gap-8 mx-8">
-      <h1 className="text-4xl sm:text-5xl tracking-tight text-center text-red-500 font-bold">
+    <div className="relative flex flex-col justify-center items-center gap-8 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10 sm:py-12 min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 animate-in fade-in duration-500">
+      <h1 className="text-4xl sm:text-5xl lg:text-6xl tracking-tight text-center text-red-500 font-bold drop-shadow-sm">
         Challenges
       </h1>
 
@@ -513,6 +640,12 @@ const Page: React.FC = () => {
 
       {/* Filter Section */}
       <div className="w-full">
+        <SearchBar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          loading={searchLoading}
+        />
+
         <DesktopFilter
           categories={categories}
           categoriesLoading={categoriesLoading}
@@ -530,17 +663,22 @@ const Page: React.FC = () => {
 
         <FilterResultsInfo
           selectedCategory={selectedCategory}
-          problemsCount={problems.length}
+          problemsCount={visibleProblems.length}
           currentPage={currentPage}
           totalPages={totalPages}
+          searchQuery={searchQuery}
+          isSearching={searchLoading}
         />
       </div>
 
       {/* Problems Grid */}
-      <div className="mx-auto my-0 flex justify-between">
-        <div className="mx-auto my-0 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1 sm:grid-cols-2 items-center gap-4">
-          {problems.length > 0 ? (
-            problems.map(
+      <div className="w-full flex justify-center">
+        <div
+          className="w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 items-stretch gap-5 sm:gap-6"
+          aria-busy={problemsLoading}
+        >
+          {visibleProblems.length > 0 ? (
+            visibleProblems.map(
               ({
                 title,
                 category,
@@ -552,7 +690,10 @@ const Page: React.FC = () => {
                 timeRemaining,
                 expiryDate,
               }: QuestionWithExpiry) => (
-                <div key={_id} className="relative">
+                <div
+                  key={_id}
+                  className="relative transition-transform duration-300 hover:-translate-y-1"
+                >
                   <QustionCards
                     title={title}
                     category={category}
@@ -573,12 +714,12 @@ const Page: React.FC = () => {
                 </div>
               )
             )
-          ) : (
+          ) : shouldShowNoProblems ? (
             <NoProblemsMessage
               selectedCategory={selectedCategory}
               onShowAll={() => handleCategoryChange("All")}
             />
-          )}
+          ) : null}
         </div>
       </div>
 

@@ -25,6 +25,11 @@ export const authOptions: AuthOptions = {
     maxAge: 60 * 60,
   },
 
+  pages: {
+    signIn: "/authentication",
+    error: "/authentication",
+  },
+
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {

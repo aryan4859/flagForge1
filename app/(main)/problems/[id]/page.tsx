@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Loading from "@/components/loading";
 import { useSession } from "next-auth/react";
 import AuthError from "@/components/authError";
@@ -9,6 +9,13 @@ import Image from "next/image";
 import doubt from "@/public/doubt.png";
 import ConfettiBoom from "react-confetti-boom";
 import FloatingChat from "@/components/FloatingChat";
+import {
+  ArrowLeft,
+  ChevronDown,
+  ExternalLink,
+  Lightbulb,
+  Trophy,
+} from "lucide-react";
 
 export const runtime = "edge";
 
@@ -411,20 +418,40 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     fetchProblems();
   }, []);
 
+  const messageTone = useMemo(() => {
+    if (!message) return "";
+
+    if (message.includes("Right")) {
+      return "border-green-200 bg-green-50 text-green-800 dark:border-green-800/60 dark:bg-green-900/20 dark:text-green-200";
+    }
+
+    if (
+      message.includes("points deducted") ||
+      message.includes("Hint revealed") ||
+      message.includes("Chat hint used")
+    ) {
+      return "border-orange-200 bg-orange-50 text-orange-800 dark:border-orange-800/60 dark:bg-orange-900/20 dark:text-orange-200";
+    }
+
+    return "border-red-200 bg-red-50 text-red-800 dark:border-red-800/60 dark:bg-red-900/20 dark:text-red-200";
+  }, [message]);
+
   if (loading || sessionStatus === "loading") return <Loading />;
   if (sessionStatus === "unauthenticated") return <AuthError />;
 
   // Show expired challenge page
   if (isExpired) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
-        <div className="max-w-screen-2xl mx-auto py-8">
-          <div className="flex flex-col gap-8 justify-center items-center">
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-red-600 dark:text-red-400 mb-4">
+      <div className="min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 text-black dark:text-white transition-colors duration-300 relative overflow-hidden">
+        <div className="pointer-events-none absolute -top-24 right-[-10%] h-72 w-72 rounded-full bg-red-200/40 blur-3xl dark:bg-red-500/10" />
+        <div className="pointer-events-none absolute -bottom-24 left-[-10%] h-72 w-72 rounded-full bg-orange-200/30 blur-3xl dark:bg-orange-500/10" />
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-8 py-12 relative z-10">
+          <div className="flex flex-col gap-10 justify-center items-center text-center">
+            <div className="w-full max-w-2xl rounded-2xl border border-red-200/70 dark:border-red-800/50 bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl p-6 sm:p-8 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.7)]">
+              <h1 className="text-3xl sm:text-4xl font-bold text-red-600 dark:text-red-400 mb-4">
                 Challenge Expired
               </h1>
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 mb-6">
+              <div className="bg-red-50/80 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-5">
                 <p className="text-lg text-red-800 dark:text-red-200 mb-2">
                   This time-limited challenge has expired and is no longer
                   available.
@@ -436,8 +463,12 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 )}
               </div>
             </div>
-            <Image src={doubt} alt="Challenge expired" className="w-72" />
-            <p className="w-full mx-auto text-center text-lg text-gray-800 dark:text-gray-300 transition-colors duration-300">
+            <Image
+              src={doubt}
+              alt="Challenge expired"
+              className="w-72 drop-shadow-xl"
+            />
+            <p className="w-full mx-auto text-center text-lg text-gray-800 dark:text-gray-300 transition-colors duration-300 max-w-2xl">
               Don't worry! Check out other available{" "}
               <Link
                 href="/problems"
@@ -453,302 +484,414 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
-      {isDone ? (
-        <div className="max-w-screen-2xl mx-auto">
-          <div className="flex flex-col gap-8 justify-center items-center">
-            <Image src={doubt} alt="Doubting skill" className="w-72" />
-            <p className="w-full mx-auto text-center text-lg text-gray-800 dark:text-gray-300 transition-colors duration-300">
-              Doubting your skills? Let's return to{" "}
+    <div className="min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 text-black dark:text-white transition-colors duration-300 relative overflow-hidden">
+      <div className="pointer-events-none absolute -top-24 right-[-8%] h-72 w-72 rounded-full bg-red-200/40 blur-3xl dark:bg-red-500/10" />
+      <div className="pointer-events-none absolute -bottom-24 left-[-8%] h-72 w-72 rounded-full bg-orange-200/30 blur-3xl dark:bg-orange-500/10" />
+      {message && (
+        <div className="fixed top-6 right-4 sm:right-6 z-50">
+          <div
+            role="status"
+            aria-live="polite"
+            className={`max-w-[320px] rounded-2xl border px-4 py-3 shadow-lg backdrop-blur-md animate-in fade-in slide-in-from-top-2 ${messageTone}`}
+          >
+            <p className="text-sm font-semibold">{message}</p>
+          </div>
+        </div>
+      )}
+      {isCorrect && !isDone && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md rounded-3xl border border-green-200/80 dark:border-green-800/60 bg-white/95 dark:bg-gray-950/90 p-6 sm:p-8 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.8)]">
+            <div className="flex items-center justify-center h-14 w-14 rounded-full bg-green-500 text-white shadow-lg">
+              <Trophy className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <h2 className="mt-5 text-2xl font-bold text-gray-900 dark:text-white text-center">
+              Congratulations!
+            </h2>
+            <p className="mt-3 text-center text-gray-600 dark:text-gray-300">
+              {message || "Flag accepted. Great work!"}
+            </p>
+            <div className="mt-6 flex items-center justify-center gap-3">
               <Link
                 href="/problems"
-                className="text-red-500 dark:text-red-500 hover:underline transition-colors duration-300"
+                className="inline-flex items-center gap-2 rounded-full bg-green-600 text-white px-5 py-2 text-sm font-semibold shadow-sm hover:bg-green-700 transition-colors"
               >
-                problems
+                Back to problems
               </Link>
-            </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {!isDone && (
+        <div className="fixed bottom-6 right-6 z-40">
+          <FloatingChat
+            userId={session?.user?.id || ""}
+            challengeId={unwrappedParams.id}
+            onPointsDeducted={handleChatPointsDeducted}
+          />
+        </div>
+      )}
+      {isDone ? (
+        <div className="max-w-screen-xl mx-auto px-4 sm:px-8 py-12 relative z-10">
+          <div className="flex flex-col gap-8 justify-center items-center text-center">
+            <div className="w-full max-w-xl rounded-2xl border border-green-200/70 dark:border-green-800/50 bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl p-6 sm:p-8 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.7)]">
+              <Image
+                src={doubt}
+                alt="Doubting skill"
+                className="w-72 mx-auto drop-shadow-xl"
+              />
+              <p className="w-full mx-auto text-center text-lg text-gray-800 dark:text-gray-300 transition-colors duration-300 mt-6">
+                Doubting your skills? Let's return to{" "}
+                <Link
+                  href="/problems"
+                  className="text-red-500 dark:text-red-500 hover:underline transition-colors duration-300"
+                >
+                  problems
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       ) : (
-        <div className="max-w-screen-2xl mx-4 sm:mx-12 my-0 py-8">
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <h1 className="text-2xl sm:text-3xl flex items-center justify-center gap-4 text-black dark:text-white font-bold transition-colors duration-300">
-                {problems.title}
-                <span className="text-sm hidden sm:block px-2 py-1 shadow-lg text-center bg-red-400 dark:bg-red-500 rounded-full tracking-tight font-semibold text-white hover:bg-red-700 dark:hover:bg-red-700 transition-colors duration-300">
-                  {problems.category}
-                </span>
-              </h1>
-              <h2 className="text-xl hidden sm:block text-gray-800 dark:text-gray-300 transition-colors duration-300">
-                Points: &nbsp;
-                <span className="text-red-500 dark:text-red-500 font-extrabold transition-colors duration-300">
-                  {problems.points}
-                </span>
-              </h2>
-            </div>
-            <div className="w-full border-b border-gray-300 dark:border-gray-700 transition-colors duration-300"></div>
-            <FloatingChat
-              userId={session?.user?.id || ""}
-              challengeId={unwrappedParams.id}
-              onPointsDeducted={handleChatPointsDeducted}
-            />
-          </div>
-
-          {/* Challenge expiry info */}
-          {problems.expiryDate && (
-            <div className="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                  Time-Limited Challenge
-                </p>
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-8 lg:px-12 py-10 relative z-10">
+          <div className="relative overflow-hidden rounded-[2.75rem] border border-red-100/70 dark:border-white/10 bg-gradient-to-br from-white/95 via-red-50/80 to-orange-50/70 dark:from-gray-950/90 dark:via-gray-900/80 dark:to-gray-950/80 p-6 sm:p-10 shadow-[0_35px_90px_-55px_rgba(15,23,42,0.8)]">
+            <div className="pointer-events-none absolute -top-24 right-[-10%] h-56 w-56 rounded-full bg-red-400/30 blur-3xl dark:bg-red-500/10" />
+            <div className="pointer-events-none absolute -bottom-24 left-[-10%] h-56 w-56 rounded-full bg-orange-300/30 blur-3xl dark:bg-orange-500/10" />
+            <div className="relative z-10 flex flex-col gap-8">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <Link
+                  href="/problems"
+                  className="inline-flex items-center gap-2 rounded-full border border-red-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-white/90 dark:hover:bg-gray-900 transition-colors"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to problems
+                </Link>
+                <div className="flex items-center gap-3 rounded-full border border-red-200/60 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 px-4 py-2 shadow-sm">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">Points</span>
+                  <span className="text-lg font-bold text-red-500">{problems.points}</span>
+                </div>
               </div>
-              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                Expires on: {formatExpiryDate(problems.expiryDate)}
-              </p>
-            </div>
-          )}
 
-          {/* Chat Assistant Usage Stats */}
-          {chatHintStats.totalHintsUsed > 0 && (
-            <div className="mt-6 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-orange-600 dark:text-orange-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <div>
-                    <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">
-                      Chat Assistant Usage
-                    </p>
-                    <p className="text-xs text-orange-700 dark:text-orange-300">
-                      {chatHintStats.totalHintsUsed} chat hint{chatHintStats.totalHintsUsed !== 1 ? "s" : ""} requested
-                    </p>
+              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    {problems.title}
+                  </h1>
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-red-500/90 text-white px-4 py-1 text-xs font-semibold uppercase tracking-wide">
+                      {problems.category}
+                    </span>
+                    {problems.expiryDate && (
+                      <span className="rounded-full border border-yellow-200/70 dark:border-yellow-800/60 bg-yellow-50/80 dark:bg-yellow-900/30 px-3 py-1 text-xs font-semibold text-yellow-700 dark:text-yellow-200">
+                        Time-limited
+                      </span>
+                    )}
+                    {isCorrect && (
+                      <span className="rounded-full border border-green-200/70 dark:border-green-800/60 bg-green-50/80 dark:bg-green-900/30 px-3 py-1 text-xs font-semibold text-green-700 dark:text-green-200">
+                        Solved
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-red-600 dark:text-red-400">
-                    -{chatHintStats.totalPointsDeducted}
-                  </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">points deducted</p>
+                <div className="flex flex-wrap gap-3">
+                  {timeRemaining && timeRemaining > 0 && !isExpired && (
+                    <div className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-3 shadow-sm">
+                      <p className="text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                        Time Remaining
+                      </p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">
+                        {formatTimeRemaining(timeRemaining)}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          )}
-
-          <div className="mt-8 text-lg flex flex-col gap-2">
-            <p className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 transition-colors duration-300">
-              Description
-            </p>
-            <p className="text-gray-800 dark:text-gray-300 transition-colors duration-300">
-              {problems.description}
-            </p>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <div className="mt-8 text-lg flex flex-col sm:flex-row sm:justify-between gap-4">
-              <div className="flex flex-col gap-2">
-                <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
-                  Given Resources
+          {(problems.expiryDate || chatHintStats.totalHintsUsed > 0) && (
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {problems.expiryDate && (
+                <div className="rounded-2xl bg-yellow-50/80 dark:bg-yellow-900/20 border border-yellow-200/70 dark:border-yellow-800/60 p-4 sm:p-5 shadow-sm backdrop-blur-xl">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                      Time-Limited Challenge
+                    </p>
+                  </div>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                    Expires on: {formatExpiryDate(problems.expiryDate)}
+                  </p>
+                </div>
+              )}
+
+              {chatHintStats.totalHintsUsed > 0 && (
+                <div className="rounded-2xl bg-orange-50/80 dark:bg-orange-900/20 border border-orange-200/70 dark:border-orange-800/60 p-4 sm:p-5 shadow-sm backdrop-blur-xl">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-orange-600 dark:text-orange-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <div>
+                        <p className="text-sm font-semibold text-orange-800 dark:text-orange-200">
+                          Chat Assistant Usage
+                        </p>
+                        <p className="text-xs text-orange-700 dark:text-orange-300">
+                          {chatHintStats.totalHintsUsed} chat hint{chatHintStats.totalHintsUsed !== 1 ? "s" : ""} requested
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-red-600 dark:text-red-400">
+                        -{chatHintStats.totalPointsDeducted}
+                      </p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">points deducted</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-6">
+            <div className="flex flex-col gap-6">
+              <div className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl p-6 shadow-lg transition-colors duration-300">
+                <p className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                  Description
                 </p>
-                {problems.link ? (
-                  isValidUrl(problems.link) ? (
-                    <p className="font-bold text-sm sm:text-md text-red-500 dark:text-red-500 transition-colors duration-300">
+                <p className="text-gray-800 dark:text-gray-300 transition-colors duration-300 mt-3">
+                  {problems.description}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl p-6 shadow-lg transition-colors duration-300">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                    Given Resources
+                  </p>
+                  {problems.link ? (
+                    isValidUrl(problems.link) ? (
                       <a
                         href={problems.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline"
+                        className="inline-flex items-center gap-2 rounded-full bg-red-500/90 text-white px-4 py-2 text-sm font-semibold shadow-sm hover:bg-red-600 transition-colors"
+                        aria-label={`Start Challenge: ${problems.link}`}
                       >
-                        {problems.link}
+                        Start Challenge
+                        <ExternalLink className="h-4 w-4" />
                       </a>
-                    </p>
+                    ) : (
+                      <div
+                        className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-white/10 bg-gray-100/80 dark:bg-gray-900/60 px-4 py-2 text-sm font-semibold text-gray-500 dark:text-gray-400"
+                        title={problems.link}
+                      >
+                        Resource Available
+                        <ExternalLink className="h-4 w-4" />
+                      </div>
+                    )
                   ) : (
-                    <p className="font-bold text-sm sm:text-md text-red-500 dark:text-red-500 transition-colors duration-300">
-                      {problems.link}
+                    <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                      No resources provided
                     </p>
-                  )
-                ) : (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                    No resources provided
-                  </p>
-                )}
+                  )}
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
-                  Hints
-                </p>
+
+              <div className="rounded-2xl border border-rose-200/70 dark:border-rose-800/50 bg-rose-50/70 dark:bg-rose-900/15 backdrop-blur-xl p-6 shadow-lg transition-colors duration-300">
                 <button
+                  type="button"
                   onClick={toggleHints}
                   disabled={hintLoading}
-                  className="text-sm sm:text-md px-3 py-1 shadow-lg text-center bg-red-400 dark:bg-red-500 rounded-lg text-white font-bold hover:bg-red-700 dark:hover:bg-red-700 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-expanded={showHint}
+                  aria-controls="hints-panel"
+                  className={`w-full flex items-center justify-between gap-4 rounded-2xl px-2 py-1 text-left transition-colors duration-300 ${hintLoading ? "cursor-not-allowed opacity-80" : "hover:bg-white/50 dark:hover:bg-white/5"}`}
                 >
-                  {hintLoading ? "Loading..." : problems.hints?.length || 0}
+                  <span className="flex items-center gap-2 text-lg font-semibold text-rose-800 dark:text-rose-200">
+                    <Lightbulb
+                      className="h-5 w-5 text-rose-600 dark:text-rose-300"
+                      aria-hidden="true"
+                    />
+                    <span>Available Hints ({availableHints.length})</span>
+                  </span>
+                  <span className="flex items-center gap-3">
+                    <span
+                      className={`text-sm sm:text-md px-4 py-2 shadow-sm text-center bg-red-500/90 dark:bg-red-500 rounded-full text-white font-bold transition-colors duration-300 ${hintLoading ? "animate-pulse" : ""}`}
+                    >
+                      {hintLoading ? "Loading..." : problems.hints?.length || 0}
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-rose-600 dark:text-rose-300 transition-transform duration-300 ${showHint ? "rotate-180" : ""}`}
+                      aria-hidden="true"
+                    />
+                  </span>
                 </button>
+
+                {/* Hints section */}
+                {showHint && (
+                  <div
+                    id="hints-panel"
+                    className="mt-4 bg-white/70 dark:bg-gray-900/40 border border-rose-200 dark:border-rose-800 rounded-2xl p-4"
+                    aria-busy={hintLoading}
+                  >
+                    {availableHints.length > 0 ? (
+                      <div className="space-y-3">
+                        {availableHints.map((hint: Hint, index: number) => {
+                          const hintIdx =
+                            hint.index !== undefined ? hint.index : index;
+                          const isUsed = usedHints.includes(hintIdx);
+                          const displayHintIndex =
+                            hintIdx >= 0 ? hintIdx + 1 : index + 1;
+                          const hintKey = hintIdx >= 0 ? hintIdx : index;
+                          return (
+                            <div
+                              key={hintKey}
+                              className="bg-white/90 dark:bg-gray-800 border border-rose-200 dark:border-rose-700 rounded-2xl p-4 shadow-sm"
+                            >
+                              <div className="flex justify-between items-start gap-3">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="font-medium text-rose-800 dark:text-rose-200">
+                                      Hint {displayHintIndex}
+                                    </span>
+                                    {hint.pointsDeduction &&
+                                      Number(hint.pointsDeduction) > 0 && (
+                                        <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-2 py-1 rounded-full text-xs font-medium">
+                                          -{hint.pointsDeduction} pts
+                                        </div>
+                                      )}
+                                  </div>
+                                  {isUsed ? (
+                                    <p className="text-rose-700 dark:text-rose-300">
+                                      {hint.text}
+                                    </p>
+                                  ) : (
+                                    <p className="text-gray-600 dark:text-gray-400 italic">
+                                      Click "Use Hint" to reveal this hint
+                                    </p>
+                                  )}
+                                </div>
+                                <div>
+                                  {!isUsed && (
+                                    <button
+                                      onClick={() => requestHint(hintIdx)}
+                                      disabled={hintLoading}
+                                      className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-1 rounded-full text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      {hintLoading ? "..." : "Use Hint"}
+                                    </button>
+                                  )}
+                                  {isUsed && (
+                                    <span className="text-green-600 dark:text-green-400 text-sm font-medium">
+                                      Used
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-rose-700 dark:text-rose-300">
+                        {hintLoading
+                          ? "Loading hints..."
+                          : "No hints available for this challenge."}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Hints section */}
-            {showHint && (
-              <div className="mt-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-rose-800 dark:text-rose-200 mb-3">
-                  💡 Available Hints ({availableHints.length})
-                </h3>
-                {availableHints.length > 0 ? (
-                  <div className="space-y-3">
-                    {availableHints.map((hint: Hint, index: number) => {
-                      const hintIdx = hint.index !== undefined ? hint.index : index;
-                      const isUsed = usedHints.includes(hintIdx);
-                      return (
-                        <div
-                          key={hintIdx}
-                          className="bg-white dark:bg-gray-800 border border-rose-200 dark:border-rose-700 rounded-lg p-3"
-                        >
-                          <div className="flex justify-between items-start gap-3">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="font-medium text-rose-800 dark:text-rose-200">
-                                  Hint {hintIdx + 1}
-                                </span>
-                                {hint.pointsDeduction &&
-                                  Number(hint.pointsDeduction) > 0 && (
-                                    <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 px-2 py-1 rounded text-xs font-medium">
-                                      -{hint.pointsDeduction} pts
-                                    </div>
-                                  )}
-                              </div>
-                              {isUsed ? (
-                                <p className="text-rose-700 dark:text-rose-300">
-                                  {hint.text}
-                                </p>
-                              ) : (
-                                <p className="text-gray-600 dark:text-gray-400 italic">
-                                  Click "Use Hint" to reveal this hint
-                                </p>
-                              )}
-                            </div>
-                            <div>
-                              {!isUsed && (
-                                <button
-                                  onClick={() => requestHint(hintIdx)}
-                                  disabled={hintLoading}
-                                  className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                  {hintLoading ? "..." : "Use Hint"}
-                                </button>
-                              )}
-                              {isUsed && (
-                                <span className="text-green-600 dark:text-green-400 text-sm font-medium">
-                                  ✓ Used
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+            <div className="flex flex-col gap-6">
+              <div
+                className={`border rounded-2xl p-6 flex flex-col justify-start gap-4 bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl shadow-lg transition-colors duration-300 ${isCorrect
+                  ? "border-green-200/80 dark:border-green-800/60 bg-green-50/40 dark:bg-green-900/10"
+                  : "border-gray-200/70 dark:border-white/10"
+                  }`}
+                aria-busy={submitting}
+              >
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</p>
+                <input
+                  type="text"
+                  className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${submitting || isCorrect || isExpired
+                    ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60"
+                    : "border-gray-300 dark:border-gray-700"
+                    }`}
+                  placeholder="Flag here!"
+                  value={flag}
+                  onChange={(e) => setFlag(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  disabled={submitting || isCorrect || isExpired}
+                  maxLength={100}
+                />
+                <button
+                  className={`w-full sm:w-[180px] border rounded-full px-4 py-2 text-white shadow-sm transition-colors duration-300 ${submitting || isCorrect || isExpired
+                    ? "bg-gray-400 border-gray-400 cursor-not-allowed"
+                    : "bg-red-500/90 dark:bg-red-500 border-red-500/70 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
+                    } ${submitting ? "animate-pulse" : ""}`}
+                  onClick={handleSubmit}
+                  disabled={submitting || isCorrect || isExpired}
+                >
+                  {submitting
+                    ? "Submitting..."
+                    : isCorrect
+                      ? "Solved!"
+                      : isExpired
+                        ? "Expired"
+                        : "Submit"}
+                </button>
+
+                {/* Time remaining display */}
+                {timeRemaining && timeRemaining > 0 && !isExpired && (
+                  <div className="text-center">
+                    <div
+                      className={`inline-block px-4 py-2 rounded-full font-semibold shadow-sm ${timeRemaining < 3600000 // Less than 1 hour
+                        ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
+                        : timeRemaining < 86400000 // Less than 1 day
+                          ? "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800"
+                          : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800"
+                        }`}
+                    >
+                      Time Remaining: {formatTimeRemaining(timeRemaining)}
+                    </div>
                   </div>
-                ) : (
-                  <p className="text-rose-700 dark:text-rose-300">
-                    {hintLoading
-                      ? "Loading hints..."
-                      : "No hints available for this challenge."}
-                  </p>
+                )}
+
+                {showConfetti && (
+                  <ConfettiBoom
+                    colors={[
+                      "#FF6347",
+                      "#FFD700",
+                      "#00FF00",
+                      "#1E90FF",
+                      "#FF69B4",
+                    ]}
+                    particleCount={100}
+                    shapeSize={30}
+                    deg={270}
+                    effectCount={Infinity}
+                    effectInterval={3000}
+                    spreadDeg={60}
+                    x={0.5}
+                    y={0.5}
+                    launchSpeed={1}
+                  />
                 )}
               </div>
-            )}
-
-            <div className="mt-3 border border-gray-200 dark:border-gray-700 rounded-lg p-6 flex flex-col justify-start gap-4 bg-white dark:bg-gray-800 shadow-md transition-colors duration-300">
-              <input
-                type="text"
-                className="py-2 px-4 block w-full border border-gray-300 dark:border-gray-600 rounded-lg text-base sm:text-lg bg-white dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 transition-colors duration-300"
-                placeholder="Flag here!"
-                value={flag}
-                onChange={(e) => setFlag(e.target.value)}
-                onKeyPress={handleKeyPress}
-                disabled={submitting || isCorrect || isExpired}
-                maxLength={100}
-              />
-              <button
-                className={`w-full sm:w-[180px] border rounded-lg px-4 py-2 text-white transition-colors duration-300 ${submitting || isCorrect || isExpired
-                  ? "bg-gray-400 border-gray-400 cursor-not-allowed"
-                  : "bg-red-400 dark:bg-red-500 border-red-500 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
-                  }`}
-                onClick={handleSubmit}
-                disabled={submitting || isCorrect || isExpired}
-              >
-                {submitting
-                  ? "Submitting..."
-                  : isCorrect
-                    ? "Solved!"
-                    : isExpired
-                      ? "Expired"
-                      : "Submit"}
-              </button>
-
-              {message && (
-                <div
-                  className={`text-center text-lg font-bold mt-4 transition-colors duration-300 ${message.includes("Right")
-                    ? "text-green-600 dark:text-green-400"
-                    : message.includes("points deducted") ||
-                      message.includes("Hint revealed") ||
-                      message.includes("Chat hint used")
-                      ? "text-orange-600 dark:text-orange-400"
-                      : "text-red-600 dark:text-red-500"
-                    }`}
-                >
-                  {message}
-                </div>
-              )}
-
-              {/* Time remaining display */}
-              {timeRemaining && timeRemaining > 0 && !isExpired && (
-                <div className="text-center">
-                  <div
-                    className={`inline-block px-4 py-2 rounded-lg font-semibold ${timeRemaining < 3600000 // Less than 1 hour
-                      ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
-                      : timeRemaining < 86400000 // Less than 1 day
-                        ? "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border border-orange-200 dark:border-orange-800"
-                        : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800"
-                      }`}
-                  >
-                    ⏰ Time Remaining: {formatTimeRemaining(timeRemaining)}
-                  </div>
-                </div>
-              )}
-
-              {showConfetti && (
-                <ConfettiBoom
-                  colors={[
-                    "#FF6347",
-                    "#FFD700",
-                    "#00FF00",
-                    "#1E90FF",
-                    "#FF69B4",
-                  ]}
-                  particleCount={100}
-                  shapeSize={30}
-                  deg={270}
-                  effectCount={Infinity}
-                  effectInterval={3000}
-                  spreadDeg={60}
-                  x={0.5}
-                  y={0.5}
-                  launchSpeed={1}
-                />
-              )}
             </div>
           </div>
         </div>
+
       )}
     </div>
   );
