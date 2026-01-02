@@ -20,6 +20,7 @@ interface LeaderboardUser {
   rank: number;
   image: string;
   roomsCompleted: number;
+  slug: string;
 }
 
 const LeaderboardPage = () => {
@@ -267,9 +268,7 @@ const LeaderboardPage = () => {
                       {" "}
                       <button
                         onClick={() =>
-                          router.push(
-                            `/user/${encodeURIComponent(leaderboard[0].name)}`
-                          )
+                          router.push(`/user/${leaderboard[0].slug}`)
                         }
                         className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
                       >
@@ -316,20 +315,17 @@ const LeaderboardPage = () => {
                         className="transition-all duration-300 hover:scale-105"
                       >
                         <div
-                          className={`flex flex-col dark:bg-gray-800 rounded-lg px-4 py-4 shadow-lg shadow-gray-100 dark:shadow-gray-900 relative overflow-clip border border-gray-200 dark:border-gray-700 transition-colors duration-300 ${
-                            actualIndex === 1 ? "ring-2 ring-gray-400" : ""
-                          } ${
-                            actualIndex === 2 ? "ring-2 ring-orange-400" : ""
-                          }`}
+                          className={`flex flex-col dark:bg-gray-800 rounded-lg px-4 py-4 shadow-lg shadow-gray-100 dark:shadow-gray-900 relative overflow-clip border border-gray-200 dark:border-gray-700 transition-colors duration-300 ${actualIndex === 1 ? "ring-2 ring-gray-400" : ""
+                            } ${actualIndex === 2 ? "ring-2 ring-orange-400" : ""
+                            }`}
                         >
                           <span
-                            className={`text-lg font-bold absolute top-2 right-3 ${
-                              actualIndex === 1
+                            className={`text-lg font-bold absolute top-2 right-3 ${actualIndex === 1
                                 ? "text-gray-500"
                                 : actualIndex === 2
-                                ? "text-orange-500"
-                                : "text-red-500 dark:text-red-400"
-                            }`}
+                                  ? "text-orange-500"
+                                  : "text-red-500 dark:text-red-400"
+                              }`}
                           >
                             #{user.rank}
                           </span>
@@ -358,7 +354,7 @@ const LeaderboardPage = () => {
                           <button
                             onClick={() =>
                               router.push(
-                                `/user/${encodeURIComponent(user.name)}`
+                                `/user/${encodeURIComponent(user.slug)}`
                               )
                             }
                             className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate text-center transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
@@ -436,7 +432,7 @@ const LeaderboardPage = () => {
                             <button
                               onClick={() =>
                                 router.push(
-                                  `/user/${encodeURIComponent(user.name)}`
+                                  `/user/${encodeURIComponent(user.slug)}`
                                 )
                               }
                               className="text-red-500 dark:text-red-500 font-medium truncate hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"

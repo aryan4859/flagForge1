@@ -17,8 +17,13 @@ export async function GET(
     const { username: rawUsername } = await params;
     const username = decodeURIComponent(rawUsername);
 
+    const usernameWithSpaces = username.replace(/-/g, " ");
+
     const user = await UserSchema.findOne({
-      name: { $regex: new RegExp(`^${username}$`, "i") },
+      $or: [
+        { name: { $regex: new RegExp(`^${username}$`, "i") } },
+        { name: { $regex: new RegExp(`^${usernameWithSpaces}$`, "i") } },
+      ],
     }).select("name image totalScore customBadges createdAt role");
 
     if (!user) {

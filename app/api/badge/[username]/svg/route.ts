@@ -117,8 +117,14 @@ export async function GET(
     const { username } = await params;
 
     // Find user by name (case-insensitive, trimmed, partial match safe)
+    const usernameWithSpaces = username.replace(/-/g, " ");
+
+    // Find user by name (case-insensitive, trimmed, partial match safe)
     const user = await UserSchema.findOne({
-      name: { $regex: username.trim(), $options: "i" },
+      $or: [
+        { name: { $regex: username.trim(), $options: "i" } },
+        { name: { $regex: usernameWithSpaces.trim(), $options: "i" } },
+      ],
     }).select("name image totalScore customBadges createdAt");
 
     if (!user) {

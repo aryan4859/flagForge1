@@ -30,6 +30,7 @@ export async function GET() {
         image: user.image,
         roomsCompleted,
         rank: index + 1, // Rank starts from 1
+        slug: user.name.replace(/\s+/g, "-"),
       };
     });
 

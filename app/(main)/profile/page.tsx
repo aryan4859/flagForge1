@@ -155,7 +155,7 @@ const DIFFICULTY_CONFIG: {
 const ProfilePage = () => {
   // Hooks
   const { data: session, status: sessionStatus } = useSession();
-  
+
   // State
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -168,13 +168,13 @@ const ProfilePage = () => {
   const [showCustomBadgeTooltip, setShowCustomBadgeTooltip] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
   const [copiedText, setCopiedText] = useState<string>('');
-  
+
   // Pagination states for completed problems
   const [problemsCurrentPage, setProblemsCurrentPage] = useState<number>(1);
   const [problemsLoading, setProblemsLoading] = useState<boolean>(false);
   const [problemsHasNextPage, setProblemsHasNextPage] = useState<boolean>(true);
   const [totalCompletedProblems, setTotalCompletedProblems] = useState<number>(0);
-  
+
   // Pagination states for created rooms
   const [roomsCurrentPage, setRoomsCurrentPage] = useState<number>(1);
   const [roomsLoading, setRoomsLoading] = useState<boolean>(false);
@@ -501,7 +501,7 @@ const ProfilePage = () => {
     const imageSrc = getImageSrc();
     const displayName = profileData?.name || session?.user?.name || "User";
     const [hasError, setHasError] = useState(false);
-    
+
     if (imageSrc && !hasError) {
       return (
         <Image
@@ -516,7 +516,7 @@ const ProfilePage = () => {
         />
       );
     }
-    
+
     return (
       <Image
         src={Flagforge}
@@ -544,7 +544,7 @@ const ProfilePage = () => {
             {profileData.customBadges.length} badge{profileData.customBadges.length !== 1 ? 's' : ''}
           </span>
         </div>
-        
+
         <div className="flex flex-wrap gap-4">
           {profileData.customBadges.map((badge, index) => (
             <div
@@ -565,7 +565,7 @@ const ProfilePage = () => {
                   }}
                 />
               </div>
-              
+
               {/* Custom Badge Tooltip */}
               {showCustomBadgeTooltip === badge.name && (
                 <div className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap z-20 shadow-lg">
@@ -605,13 +605,12 @@ const ProfilePage = () => {
             return (
               <div
                 key={badge.name}
-                className={`text-center p-3 rounded-lg border transition-all ${
-                  earned
+                className={`text-center p-3 rounded-lg border transition-all ${earned
                     ? current
                       ? "border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 shadow-sm ring-2 ring-red-200 dark:ring-red-700"
                       : "border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/20"
                     : "border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-60"
-                }`}
+                  }`}
               >
                 <div className="flex justify-center mb-2">
                   {getBadgeComponent(badge.threshold, 24)}
@@ -703,11 +702,11 @@ const ProfilePage = () => {
             icon: CheckCircle,
             count: totalCompletedProblems,
           },
-          { 
-            id: "badges", 
-            label: "Badge Collection", 
-            icon: Award, 
-            count: null 
+          {
+            id: "badges",
+            label: "Badge Collection",
+            icon: Award,
+            count: null
           },
           {
             id: "created",
@@ -719,11 +718,10 @@ const ProfilePage = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center transition-all ${
-              activeTab === tab.id
+            className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center transition-all ${activeTab === tab.id
                 ? "border-red-600 text-gray-900 dark:text-gray-100"
                 : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600"
-            }`}
+              }`}
           >
             <tab.icon className="w-4 h-4 mr-2" />
             {tab.label} {tab.count !== null && `(${tab.count})`}
@@ -736,7 +734,7 @@ const ProfilePage = () => {
   // Render conditions
   if (loading || sessionStatus === "loading") return <Loading />;
   if (sessionStatus === "unauthenticated") return <AuthError />;
-  
+
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
@@ -774,7 +772,7 @@ const ProfilePage = () => {
             <div className="flex-shrink-0">
               <ProfileImage />
             </div>
-            
+
             {/* Profile Info */}
             <div className="flex-grow text-center lg:text-left">
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
@@ -800,7 +798,7 @@ const ProfilePage = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Current Badge */}
                 <div className="relative">
                   <div
@@ -815,7 +813,7 @@ const ProfilePage = () => {
                   <BadgeTooltip />
                 </div>
               </div>
-              
+
               {/* Score and Progress */}
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mt-8 shadow-lg">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -846,9 +844,9 @@ const ProfilePage = () => {
                   )}
                 </div>
               </div>
-              
+
               <CustomBadgeDisplay />
-              
+
               <HeroStats />
 
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mt-8 shadow-lg">
@@ -942,22 +940,20 @@ const ProfilePage = () => {
                           <button
                             onClick={handleProblemsPrevPage}
                             disabled={problemsCurrentPage === 1 || problemsLoading}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              problemsCurrentPage === 1 || problemsLoading
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${problemsCurrentPage === 1 || problemsLoading
                                 ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                                 : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
+                              }`}
                           >
                             Previous
                           </button>
                           <button
                             onClick={handleProblemsNextPage}
                             disabled={!problemsHasNextPage || problemsLoading}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              !problemsHasNextPage || problemsLoading
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${!problemsHasNextPage || problemsLoading
                                 ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                                 : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
+                              }`}
                           >
                             Next
                           </button>
@@ -994,7 +990,7 @@ const ProfilePage = () => {
                       System Badge Collection
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                      Unlock prestigious badges by accumulating points through completed challenges. 
+                      Unlock prestigious badges by accumulating points through completed challenges.
                       Each badge represents your growing expertise in cybersecurity.
                     </p>
                   </div>
@@ -1005,13 +1001,12 @@ const ProfilePage = () => {
                       return (
                         <div
                           key={badge.name}
-                          className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
-                            earned
+                          className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${earned
                               ? current
                                 ? `border-red-500 bg-gradient-to-br ${badge.color} shadow-lg ring-2 ring-red-300 dark:ring-red-700 text-white`
                                 : "border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20 hover:shadow-md hover:border-green-400 dark:hover:border-green-500"
                               : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
-                          }`}
+                            }`}
                         >
                           {current && (
                             <div className="absolute -top-2 -right-2">
@@ -1023,22 +1018,20 @@ const ProfilePage = () => {
                           <div className={`mb-4 flex justify-center ${earned ? "" : "opacity-40 grayscale"}`}>
                             {getBadgeComponent(badge.threshold, 72)}
                           </div>
-                          <h4 className={`font-bold text-center mb-2 text-lg ${
-                              earned
-                                ? current
-                                  ? "text-white"
-                                  : "text-green-800 dark:text-green-400"
-                                : "text-gray-500 dark:text-gray-400"
+                          <h4 className={`font-bold text-center mb-2 text-lg ${earned
+                              ? current
+                                ? "text-white"
+                                : "text-green-800 dark:text-green-400"
+                              : "text-gray-500 dark:text-gray-400"
                             }`}
                           >
                             {badge.name}
                           </h4>
-                          <p className={`text-sm text-center ${
-                              earned
-                                ? current
-                                  ? "text-red-100"
-                                  : "text-green-600 dark:text-green-400"
-                                : "text-gray-400 dark:text-gray-500"
+                          <p className={`text-sm text-center ${earned
+                              ? current
+                                ? "text-red-100"
+                                : "text-green-600 dark:text-green-400"
+                              : "text-gray-400 dark:text-gray-500"
                             }`}
                           >
                             {badge.threshold}+ points required
@@ -1066,7 +1059,7 @@ const ProfilePage = () => {
                         Special Achievement Badges
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                        Exclusive badges awarded by administrators for exceptional contributions, 
+                        Exclusive badges awarded by administrators for exceptional contributions,
                         outstanding achievements, or special recognitions.
                       </p>
                     </div>
@@ -1173,11 +1166,10 @@ const ProfilePage = () => {
                               </div>
                               <div>
                                 <span
-                                  className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                    room.isPublished
+                                  className={`px-3 py-1 rounded-full text-xs font-medium border ${room.isPublished
                                       ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-700"
                                       : "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700"
-                                  }`}
+                                    }`}
                                 >
                                   {room.isPublished ? "Published" : "Draft"}
                                 </span>
@@ -1211,22 +1203,20 @@ const ProfilePage = () => {
                           <button
                             onClick={handleRoomsPrevPage}
                             disabled={roomsCurrentPage === 1 || roomsLoading}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              roomsCurrentPage === 1 || roomsLoading
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${roomsCurrentPage === 1 || roomsLoading
                                 ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                                 : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
+                              }`}
                           >
                             Previous
                           </button>
                           <button
                             onClick={handleRoomsNextPage}
                             disabled={!roomsHasNextPage || roomsLoading}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              !roomsHasNextPage || roomsLoading
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${!roomsHasNextPage || roomsLoading
                                 ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                                 : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
+                              }`}
                           >
                             Next
                           </button>
@@ -1294,9 +1284,13 @@ const ProfilePage = () => {
               <div className="space-y-4">
                 {(() => {
                   const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://flagforge.xyz';
-                  const profileUrl = `${currentDomain}/user/${encodeURIComponent(profileData?.name || '')}`;
-                  const badgeSvgUrl = `${currentDomain}/api/badge/${encodeURIComponent(profileData?.name || '')}/svg`;
-                  
+                  const profileUrl = `${currentDomain}/user/${encodeURIComponent(
+                    (profileData?.name || "").replace(/\s+/g, "-")
+                  )}`;
+                  const badgeSvgUrl = `${currentDomain}/api/badge/${encodeURIComponent(
+                    (profileData?.name || "").replace(/\s+/g, "-")
+                  )}/svg`;
+
                   return (
                     <>
                       {/* Profile Link */}
