@@ -118,6 +118,8 @@ export default function Footer() {
             <span>MAINTAINED BY</span>
             <Link
               href="https://www.linkedin.com/company/shyenasec/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-red-600 font-black hover:text-red-500 transition-colors ml-0.5"
             >
               SHYENA
