@@ -395,9 +395,7 @@ const ProfilePage = () => {
     if (!session?.user?.email) return;
     setRoomsLoading(true);
     try {
-      // const res = await fetch(`/api/rooms/created?page=${roomsCurrentPage}`, {
-      const res = await fetch(`/`, {
-
+      const res = await fetch(`/api/rooms/created?page=${roomsCurrentPage}`, {
         method: "GET",
         headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
       });

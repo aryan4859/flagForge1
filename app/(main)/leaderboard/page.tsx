@@ -215,17 +215,20 @@ const LeaderboardPage = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center py-8 px-4 sm:px-6 lg:px-8  dark:bg-gray-900 min-h-screen transition-colors duration-300">
-      <div className="flex flex-col items-center mb-6">
-        <h1 className="text-xl sm:text-3xl lg:text-5xl tracking-tight text-center text-red-500 dark:text-red-500 font-bold mb-2 transition-colors duration-300">
-          Leaderboard
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300 text-center transition-colors duration-300">
-          Showing top 50 players only
-        </p>
-      </div>
+    <div className="relative min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 py-10 px-4 sm:px-6 lg:px-10 transition-colors duration-300 overflow-hidden">
+      <div className="pointer-events-none absolute -top-24 right-[-12%] h-72 w-72 rounded-full bg-red-200/40 blur-3xl dark:bg-red-500/10" />
+      <div className="pointer-events-none absolute -bottom-24 left-[-12%] h-72 w-72 rounded-full bg-orange-200/30 blur-3xl dark:bg-orange-500/10" />
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-8">
+        <div className="w-full rounded-3xl border border-red-100/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl px-6 py-6 sm:px-10 sm:py-8 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.6)] text-center">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl tracking-tight text-red-500 dark:text-red-400 font-extrabold transition-colors duration-300">
+            Leaderboard
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-300">
+            Showing top 50 players only
+          </p>
+        </div>
 
-      <div className="w-full max-w-4xl">
+        <div className="w-full">
         {leaderboard.length === 0 ? (
           <p className="text-center text-gray-500 dark:text-gray-400">
             No data available
@@ -234,8 +237,9 @@ const LeaderboardPage = () => {
           <>
             {/* First Place - Compact */}
             {leaderboard.length > 0 && (
-              <div className="mb-4">
-                <div className="flex flex-col  dark:bg-gray-800 rounded-lg px-4 py-4 shadow-lg shadow-gray-100 dark:shadow-gray-900 relative overflow-clip border border-gray-200 dark:border-gray-700 ring-2 ring-yellow-400 transition-colors duration-300">
+              <div className="mb-6">
+                <div className="relative overflow-hidden rounded-3xl border border-yellow-200/70 dark:border-yellow-500/20 bg-white/90 dark:bg-gray-900/70 px-5 py-6 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.6)] ring-1 ring-yellow-300/70 transition-colors duration-300">
+                  <div className="pointer-events-none absolute -top-10 right-[-15%] h-32 w-32 rounded-full bg-yellow-300/30 blur-2xl" />
                   <span className="text-lg font-bold absolute top-2 right-3 text-yellow-500">
                     #{leaderboard[0].rank}
                   </span>
@@ -247,9 +251,9 @@ const LeaderboardPage = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-3">
+                  <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-4">
                     {/* Avatar */}
-                    <div className="w-16 h-16 rounded-full border-2 border-gray-200 dark:border-gray-600 overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0 transition-colors duration-300">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-yellow-200 dark:border-yellow-600 overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0 transition-colors duration-300 shadow-md">
                       <img
                         src={getImageSource(leaderboard[0])}
                         alt={`${leaderboard[0].name}'s avatar`}
@@ -264,21 +268,20 @@ const LeaderboardPage = () => {
                     </div>
 
                     <div className="flex-1">
-                      {" "}
                       <button
                         onClick={() =>
                           router.push(
                             `/user/${encodeURIComponent(leaderboard[0].name)}`
                           )
                         }
-                        className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1 transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
+                        className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
                       >
                         {leaderboard[0].name}
                       </button>
-                      <span className="font-medium text-red-500 dark:text-red-500 text-sm">
+                      <span className="font-semibold text-red-500 dark:text-red-400 text-sm">
                         {getLevel(leaderboard[0].totalScore)}
                       </span>
-                      <div className="flex items-center space-x-3 mt-1 text-gray-600 dark:text-gray-300 transition-colors duration-300">
+                      <div className="flex items-center flex-wrap gap-3 mt-2 text-gray-600 dark:text-gray-300 transition-colors duration-300">
                         <p className="text-sm">
                           Points:{" "}
                           <span className="font-bold">
@@ -305,7 +308,7 @@ const LeaderboardPage = () => {
 
             {/* 2nd to 5th Place - Compact Grid */}
             {leaderboard.length > 1 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 {leaderboard
                   .slice(1, 5)
                   .map((user: LeaderboardUser, index: number) => {
@@ -313,10 +316,10 @@ const LeaderboardPage = () => {
                     return (
                       <div
                         key={`${user.name}-${user.rank}-${user.totalScore}`}
-                        className="transition-all duration-300 hover:scale-105"
+                        className="transition-all duration-300 hover:-translate-y-1"
                       >
                         <div
-                          className={`flex flex-col dark:bg-gray-800 rounded-lg px-4 py-4 shadow-lg shadow-gray-100 dark:shadow-gray-900 relative overflow-clip border border-gray-200 dark:border-gray-700 transition-colors duration-300 ${
+                          className={`flex flex-col rounded-2xl px-4 py-4 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.45)] relative overflow-clip border border-gray-200/70 dark:border-white/10 bg-white/90 dark:bg-gray-900/60 transition-colors duration-300 ${
                             actualIndex === 1 ? "ring-2 ring-gray-400" : ""
                           } ${
                             actualIndex === 2 ? "ring-2 ring-orange-400" : ""
@@ -395,9 +398,9 @@ const LeaderboardPage = () => {
 
             {/* Table for remaining users - Compact */}
             {leaderboard.length > 5 && (
-              <div className="dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-colors duration-300">
+              <div className="rounded-2xl overflow-hidden border border-gray-200/70 dark:border-white/10 bg-white/90 dark:bg-gray-900/60 shadow-[0_20px_45px_-35px_rgba(15,23,42,0.6)] transition-colors duration-300">
                 {/* Table Header */}
-                <div className="grid grid-cols-5 gap-3 p-3 bg-red-500 dark:bg-red-500 text-xs font-medium text-white border-b border-red-600 dark:border-red-600 transition-colors duration-300">
+                <div className="grid grid-cols-5 gap-3 p-3 bg-gradient-to-r from-red-500 to-red-600 text-xs font-semibold uppercase tracking-widest text-white border-b border-red-600 transition-colors duration-300">
                   <div>Rank</div>
                   <div>Username</div>
                   <div>Points</div>
@@ -412,7 +415,7 @@ const LeaderboardPage = () => {
                     .map((user: LeaderboardUser, index: number) => (
                       <div
                         key={`${user.name}-${user.rank}-${user.totalScore}`}
-                        className="grid grid-cols-5 gap-3 p-3 text-xs hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300"
+                        className="grid grid-cols-5 gap-3 p-4 text-sm hover:bg-red-50/60 dark:hover:bg-white/5 transition-colors duration-300"
                       >
                         {/* Rank */}
                         <div className="text-gray-800 dark:text-gray-200 font-medium">
@@ -472,6 +475,7 @@ const LeaderboardPage = () => {
         )}
       </div>
     </div>
+  </div>
   );
 };
 
