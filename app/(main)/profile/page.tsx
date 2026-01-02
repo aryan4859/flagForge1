@@ -399,6 +399,12 @@ const ProfilePage = () => {
         method: "GET",
         headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
       });
+      if (res.status === 404) {
+        setCreatedRooms([]);
+        setTotalCreatedRooms(0);
+        setRoomsHasNextPage(false);
+        return;
+      }
       if (!res.ok)
         throw new Error(`Failed to fetch created rooms: ${res.status}`);
       const data = await res.json();
@@ -829,11 +835,11 @@ const ProfilePage = () => {
                 )}
                 {!problemsLoading && completedProblems.length > 0 ? (
                   <div className="space-y-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
                       {completedProblems.map((p) => {
                         const diff = getDifficultyStyle(p.difficulty);
                         return (
-                          <div key={p._id} className="group bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[2rem] p-8 transition-all hover:translate-y-[-5px] hover:shadow-xl dark:hover:bg-white/[0.04]">
+                          <div key={p._id} className="group h-full min-h-[320px] flex flex-col bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[2rem] p-8 transition-all hover:translate-y-[-5px] hover:shadow-xl dark:hover:bg-white/[0.04]">
                             <div className="flex justify-between items-start mb-6">
                               <div className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 text-2xl">
                                 {getCategoryIcon(p.category)}
@@ -848,7 +854,7 @@ const ProfilePage = () => {
                             <h4 className="text-lg font-black tracking-tight mb-3 group-hover:text-red-500 transition-colors uppercase text-gray-900 dark:text-gray-100">
                               {p.title}
                             </h4>
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed mb-6">
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 line-clamp-2 text-ellipsis overflow-hidden leading-relaxed mb-6 flex-1 min-h-[48px]">
                               {p.description}
                             </p>
                             <div className="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-white/5">
@@ -1034,11 +1040,11 @@ const ProfilePage = () => {
                 )}
                 {!roomsLoading && createdRooms.length > 0 ? (
                   <div className="space-y-12">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
                       {createdRooms.map((r) => {
                         const diff = getDifficultyStyle(r.difficulty);
                         return (
-                          <div key={r._id} className="group bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[3rem] p-10 transition-all hover:shadow-2xl dark:hover:bg-white/[0.04]">
+                          <div key={r._id} className="group h-full min-h-[360px] flex flex-col bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[3rem] p-10 transition-all hover:shadow-2xl dark:hover:bg-white/[0.04]">
                             <div className="flex items-start justify-between mb-8">
                               <div className="flex items-center gap-6">
                                 <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-3xl shadow-inner">
@@ -1056,7 +1062,7 @@ const ProfilePage = () => {
                                 {r.isPublished ? 'Live Protocol' : 'Draft Protocol'}
                               </span>
                             </div>
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed mb-8 line-clamp-2">
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed mb-8 line-clamp-2 text-ellipsis overflow-hidden flex-1 min-h-[48px]">
                               {r.description}
                             </p>
                             <div className="flex items-center justify-between pt-8 border-t border-gray-100 dark:border-white/5">
