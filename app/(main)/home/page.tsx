@@ -7,6 +7,7 @@ import OnboardingGuide from "@/components/OnboardingGuide";
 import Image from "next/image";
 import FlagForge from "../../../public/flagforge.gif";
 import Link from "next/link";
+import { Space_Grotesk, Crimson_Text } from "next/font/google";
 import {
   Flag,
   LayoutDashboard,
@@ -21,6 +22,16 @@ import {
   Zap,
   Star,
 } from "lucide-react";
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
+const bodyFont = Crimson_Text({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+});
 
 interface UserStats {
   totalScore: number;
@@ -189,357 +200,388 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-      <div className="relative overflow-hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
-        <div className="absolute inset-0 opacity-30">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(239,68,68,0.15) 1px, transparent 0)`,
-              backgroundSize: "20px 20px",
-            }}
-          ></div>
-        </div>
+    <div
+      className={`${displayFont.className} min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
+    >
+      <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.2),rgba(248,113,113,0))] blur-3xl" />
+      <div className="pointer-events-none absolute top-20 left-10 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.18),rgba(251,146,60,0))] blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.18),rgba(244,63,94,0))] blur-3xl" />
 
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 animate-bounce">
-          <div className="w-3 h-3 bg-red-200 dark:bg-red-500 rounded-full"></div>
-        </div>
-        <div className="absolute top-32 right-20 animate-pulse">
-          <div className="w-2 h-2 bg-red-300 dark:bg-red-500 rounded-full"></div>
-        </div>
-        <div className="absolute bottom-20 left-1/4 animate-bounce delay-300">
-          <div className="w-4 h-4 bg-red-100 dark:bg-red-600 rounded-full"></div>
-        </div>
+      <div className="relative z-10">
+        <div className="relative overflow-hidden transition-colors duration-300">
+          <div className="absolute inset-0 opacity-30">
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `radial-gradient(circle at 1px 1px, rgba(239,68,68,0.15) 1px, transparent 0)`,
+                backgroundSize: "20px 20px",
+              }}
+            ></div>
+          </div>
 
-        <div className="relative max-w-6xl mx-auto px-6 py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
-            <div className="text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
-                <div className="relative">
-                  <Image
-                    src={FlagForge}
-                    height={100}
-                    width={100}
-                    alt="flagforge"
-                    className="rounded-lg shadow-2xl"
-                  />
+          {/* Floating Elements */}
+          <div className="absolute top-20 left-10 animate-bounce">
+            <div className="w-3 h-3 bg-red-200 dark:bg-red-500 rounded-full"></div>
+          </div>
+          <div className="absolute top-32 right-20 animate-pulse">
+            <div className="w-2 h-2 bg-red-300 dark:bg-red-500 rounded-full"></div>
+          </div>
+          <div className="absolute bottom-20 left-1/4 animate-bounce delay-300">
+            <div className="w-4 h-4 bg-red-100 dark:bg-red-600 rounded-full"></div>
+          </div>
+
+          <div className="relative max-w-7xl mx-auto px-6 py-16">
+            <div className="relative overflow-hidden rounded-[2.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(15,23,42,0.45)] p-8 md:p-12">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.18),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.14),rgba(2,6,23,0))]" />
+              <div className="relative grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
+                <div className="text-center lg:text-left">
+                  <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
+                    <div className="relative">
+                      <Image
+                        src={FlagForge}
+                        height={100}
+                        width={100}
+                        alt="flagforge"
+                        className="rounded-lg shadow-2xl"
+                      />
+                    </div>
+                    <h1 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-gray-100 tracking-tight drop-shadow-sm transition-colors duration-300">
+                      Flag
+                      <span className="text-red-500 dark:text-red-500">Forge</span>
+                    </h1>
+                  </div>
+                  <p
+                    className={`${bodyFont.className} text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed mb-6 transition-colors duration-300`}
+                  >
+                    Master cybersecurity through hands-on CTF challenges and compete
+                    with hackers worldwide
+                  </p>
+                  <div className="flex items-center justify-center lg:justify-start gap-2">
+                    <Star className="h-5 w-5 text-red-500 dark:text-red-500 fill-red-500 dark:fill-red-500" />
+                    <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
+                      Join 500+ Active Security Professionals
+                    </span>
+                    <Star className="h-5 w-5 text-red-500 dark:text-red-500 fill-red-500 dark:fill-red-500" />
+                  </div>
+                  <div className="flex text-center justify-center pt-10">
+                    {/* Enhanced User Level Display */}
+                    {userStats && (
+                      <div className="text-end">
+                        <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-white/70 dark:bg-white/[0.06] border border-white/60 dark:border-white/10 shadow-xl transition-colors duration-300">
+                          <div className="relative">
+                            <Shield className="h-8 w-8 text-red-500 dark:text-red-500" />
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 dark:bg-red-500 rounded-full animate-pulse"></div>
+                          </div>
+                          <div className="text-left">
+                            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                              {userStats.level}
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                              Security Level
+                            </div>
+                          </div>
+                          <div className="flex gap-1 ml-4">
+                            {Array.from({
+                              length: Math.min(userStats.badges, 5),
+                            }).map((_, i) => (
+                              <div
+                                key={i}
+                                className="w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full shadow-sm animate-pulse"
+                                style={{ animationDelay: `${i * 0.2}s` }}
+                              ></div>
+                            ))}
+                            {userStats.badges > 5 && (
+                              <span className="text-gray-600 dark:text-gray-400 text-sm font-medium ml-2 transition-colors duration-300">
+                                +{userStats.badges - 5}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <h1 className="text-6xl font-black text-gray-900 dark:text-gray-100 tracking-tight drop-shadow-sm transition-colors duration-300">
-                  Flag
-                  <span className="text-red-500 dark:text-red-500">Forge</span>
-                </h1>
-              </div>
-              <p className="text-xl text-gray-700 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed mb-6 transition-colors duration-300">
-                Master cybersecurity through hands-on CTF challenges and compete
-                with hackers worldwide
-              </p>
-              <div className="flex items-center justify-center lg:justify-start gap-2">
-                <Star className="h-5 w-5 text-red-500 dark:text-red-500 fill-red-500 dark:fill-red-500" />
-                <span className="text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
-                  Join 500+ Active Security Professionals
-                </span>
-                <Star className="h-5 w-5 text-red-500 dark:text-red-500 fill-red-500 dark:fill-red-500" />
-              </div>
-              <div className="flex text-center justify-center pt-10">
-                {/* Enhanced User Level Display */}
+
                 {userStats && (
-                  <div className="text-end">
-                    <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg transition-colors duration-300">
-                      <div className="relative">
-                        <Shield className="h-8 w-8 text-red-500 dark:text-red-500" />
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 dark:bg-red-500 rounded-full animate-pulse"></div>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="group relative bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-6 text-center hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+                      <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
+                        <Trophy className="h-5 w-5" />
                       </div>
-                      <div className="text-left">
-                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">
-                          {userStats.level}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                          Security Level
-                        </div>
+                      <div className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300">
+                        {userStats.totalScore.toLocaleString()}
                       </div>
-                      <div className="flex gap-1 ml-4">
-                        {Array.from({
-                          length: Math.min(userStats.badges, 5),
-                        }).map((_, i) => (
-                          <div
-                            key={i}
-                            className="w-3 h-3 bg-gradient-to-r from-red-500 to-red-500 dark:from-red-500 dark:to-red-600 rounded-full shadow-sm animate-pulse"
-                            style={{ animationDelay: `${i * 0.2}s` }}
-                          ></div>
-                        ))}
-                        {userStats.badges > 5 && (
-                          <span className="text-gray-600 dark:text-gray-400 text-sm font-medium ml-2 transition-colors duration-300">
-                            +{userStats.badges - 5}
-                          </span>
-                        )}
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
+                        Total Points
+                      </div>
+                    </div>
+
+                    <div className="group relative bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-6 text-center hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+                      <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
+                        <TrendingUp className="h-5 w-5" />
+                      </div>
+                      <div className="text-3xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
+                        #{userStats.rank}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
+                        Rank
+                      </div>
+                    </div>
+
+                    <div className="group relative bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-6 text-center hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+                      <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
+                        <CheckCircle className="h-5 w-5" />
+                      </div>
+                      <div className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300">
+                        {userStats.completedQuestions}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
+                        Challenges Solved
+                      </div>
+                    </div>
+
+                    <div className="group relative bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-6 text-center hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
+                      <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
+                        <Zap className="h-5 w-5" />
+                      </div>
+                      <div className="text-3xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
+                        {userStats.streak}
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
+                        Day Streak
                       </div>
                     </div>
                   </div>
                 )}
               </div>
             </div>
-
-            {userStats && (
-              <div className="grid grid-cols-2 gap-6">
-                <div className="group relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl p-6 text-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                  <div className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300">
-                    {userStats.totalScore.toLocaleString()}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
-                    Total Points
-                  </div>
-                </div>
-
-                <div className="group relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl p-6 text-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                  <div className="text-3xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
-                    #{userStats.rank}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
-                    Rank
-                  </div>
-                </div>
-
-                <div className="group relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl p-6 text-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                  <div className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300">
-                    {userStats.completedQuestions}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
-                    Challenges Solved
-                  </div>
-                </div>
-
-                <div className="group relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl p-6 text-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
-                  <div className="text-3xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
-                    {userStats.streak}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
-                    Day Streak
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Welcome Message for New Users */}
-        {userStats?.completedQuestions === 0 && (
-          <div className="mt-8 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-6 text-center transition-colors duration-300">
-            <div className="max-w-2xl mx-auto">
-              <div className="flex justify-center mb-4">
-                <div className="p-3 bg-red-100 dark:bg-red-800/50 rounded-full transition-colors duration-300">
-                  <Shield className="h-8 w-8 text-red-500 dark:text-red-500" />
-                </div>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 transition-colors duration-300">
-                Welcome to the Forge!
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 transition-colors duration-300">
-                Ready to test your cybersecurity skills? Practice with realistic
-                scenarios and showcase your abilities in our gamified
-                environment.
-              </p>
-              <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-6 transition-colors duration-300">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-red-500 dark:bg-red-500 rounded-full"></div>
-                  Web
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full"></div>
-                  Crypto
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full"></div>
-                  Forensics
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
-                  Reverse
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-orange-500 dark:bg-orange-400 rounded-full"></div>
-                  PWN
-                </div>
-              </div>
-              <button className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-300">
-                Start Your First Challenge
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Platform Stats */}
-        <div className="mt-8 grid grid-cols-3 gap-4">
-          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4 text-center transition-colors duration-300">
-            <div className="text-2xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
-              100+
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
-              Active Users
-            </div>
-          </div>
-          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4 text-center transition-colors duration-300">
-            <div className="text-2xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
-              50+
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
-              Challenges
-            </div>
-          </div>
-          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4 text-center transition-colors duration-300">
-            <div className="text-2xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
-              250+
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
-              Flags Captured
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Latest Challenge */}
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-6 transition-colors duration-300">
-            <div className="flex items-center gap-3 mb-4">
-              <Clock className="h-5 w-5 text-red-500 dark:text-red-500" />
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">
-                Latest Challenge
-              </h2>
-            </div>
-            {latestRoom ? (
-              <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500 transition-colors">
-                      {latestRoom.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 transition-colors duration-300">
-                      {latestRoom.description.substring(0, 100)}...
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 transition-colors duration-300">
-                      Created:{" "}
-                      {new Date(latestRoom.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="ml-4 text-right">
-                    <div
-                      className={`text-lg font-bold ${getDifficultyColor(
-                        latestRoom.points
-                      )}`}
-                    >
-                      {latestRoom.points} pts
+          {/* Welcome Message for New Users */}
+          {userStats?.completedQuestions === 0 && (
+            <div className="mt-8">
+              <div className="max-w-7xl mx-auto px-6">
+                <div className="bg-white/80 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 rounded-[2rem] p-8 text-center transition-colors duration-300 shadow-xl">
+                  <div className="flex justify-center mb-4">
+                    <div className="p-3 bg-red-100/80 dark:bg-red-800/40 rounded-full transition-colors duration-300">
+                      <Shield className="h-8 w-8 text-red-500 dark:text-red-500" />
                     </div>
                   </div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 transition-colors duration-300">
+                    Welcome to the Forge!
+                  </h2>
+                  <p className={`${bodyFont.className} text-gray-600 dark:text-gray-300 mb-4 transition-colors duration-300`}>
+                    Ready to test your cybersecurity skills? Practice with realistic
+                    scenarios and showcase your abilities in our gamified
+                    environment.
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-500 dark:text-gray-400 mb-6 transition-colors duration-300">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-red-500 dark:bg-red-500 rounded-full"></div>
+                      Web
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full"></div>
+                      Crypto
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full"></div>
+                      Forensics
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
+                      Reverse
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-orange-500 dark:bg-orange-400 rounded-full"></div>
+                      PWN
+                    </div>
+                  </div>
+                  <button className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-2xl transition-colors duration-300 shadow-lg shadow-red-500/20">
+                    Start Your First Challenge
+                  </button>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`px-3 py-1 bg-red-500 dark:bg-red-600 text-white rounded-full text-xs font-medium ${getCategoryColor(
-                      latestRoom.category
-                    )}`}
-                  >
-                    {latestRoom.category}
-                  </span>
-                  <div className="flex items-center gap-2 text-sm text-red-500 dark:text-red-500 hover:text-red-600 dark:hover:text-red-500 transition-colors duration-300">
-                    <PlayCircle className="h-4 w-4" />
-                    <Link href="/problems"> Start Challenge </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Platform Stats */}
+          <div className="mt-8">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-4 text-center transition-colors duration-300 shadow-lg">
+                  <div className="text-2xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
+                    100+
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                    Active Users
+                  </div>
+                </div>
+                <div className="bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-4 text-center transition-colors duration-300 shadow-lg">
+                  <div className="text-2xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
+                    50+
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                    Challenges
+                  </div>
+                </div>
+                <div className="bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-4 text-center transition-colors duration-300 shadow-lg">
+                  <div className="text-2xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
+                    250+
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                    Flags Captured
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="text-center py-6 text-gray-500 dark:text-gray-400 transition-colors duration-300">
-                <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p>No challenges available</p>
-              </div>
-            )}
-
-            <div className="mt-4 text-center">
-              <Link
-                href="/problems"
-                className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white font-medium px-6 py-2 rounded-lg transition-colors duration-300"
-              >
-                View All Challenges
-              </Link>
             </div>
           </div>
+        </div>
 
-          {/* Last Solved & Quick Actions */}
-          <div className="space-y-6">
-            {/* Last Solved Problem */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-6 transition-colors duration-300">
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Latest Challenge */}
+            <div className="bg-white/80 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 rounded-[2rem] p-6 transition-colors duration-300 shadow-xl">
               <div className="flex items-center gap-3 mb-4">
-                <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <Clock className="h-5 w-5 text-red-500 dark:text-red-500" />
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">
-                  Last Solved
+                  Latest Challenge
                 </h2>
               </div>
-
-              {lastSolved ? (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 transition-colors duration-300">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 dark:bg-green-800/50 rounded transition-colors duration-300">
-                      <Flag className="h-4 w-4 text-green-600 dark:text-green-400" />
-                    </div>
+              {latestRoom ? (
+                <div className="bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-5 hover:-translate-y-1 transition-all duration-300 cursor-pointer shadow-lg">
+                  <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <div className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
-                        {lastSolved.title}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                        {lastSolved.category} • {lastSolved.points} pts
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500 transition-colors">
+                        {latestRoom.title}
+                      </h3>
+                      <p className={`${bodyFont.className} text-sm text-gray-600 dark:text-gray-400 mt-1 transition-colors duration-300`}>
+                        {latestRoom.description.substring(0, 100)}...
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-2 transition-colors duration-300">
+                        Created:{" "}
+                        {new Date(latestRoom.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="ml-4 text-right">
+                      <div
+                        className={`text-lg font-bold ${getDifficultyColor(
+                          latestRoom.points
+                        )}`}
+                      >
+                        {latestRoom.points} pts
                       </div>
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500 transition-colors duration-300">
-                      {new Date(lastSolved.solvedAt).toLocaleDateString()}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(
+                        latestRoom.category
+                      )}`}
+                    >
+                      {latestRoom.category}
+                    </span>
+                    <div className="flex items-center gap-2 text-sm text-red-500 dark:text-red-500 hover:text-red-600 dark:hover:text-red-500 transition-colors duration-300">
+                      <PlayCircle className="h-4 w-4" />
+                      <Link href="/problems"> Start Challenge </Link>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-6 text-gray-500 dark:text-gray-400 transition-colors duration-300">
-                  <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No challenges solved yet</p>
-                  <p className="text-xs">Complete your first challenge!</p>
+                  <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>No challenges available</p>
                 </div>
               )}
-            </div>
 
-            {/* Quick Actions */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-6 transition-colors duration-300">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
-                Quick Actions
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="mt-4 text-center">
                 <Link
                   href="/problems"
-                  className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white font-medium px-4 py-2.5 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
+                  className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white font-medium px-6 py-2 rounded-2xl transition-colors duration-300 shadow-lg shadow-red-500/20"
                 >
-                  <Target className="h-4 w-4" />
-                  Browse
+                  View All Challenges
                 </Link>
+              </div>
+            </div>
 
-                <Link
-                  href="/leaderboard"
-                  className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium px-4 py-2.5 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
-                >
-                  <TrendingUp className="h-4 w-4" />
-                  Leaderboard
-                </Link>
+            {/* Last Solved & Quick Actions */}
+            <div className="space-y-6">
+              {/* Last Solved Problem */}
+              <div className="bg-white/80 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 rounded-[2rem] p-6 transition-colors duration-300 shadow-xl">
+                <div className="flex items-center gap-3 mb-4">
+                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                    Last Solved
+                  </h2>
+                </div>
 
-                <Link
-                  href="/profile"
-                  className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium px-4 py-2.5 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
-                >
-                  <Users className="h-4 w-4" />
-                  Profile
-                </Link>
+                {lastSolved ? (
+                  <div className="bg-green-50/80 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-2xl p-4 transition-colors duration-300">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-100 dark:bg-green-800/50 rounded transition-colors duration-300">
+                        <Flag className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                          {lastSolved.title}
+                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                          {lastSolved.category} • {lastSolved.points} pts
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-500 transition-colors duration-300">
+                        {new Date(lastSolved.solvedAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-gray-500 dark:text-gray-400 transition-colors duration-300">
+                    <Flag className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No challenges solved yet</p>
+                    <p className="text-xs">Complete your first challenge!</p>
+                  </div>
+                )}
+              </div>
 
-                <Link
-                  href="/"
-                  className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium px-4 py-2.5 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </Link>
+              {/* Quick Actions */}
+              <div className="bg-white/80 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 rounded-[2rem] p-6 transition-colors duration-300 shadow-xl">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-300">
+                  Quick Actions
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <Link
+                    href="/problems"
+                    className="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm shadow-lg shadow-red-500/20"
+                  >
+                    <Target className="h-4 w-4" />
+                    Browse
+                  </Link>
+
+                  <Link
+                    href="/leaderboard"
+                    className="bg-white/80 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    Leaderboard
+                  </Link>
+
+                  <Link
+                    href="/profile"
+                    className="bg-white/80 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
+                  >
+                    <Users className="h-4 w-4" />
+                    Profile
+                  </Link>
+
+                  <Link
+                    href="/"
+                    className="bg-white/80 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
