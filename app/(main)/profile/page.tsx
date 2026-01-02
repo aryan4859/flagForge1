@@ -11,12 +11,16 @@ import {
   CheckCircle,
   User,
   Calendar,
-  MapPin,
   Star,
   Crown,
-  Gift,
   Share2,
   Copy,
+  ArrowRight,
+  Zap,
+  Shield,
+  Lock,
+  Terminal,
+  Target,
   ExternalLink
 } from "lucide-react";
 import Newbie from "../../../public/badges/0x1.png";
@@ -155,7 +159,7 @@ const DIFFICULTY_CONFIG: {
 const ProfilePage = () => {
   // Hooks
   const { data: session, status: sessionStatus } = useSession();
-  
+
   // State
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -168,13 +172,13 @@ const ProfilePage = () => {
   const [showCustomBadgeTooltip, setShowCustomBadgeTooltip] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState<boolean>(false);
   const [copiedText, setCopiedText] = useState<string>('');
-  
+
   // Pagination states for completed problems
   const [problemsCurrentPage, setProblemsCurrentPage] = useState<number>(1);
   const [problemsLoading, setProblemsLoading] = useState<boolean>(false);
   const [problemsHasNextPage, setProblemsHasNextPage] = useState<boolean>(true);
   const [totalCompletedProblems, setTotalCompletedProblems] = useState<number>(0);
-  
+
   // Pagination states for created rooms
   const [roomsCurrentPage, setRoomsCurrentPage] = useState<number>(1);
   const [roomsLoading, setRoomsLoading] = useState<boolean>(false);
@@ -501,32 +505,25 @@ const ProfilePage = () => {
     const imageSrc = getImageSrc();
     const displayName = profileData?.name || session?.user?.name || "User";
     const [hasError, setHasError] = useState(false);
-    
-    if (imageSrc && !hasError) {
-      return (
-        <Image
-          src={imageSrc}
-          alt={`${displayName} Profile Picture`}
-          width={120}
-          height={120}
-          className="w-30 h-30 rounded-full object-cover ring-4 ring-red-500 shadow-xl"
-          unoptimized
-          priority
-          onError={() => setHasError(true)}
-        />
-      );
-    }
-    
+
     return (
-      <Image
-        src={Flagforge}
-        alt={`${displayName} Profile Picture`}
-        width={120}
-        height={120}
-        className="w-30 h-30 rounded-full object-cover ring-4 ring-red-500 shadow-xl"
-        unoptimized
-        priority
-      />
+      <div className="relative group">
+        <div className="absolute -inset-4 bg-gradient-to-br from-red-600 to-orange-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
+        <div className="relative w-40 h-40 lg:w-48 lg:h-48 rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-[#0f0f0f] shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] group-hover:rotate-2">
+          <Image
+            src={(!hasError && imageSrc) ? imageSrc : Flagforge}
+            alt={`${displayName} Profile Picture`}
+            fill
+            className="object-cover"
+            unoptimized
+            priority
+            onError={() => setHasError(true)}
+          />
+        </div>
+        <div className="absolute -bottom-4 -right-4 bg-white dark:bg-[#111] p-3 rounded-2xl shadow-xl border border-gray-100 dark:border-white/10 transform group-hover:scale-110 transition-transform duration-500 z-20">
+          <Shield className="w-8 h-8 text-red-600" />
+        </div>
+      </div>
     );
   };
 
@@ -534,57 +531,45 @@ const ProfilePage = () => {
     if (!profileData?.customBadges || profileData.customBadges.length === 0) return null;
 
     return (
-      <div className="mt-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
-            <Crown className="w-5 h-5 mr-2 text-yellow-500" />
-            Special Badges
-          </h3>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {profileData.customBadges.length} badge{profileData.customBadges.length !== 1 ? 's' : ''}
-          </span>
+      <div className="bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent border border-yellow-500/20 dark:border-yellow-500/10 rounded-[2.5rem] p-8 lg:p-12 overflow-hidden relative group mt-8">
+        <div className="absolute top-0 right-0 p-8 transform translate-x-12 -translate-y-12 opacity-[0.03] dark:opacity-[0.05] group-hover:translate-x-8 group-hover:-translate-y-8 transition-transform duration-700">
+          <Crown className="w-40 h-40 text-yellow-500" />
         </div>
-        
-        <div className="flex flex-wrap gap-4">
-          {profileData.customBadges.map((badge, index) => (
-            <div
-              key={index}
-              className="relative group cursor-pointer"
-              onMouseEnter={() => setShowCustomBadgeTooltip(badge.name)}
-              onMouseLeave={() => setShowCustomBadgeTooltip(null)}
-            >
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-yellow-400 shadow-lg ring-2 ring-yellow-200 dark:ring-yellow-600 hover:scale-105 transition-transform duration-200">
-                <Image
-                  src={badge.icon}
-                  alt={badge.name}
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = '/api/placeholder/64/64';
-                  }}
-                />
-              </div>
-              
-              {/* Custom Badge Tooltip */}
-              {showCustomBadgeTooltip === badge.name && (
-                <div className="absolute bottom-full mb-3 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap z-20 shadow-lg">
-                  <div className="text-center">
-                    <div className="font-semibold text-yellow-300">{badge.name}</div>
-                    <div className="text-gray-300">{badge.description}</div>
-                    <div className="text-gray-400 mt-1">
-                      By: {badge.assignedBy}
-                    </div>
-                    <div className="text-gray-400 text-xs">
-                      {formatDate(badge.assignedAt)}
+        <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div className="space-y-2 text-center lg:text-left">
+            <h3 className="text-sm font-black uppercase tracking-[0.25em] text-yellow-600 dark:text-yellow-500 flex items-center justify-center lg:justify-start gap-2">
+              <Crown className="w-5 h-5" />
+              <span>Special Achievement Vault</span>
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md font-medium">Prestigious honors bestowed upon the most dedicated seekers of the arena.</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-6">
+            {profileData.customBadges.map((badge, index) => (
+              <div
+                key={index}
+                className="relative group/badge cursor-pointer"
+                onMouseEnter={() => setShowCustomBadgeTooltip(badge.name)}
+                onMouseLeave={() => setShowCustomBadgeTooltip(null)}
+              >
+                <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full p-1 bg-gradient-to-tr from-yellow-500 to-orange-500 animate-spin-slow opacity-20" />
+                <div className="absolute inset-1 rounded-full overflow-hidden border-2 border-white dark:border-[#0a0a0a] shadow-xl transform transition-transform group-hover/badge:scale-110">
+                  <Image src={badge.icon} alt={badge.name} fill className="object-cover" unoptimized />
+                </div>
+
+                {showCustomBadgeTooltip === badge.name && (
+                  <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-64 bg-[#0a0a0a]/95 backdrop-blur-xl text-white p-4 rounded-2xl z-50 text-center shadow-2xl animate-in zoom-in-95 fade-in duration-200 border border-white/10">
+                    <p className="font-black uppercase text-[11px] text-yellow-500 tracking-widest mb-1">{badge.name}</p>
+                    <p className="text-xs font-medium text-gray-300 leading-relaxed mb-2">{badge.description}</p>
+                    <div className="border-t border-white/10 pt-2 mt-2 flex items-center justify-center gap-2 text-[9px] font-bold text-gray-500 uppercase">
+                      <span>Issued by: {badge.assignedBy}</span>
+                      <span className="w-1 h-1 rounded-full bg-white/20" />
+                      <span>{formatDate(badge.assignedAt)}</span>
                     </div>
                   </div>
-                  {/* Tooltip Arrow */}
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black"></div>
-                </div>
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -593,35 +578,17 @@ const ProfilePage = () => {
   const BadgeTooltip = () => {
     if (!showBadgeTooltip) return null;
     return (
-      <div className="absolute top-full mt-2 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl rounded-xl p-6 z-10 w-80">
-        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">
-          Badge Progress
-        </h4>
+      <div className="absolute top-[110%] left-1/2 -translate-x-1/2 w-[85vw] sm:w-80 bg-white dark:bg-[#0a0a0a] border border-gray-100 dark:border-white/10 rounded-[2rem] p-6 shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] z-[100] animate-in fade-in slide-in-from-top-4 pointer-events-none">
+        <h5 className="text-sm font-black uppercase tracking-widest text-center mb-4 text-gray-400 dark:text-gray-500">Badge Progress</h5>
         <div className="grid grid-cols-2 gap-3">
           {BADGE_CONFIG.map((badge) => {
             const earned = (profileData?.totalScore || 0) >= badge.threshold;
-            const current =
-              getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
+            const active = getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
             return (
-              <div
-                key={badge.name}
-                className={`text-center p-3 rounded-lg border transition-all ${
-                  earned
-                    ? current
-                      ? "border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20 shadow-sm ring-2 ring-red-200 dark:ring-red-700"
-                      : "border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/20"
-                    : "border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-60"
-                }`}
-              >
-                <div className="flex justify-center mb-2">
-                  {getBadgeComponent(badge.threshold, 24)}
-                </div>
-                <p className="text-xs font-medium text-gray-900 dark:text-gray-100">
-                  {badge.name}
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  ({badge.threshold}+)
-                </p>
+              <div key={badge.name} className={`p-3 rounded-2xl border transition-all ${earned ? (active ? 'border-red-500 bg-red-500/10' : 'border-green-500/20 bg-green-500/5') : 'border-gray-100 dark:border-white/5 opacity-40'}`}>
+                <div className="flex justify-center mb-2">{getBadgeComponent(badge.threshold, 24)}</div>
+                <p className="text-[10px] font-black uppercase text-center text-gray-700 dark:text-gray-300">{badge.name}</p>
+                <p className="text-[8px] text-gray-500 text-center uppercase tracking-tighter">({badge.threshold}+ PTS)</p>
               </div>
             );
           })}
@@ -631,112 +598,78 @@ const ProfilePage = () => {
   };
 
   const HeroStats = () => (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mt-8">
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
       {[
         {
           icon: Trophy,
           label: "Rank",
           value: `#${profileData?.rank || "N/A"}`,
-          color: "text-red-500",
-          bg: "bg-white/95 dark:bg-gray-800/95",
-          border: "border-gray-200 dark:border-gray-700",
+          color: "text-red-600"
         },
         {
-          icon: Award,
+          icon: Target,
           label: "System Badges",
           value: profileData?.badges || 0,
-          color: "text-red-500",
-          bg: "bg-white/95 dark:bg-gray-800/95",
-          border: "border-gray-200 dark:border-gray-700",
+          color: "text-red-600"
         },
         {
           icon: Crown,
           label: "Special Badges",
           value: profileData?.customBadges?.length || 0,
-          color: "text-yellow-500",
-          bg: "bg-white/95 dark:bg-gray-800/95",
-          border: "border-gray-200 dark:border-gray-700",
+          color: "text-orange-500"
         },
         {
           icon: Flame,
           label: "Streak",
           value: profileData?.streak || 0,
-          color: "text-red-500",
-          bg: "bg-white/95 dark:bg-gray-800/95",
-          border: "border-gray-200 dark:border-gray-700",
+          color: "text-red-600"
         },
         {
           icon: CheckCircle,
           label: "Completed",
-          value:
-            profileData?.completedQuestions || profileData?.roomsCompleted || 0,
-          color: "text-red-500",
-          bg: "bg-white/95 dark:bg-gray-800/95",
-          border: "border-gray-200 dark:border-gray-700",
+          value: profileData?.completedQuestions || profileData?.roomsCompleted || 0,
+          color: "text-red-600"
         },
       ].map((stat, index) => (
-        <div
-          key={index}
-          className={`${stat.bg} ${stat.border} backdrop-blur-sm border rounded-xl p-4 lg:p-6 text-center transition-all hover:bg-white dark:hover:bg-gray-800 hover:scale-105 shadow-lg`}
-        >
-          <stat.icon
-            className={`w-6 h-6 lg:w-8 lg:h-8 ${stat.color} mx-auto mb-2 lg:mb-3`}
-          />
-          <p className="text-xs lg:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-            {stat.label}
-          </p>
-          <p className={`text-lg lg:text-2xl font-bold ${stat.color}`}>
-            {stat.value}
-          </p>
+        <div key={index} className="group bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[2rem] p-5 lg:p-8 text-center transition-all hover:translate-y-[-5px] hover:shadow-xl dark:hover:bg-white/[0.04]">
+          <div className={`inline-flex p-3 rounded-2xl bg-gray-50 dark:bg-white/5 mb-4 group-hover:scale-110 transition-transform ${stat.color}`}>
+            <stat.icon className="w-6 h-6 lg:w-8 lg:h-8" />
+          </div>
+          <p className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">{stat.label}</p>
+          <p className="text-2xl lg:text-3xl font-black tracking-tight text-gray-900 dark:text-white">{stat.value}</p>
         </div>
       ))}
     </div>
   );
 
   const TabNavigation = () => (
-    <div className="border-b border-gray-200 dark:border-gray-700">
-      <nav className="flex space-x-8">
+    <div className="flex justify-center mb-12 overflow-x-auto pb-4 no-scrollbar">
+      <div className="inline-flex bg-gray-100 dark:bg-white/[0.03] p-2 rounded-[2rem] border border-gray-200 dark:border-white/10 min-w-max">
         {[
-          {
-            id: "completed",
-            label: "Completed Problems",
-            icon: CheckCircle,
-            count: totalCompletedProblems,
-          },
-          { 
-            id: "badges", 
-            label: "Badge Collection", 
-            icon: Award, 
-            count: null 
-          },
-          {
-            id: "created",
-            label: "Created Rooms",
-            icon: Star,
-            count: totalCreatedRooms,
-          },
+          { id: "completed", label: "Completed", icon: CheckCircle, count: totalCompletedProblems },
+          { id: "badges", label: "Badges", icon: Award, count: null },
+          { id: "created", label: "Rooms", icon: Star, count: totalCreatedRooms },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`border-b-2 py-4 px-1 text-sm font-medium flex items-center transition-all ${
-              activeTab === tab.id
-                ? "border-red-600 text-gray-900 dark:text-gray-100"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600"
-            }`}
+            className={`px-6 lg:px-8 py-3 lg:py-4 rounded-[1.5rem] text-xs lg:text-sm font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-3 ${activeTab === tab.id
+              ? 'bg-red-600 text-white shadow-xl shadow-red-600/20'
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white'}`}
           >
-            <tab.icon className="w-4 h-4 mr-2" />
-            {tab.label} {tab.count !== null && `(${tab.count})`}
+            <tab.icon className="w-4 h-4" />
+            <span>{tab.label}</span>
+            {tab.count !== null && <span className="opacity-60">({tab.count})</span>}
           </button>
         ))}
-      </nav>
+      </div>
     </div>
   );
 
   // Render conditions
   if (loading || sessionStatus === "loading") return <Loading />;
   if (sessionStatus === "unauthenticated") return <AuthError />;
-  
+
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
@@ -765,166 +698,167 @@ const ProfilePage = () => {
     : new Date().getFullYear();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white pb-20 overflow-x-hidden">
+
+      {/* Elite Atmospheric Background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-5%] right-[-2%] w-[30%] h-[30%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02] dark:opacity-[0.05] pointer-events-none" />
+      </div>
+
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
-            {/* Profile Image */}
-            <div className="flex-shrink-0">
+      <section className="relative z-30 pt-16 pb-12 border-b border-gray-100 dark:border-white/5">
+        <div className="w-[92%] lg:w-[80%] mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+
+            {/* Avatar Column */}
+            <div className="relative group">
               <ProfileImage />
             </div>
-            
-            {/* Profile Info */}
-            <div className="flex-grow text-center lg:text-left">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
-                <div className="mb-6 lg:mb-0">
-                  <h1 className="text-4xl lg:text-5xl font-bold mb-3 text-gray-900 dark:text-white">
-                    {profileData?.name || session?.user?.name || "User"}
-                  </h1>
-                  <p className="text-xl text-red-600 dark:text-red-500 mb-4 font-medium">
-                    {profileData?.level || "[0x1][NEWBIE]"}
-                  </p>
-                  <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 text-gray-600 dark:text-gray-300">
-                    <div className="flex items-center">
-                      <User className="w-4 h-4 mr-2" />
-                      <span className="text-sm">
-                        {profileData?.email || session?.user?.email}
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      <span className="text-sm">
-                        Member since {memberSince}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Current Badge */}
-                <div className="relative">
-                  <div
-                    className="cursor-pointer transform hover:scale-105 transition-transform"
-                    onMouseEnter={() => setShowBadgeTooltip(true)}
-                    onMouseLeave={() => setShowBadgeTooltip(false)}
-                  >
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
-                      {getBadgeComponent(profileData?.totalScore || 0, 80)}
-                    </div>
-                  </div>
-                  <BadgeTooltip />
-                </div>
-              </div>
-              
-              {/* Score and Progress */}
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mt-8 shadow-lg">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="text-center md:text-left">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                      {getCurrentBadgeName(profileData?.totalScore || 0)}
-                    </h3>
-                    <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                      {profileData?.totalScore?.toLocaleString() || 0} points
-                    </p>
-                  </div>
-                  {nextBadge && (
-                    <div className="text-center md:text-right flex-shrink-0">
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                        Next: {nextBadge.nextBadgeName} (
-                        {nextBadge.pointsNeeded} points needed)
-                      </p>
-                      <div className="w-48 bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-                        <div
-                          className="bg-gradient-to-r from-red-500 to-red-600 h-3 rounded-full transition-all duration-700 ease-out"
-                          style={{ width: `${nextBadge.progress}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-                        {nextBadge.progress.toFixed(1)}% complete
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              <CustomBadgeDisplay />
-              
-              <HeroStats />
 
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mt-8 shadow-lg">
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-                    Share Your Profile
-                  </h3>
-                  <button
-                    onClick={() => setShowShareModal(true)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2 mx-auto"
-                  >
-                    <Share2 className="w-5 h-5" />
-                    <span>Share Badge</span>
-                  </button>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                    Create a shareable badge for GitHub, LinkedIn, Twitter and more!
-                  </p>
+            {/* Info Column */}
+            <div className="flex-1 text-center lg:text-left space-y-4 lg:space-y-6">
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 text-red-600 dark:text-red-400 text-xs font-black uppercase tracking-[0.2em]">
+                  <Terminal className="w-3.5 h-3.5" />
+                  <span>Verified Operator</span>
                 </div>
+                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.1] lg:leading-[0.9] text-gray-900 dark:text-white">
+                  {profileData?.name || session?.user?.name || "User"}
+                </h1>
+                <p className="text-lg lg:text-xl font-bold text-red-600 dark:text-red-500 flex items-center justify-center lg:justify-start gap-2">
+                  <Crown className="w-5 h-5" />
+                  {profileData?.level || "[0x1][NEWBIE]"}
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4 lg:gap-6 text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400">
+                <div className="flex items-center justify-center lg:justify-start gap-2">
+                  <User className="w-4 h-4" />
+                  <span className="break-all">{profileData?.email || session?.user?.email}</span>
+                </div>
+                <div className="flex items-center justify-center lg:justify-start gap-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>Member since {memberSince}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Badge Card Column */}
+            <div className="lg:w-72">
+              <div
+                className="relative group cursor-pointer perspective-1000"
+                onMouseEnter={() => setShowBadgeTooltip(true)}
+                onMouseLeave={() => setShowBadgeTooltip(false)}
+              >
+                <div className="absolute -inset-2 bg-gradient-to-br from-red-600/20 to-orange-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative bg-white/60 dark:bg-white/[0.03] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem] p-8 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] text-center transition-all duration-500 group-hover:translate-y-[-5px]">
+                  <div className="flex justify-center mb-6">
+                    {getBadgeComponent(profileData?.totalScore || 0, 96)}
+                  </div>
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500">Current Standing</span>
+                  <h4 className="text-xl font-black mt-1 uppercase tracking-tight text-gray-900 dark:text-white">
+                    {getCurrentBadgeName(profileData?.totalScore || 0)}
+                  </h4>
+                </div>
+
+                <BadgeTooltip />
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 z-20">
-        {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
-          <div className="p-6 pb-0">
-            <TabNavigation />
+      {/* Core Stats Section */}
+      <section className="relative z-10 py-12">
+        <div className="w-[92%] lg:w-[80%] mx-auto space-y-8">
+
+          {/* Progress Bar Container */}
+          <div className="bg-white/60 dark:bg-white/[0.02] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem] p-8 lg:p-12 shadow-sm">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+              <div className="space-y-1 text-center md:text-left">
+                <h3 className="text-sm font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500">Capture Mastery</h3>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-6xl font-black tracking-tighter text-gray-900 dark:text-white">{profileData?.totalScore?.toLocaleString() || 0}</span>
+                  <span className="text-xl font-bold text-red-600">PTS</span>
+                </div>
+              </div>
+
+              {nextBadge && (
+                <div className="flex-1 max-w-xl w-full space-y-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end gap-2">
+                    <p className="text-sm lg:text-base font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                      Next Level: <span className="text-red-500">{nextBadge.nextBadgeName}</span>
+                    </p>
+                    <p className="text-xs lg:text-sm font-bold text-gray-500 dark:text-gray-400">{nextBadge.pointsNeeded} UNTIL CLEARANCE</p>
+                  </div>
+                  <div className="relative h-4 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden p-1 border border-gray-200 dark:border-white/5">
+                    <div
+                      className="h-full bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+                      style={{ width: `${nextBadge.progress}%` }}
+                    />
+                  </div>
+                  <p className="text-right text-[10px] font-black tracking-widest text-gray-400 dark:text-gray-500 uppercase">
+                    {nextBadge.progress.toFixed(1)}% System Clearance
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="p-6">
-            {/* Tab Content */}
+
+          <HeroStats />
+
+          <CustomBadgeDisplay />
+        </div>
+      </section>
+
+      {/* Main Tabs Content */}
+      <section className="relative z-10 py-12">
+        <div className="w-[92%] lg:w-[80%] mx-auto">
+
+          {/* Prestigious Tab Header */}
+          <TabNavigation />
+
+          {/* Tab Content Panels */}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             {activeTab === "completed" && (
               <div>
                 {problemsLoading && (
-                  <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+                  <div className="flex justify-center items-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
                   </div>
                 )}
                 {!problemsLoading && completedProblems.length > 0 ? (
-                  <div>
-                    <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-                      {completedProblems.map((problem) => {
-                        const diffStyle = getDifficultyStyle(problem.difficulty);
+                  <div className="space-y-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {completedProblems.map((p) => {
+                        const diff = getDifficultyStyle(p.difficulty);
                         return (
-                          <div
-                            key={problem._id}
-                            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600"
-                          >
-                            <div className="flex items-start justify-between mb-4">
-                              <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 leading-tight">
-                                {problem.title}
-                              </h3>
-                              <span className="font-bold text-white bg-red-500 px-3 py-1 rounded-full text-sm ml-3 flex-shrink-0">
-                                +{problem.points}
-                              </span>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 leading-relaxed">
-                              {problem.description}
-                            </p>
-                            <div className="flex items-center justify-between">
-                              <span
-                                className={`text-sm font-medium px-3 py-1 rounded-full ${diffStyle.color} ${diffStyle.darkColor} ${diffStyle.bg} ${diffStyle.darkBg} border ${diffStyle.border} ${diffStyle.darkBorder}`}
-                              >
-                                {problem.difficulty}
-                              </span>
-                              <div className="flex gap-2">
-                                <span className="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-full border border-green-200 dark:border-green-700">
-                                  <CheckCircle className="w-3 h-3 inline mr-1" />
-                                  Completed
-                                </span>
-                                <span className="px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full border border-gray-200 dark:border-gray-600">
-                                  {problem.category}
+                          <div key={p._id} className="group bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[2rem] p-8 transition-all hover:translate-y-[-5px] hover:shadow-xl dark:hover:bg-white/[0.04]">
+                            <div className="flex justify-between items-start mb-6">
+                              <div className="p-3 rounded-2xl bg-gray-50 dark:bg-white/5 text-2xl">
+                                {getCategoryIcon(p.category)}
+                              </div>
+                              <div className="flex flex-col items-end gap-2">
+                                <span className="text-xl font-black tracking-tight text-red-600">+{p.points}</span>
+                                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${diff.color} ${diff.darkColor} ${diff.bg} ${diff.darkBg} ${diff.border} ${diff.darkBorder} uppercase tracking-widest`}>
+                                  {p.difficulty}
                                 </span>
                               </div>
+                            </div>
+                            <h4 className="text-lg font-black tracking-tight mb-3 group-hover:text-red-500 transition-colors uppercase text-gray-900 dark:text-gray-100">
+                              {p.title}
+                            </h4>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed mb-6">
+                              {p.description}
+                            </p>
+                            <div className="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-white/5">
+                              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-tighter text-gray-400 dark:text-gray-500">
+                                <Calendar className="w-3 h-3" />
+                                <span>Completed {formatDate(p.completedAt)}</span>
+                              </div>
+                              <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-red-500 group-hover:translate-x-1 transition-all" />
                             </div>
                           </div>
                         );
@@ -932,32 +866,30 @@ const ProfilePage = () => {
                     </div>
                     {/* Pagination */}
                     {(completedProblems.length > 0 || problemsCurrentPage > 1) && (
-                      <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex justify-between items-center pt-8 border-t border-gray-100 dark:border-white/5">
+                        <div className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
                           Page {problemsCurrentPage}{" "}
                           {totalCompletedProblems > 0 &&
                             `• ${totalCompletedProblems} problems total`}
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex gap-4">
                           <button
                             onClick={handleProblemsPrevPage}
                             disabled={problemsCurrentPage === 1 || problemsLoading}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              problemsCurrentPage === 1 || problemsLoading
-                                ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                                : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
+                            className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${problemsCurrentPage === 1 || problemsLoading
+                              ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                              : "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20 active:scale-95"
+                              }`}
                           >
                             Previous
                           </button>
                           <button
                             onClick={handleProblemsNextPage}
                             disabled={!problemsHasNextPage || problemsLoading}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              !problemsHasNextPage || problemsLoading
-                                ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                                : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
+                            className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${!problemsHasNextPage || problemsLoading
+                              ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                              : "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20 active:scale-95"
+                              }`}
                           >
                             Next
                           </button>
@@ -966,16 +898,14 @@ const ProfilePage = () => {
                     )}
                   </div>
                 ) : !problemsLoading && completedProblems.length === 0 ? (
-                  <div className="text-center py-16">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <CheckCircle className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                  <div className="text-center py-20 bg-white/60 dark:bg-white/[0.02] border border-white dark:border-white/10 rounded-[3rem]">
+                    <div className="w-20 h-20 bg-gray-50 dark:bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                      <CheckCircle className="w-10 h-10 text-gray-300 dark:text-gray-600" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      {problemsCurrentPage === 1
-                        ? "No Problems Completed Yet"
-                        : "No More Problems"}
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-2">
+                      {problemsCurrentPage === 1 ? "No Problems Completed Yet" : "No More Problems"}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                    <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto font-medium">
                       {problemsCurrentPage === 1
                         ? "Start solving challenges to build your portfolio and earn badges!"
                         : "You've reached the end of your completed problems."}
@@ -986,69 +916,41 @@ const ProfilePage = () => {
             )}
 
             {activeTab === "badges" && (
-              <div>
+              <div className="space-y-16">
                 {/* System Badges Section */}
-                <div className="mb-12">
-                  <div className="text-center mb-10">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                      System Badge Collection
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                      Unlock prestigious badges by accumulating points through completed challenges. 
-                      Each badge represents your growing expertise in cybersecurity.
-                    </p>
+                <div className="space-y-10">
+                  <div className="text-center space-y-3">
+                    <h3 className="text-3xl font-black uppercase tracking-tighter text-gray-900 dark:text-gray-100">System Badge Collection</h3>
+                    <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium">Unlock prestigious badges by accumulating points through completed challenges.</p>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {BADGE_CONFIG.map((badge) => {
-                      const earned = (profileData?.totalScore || 0) >= badge.threshold;
-                      const current = getCurrentBadgeName(profileData?.totalScore || 0) === badge.name;
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {BADGE_CONFIG.map((b) => {
+                      const earned = (profileData?.totalScore || 0) >= b.threshold;
+                      const active = getCurrentBadgeName(profileData?.totalScore || 0) === b.name;
                       return (
-                        <div
-                          key={badge.name}
-                          className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
-                            earned
-                              ? current
-                                ? `border-red-500 bg-gradient-to-br ${badge.color} shadow-lg ring-2 ring-red-300 dark:ring-red-700 text-white`
-                                : "border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20 hover:shadow-md hover:border-green-400 dark:hover:border-green-500"
-                              : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
-                          }`}
-                        >
-                          {current && (
-                            <div className="absolute -top-2 -right-2">
-                              <div className="bg-red-600 text-white text-xs px-2 py-1 rounded-full font-medium">
-                                Current
-                              </div>
+                        <div key={b.name} className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 ${earned
+                          ? (active ? 'bg-red-600 shadow-[0_20px_40px_rgba(220,38,38,0.2)] border-red-500 text-white' : 'bg-white/60 dark:bg-white/[0.02] dark:border-white/10 border-white hover:bg-white dark:hover:bg-white/5 hover:translate-y-[-5px]')
+                          : 'bg-gray-50/50 dark:bg-black/20 border-gray-100 dark:border-white/5 opacity-40 grayscale blur-[1px]'}`}>
+
+                          {active && (
+                            <div className="absolute top-4 right-4 animate-bounce">
+                              <Crown className="w-4 h-4 text-yellow-300" />
                             </div>
                           )}
-                          <div className={`mb-4 flex justify-center ${earned ? "" : "opacity-40 grayscale"}`}>
-                            {getBadgeComponent(badge.threshold, 72)}
+
+                          <div className="flex justify-center mb-8 transform group-hover:scale-110 transition-transform duration-500">
+                            {getBadgeComponent(b.threshold, 80)}
                           </div>
-                          <h4 className={`font-bold text-center mb-2 text-lg ${
-                              earned
-                                ? current
-                                  ? "text-white"
-                                  : "text-green-800 dark:text-green-400"
-                                : "text-gray-500 dark:text-gray-400"
-                            }`}
-                          >
-                            {badge.name}
-                          </h4>
-                          <p className={`text-sm text-center ${
-                              earned
-                                ? current
-                                  ? "text-red-100"
-                                  : "text-green-600 dark:text-green-400"
-                                : "text-gray-400 dark:text-gray-500"
-                            }`}
-                          >
-                            {badge.threshold}+ points required
+                          <h5 className="text-sm font-black text-center uppercase tracking-widest mb-1">{b.name}</h5>
+                          <p className={`text-[10px] font-bold text-center uppercase tracking-tighter ${active ? 'text-red-100' : 'text-gray-400'}`}>
+                            {b.threshold} POINTS THRESHOLD
                           </p>
-                          {earned && !current && (
-                            <div className="mt-3 text-center">
-                              <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 text-xs rounded-full font-medium border border-green-200 dark:border-green-700">
-                                <CheckCircle className="w-3 h-3 inline mr-1" />
-                                Earned
-                              </span>
+
+                          {earned && (
+                            <div className={`mt-6 flex justify-center ${active ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+                              <div className="bg-white/20 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">
+                                Active Standing
+                              </div>
                             </div>
                           )}
                         </div>
@@ -1059,62 +961,53 @@ const ProfilePage = () => {
 
                 {/* Custom Badges Section */}
                 {profileData?.customBadges && profileData.customBadges.length > 0 && (
-                  <div>
-                    <div className="text-center mb-10">
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center justify-center">
-                        <Crown className="w-6 h-6 mr-2 text-yellow-500" />
+                  <div className="space-y-10">
+                    <div className="text-center space-y-3">
+                      <h3 className="text-3xl font-black uppercase tracking-tighter text-gray-900 dark:text-gray-100 flex items-center justify-center gap-4">
+                        <Crown className="w-10 h-10 text-yellow-500" />
                         Special Achievement Badges
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                        Exclusive badges awarded by administrators for exceptional contributions, 
-                        outstanding achievements, or special recognitions.
-                      </p>
+                      <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium">Exclusive honors awarded by administrators for exceptional contributions.</p>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       {profileData.customBadges.map((badge, index) => (
                         <div
                           key={index}
-                          className="relative p-6 rounded-xl border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 shadow-lg hover:shadow-xl transition-all duration-300 ring-2 ring-yellow-200 dark:ring-yellow-600"
+                          className="relative p-8 rounded-[2.5rem] border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/10 dark:to-amber-900/10 shadow-xl hover:translate-y-[-5px] transition-all duration-300 ring-4 ring-yellow-400/10"
                         >
-                          <div className="absolute -top-2 -right-2">
-                            <div className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium flex items-center">
-                              <Gift className="w-3 h-3 mr-1" />
+                          <div className="absolute -top-3 -right-3">
+                            <div className="bg-yellow-500 text-white text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest flex items-center shadow-lg">
+                              <Shield className="w-3 h-3 mr-1" />
                               Special
                             </div>
                           </div>
-                          <div className="mb-4 flex justify-center">
-                            <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-yellow-400 shadow-lg ring-2 ring-yellow-200 dark:ring-yellow-600">
+                          <div className="mb-6 flex justify-center">
+                            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-yellow-400 shadow-2xl ring-4 ring-yellow-400/20">
                               <Image
                                 src={badge.icon}
                                 alt={badge.name}
-                                width={80}
-                                height={80}
+                                width={96}
+                                height={96}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
-                                  e.currentTarget.src = '/api/placeholder/80/80';
+                                  e.currentTarget.src = '/api/placeholder/96/96';
                                 }}
                               />
                             </div>
                           </div>
-                          <h4 className="font-bold text-center mb-2 text-lg text-yellow-800 dark:text-yellow-400">
+                          <h4 className="font-black text-center mb-2 text-lg text-yellow-800 dark:text-yellow-500 uppercase tracking-tight">
                             {badge.name}
                           </h4>
-                          <p className="text-sm text-center text-yellow-700 dark:text-yellow-500 mb-3">
+                          <p className="text-xs font-medium text-center text-yellow-700 dark:text-yellow-600/80 mb-6 leading-relaxed">
                             {badge.description}
                           </p>
-                          <div className="text-center space-y-1">
-                            <div className="text-xs text-yellow-600 dark:text-yellow-400">
-                              Awarded by: <span className="font-semibold">Flagforge</span>
+                          <div className="pt-6 border-t border-yellow-400/20 text-center space-y-1">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-yellow-600 dark:text-yellow-500">
+                              Awarded by: {badge.assignedBy}
                             </div>
-                            <div className="text-xs text-yellow-600 dark:text-yellow-400">
+                            <div className="text-[9px] font-bold text-yellow-600/60 dark:text-yellow-500/50">
                               {formatDate(badge.assignedAt)}
                             </div>
-                          </div>
-                          <div className="mt-3 text-center">
-                            <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-xs rounded-full font-medium border border-yellow-200 dark:border-yellow-700">
-                              <Crown className="w-3 h-3 inline mr-1" />
-                              Exclusive
-                            </span>
                           </div>
                         </div>
                       ))}
@@ -1122,79 +1015,59 @@ const ProfilePage = () => {
                   </div>
                 )}
 
-                {/* No Custom Badges Message */}
                 {(!profileData?.customBadges || profileData.customBadges.length === 0) && (
-                  <div className="mt-12 text-center py-12 border-t border-gray-200 dark:border-gray-700">
-                    <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Crown className="w-8 h-8 text-yellow-500" />
+                  <div className="text-center py-20 bg-yellow-500/[0.02] border border-yellow-500/10 rounded-[3rem]">
+                    <div className="w-20 h-20 bg-yellow-500/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                      <Crown className="w-10 h-10 text-yellow-500/40" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      No Special Badges Yet
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                      Keep contributing to the community and demonstrating exceptional skills to earn exclusive special badges from administrators!
-                    </p>
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-2">No Special Badges Yet</h3>
+                    <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto font-medium">Keep contributing to the community to earn exclusive honors!</p>
                   </div>
                 )}
               </div>
             )}
 
             {activeTab === "created" && (
-              <div>
+              <div className="space-y-12">
                 {roomsLoading && (
-                  <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+                  <div className="flex justify-center items-center py-20">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
                   </div>
                 )}
                 {!roomsLoading && createdRooms.length > 0 ? (
-                  <div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                      {createdRooms.map((room) => {
-                        const diffStyle = getDifficultyStyle(room.difficulty);
+                  <div className="space-y-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {createdRooms.map((r) => {
+                        const diff = getDifficultyStyle(r.difficulty);
                         return (
-                          <div
-                            key={room._id}
-                            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:shadow-md transition-all duration-200 hover:border-gray-300 dark:hover:border-gray-600"
-                          >
-                            <div className="flex items-start mb-6">
-                              <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center mr-4 border border-gray-200 dark:border-gray-600">
-                                <span className="text-gray-600 dark:text-gray-300 text-xl">
-                                  {getCategoryIcon(room.category)}
-                                </span>
-                              </div>
-                              <div className="flex-grow">
-                                <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-1">
-                                  {room.title}
-                                </h3>
-                                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                                  <Calendar className="w-4 h-4 mr-1" />
-                                  Created {new Date(room.createdAt).toLocaleDateString()}
+                          <div key={r._id} className="group bg-white/60 dark:bg-white/[0.02] backdrop-blur-2xl border border-white dark:border-white/10 rounded-[3rem] p-10 transition-all hover:shadow-2xl dark:hover:bg-white/[0.04]">
+                            <div className="flex items-start justify-between mb-8">
+                              <div className="flex items-center gap-6">
+                                <div className="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-3xl shadow-inner">
+                                  {getCategoryIcon(r.category)}
+                                </div>
+                                <div>
+                                  <h4 className="text-xl font-black uppercase tracking-tight mb-1 text-gray-900 dark:text-gray-100">{r.title}</h4>
+                                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>Created {new Date(r.createdAt).toLocaleDateString()}</span>
+                                  </div>
                                 </div>
                               </div>
-                              <div>
-                                <span
-                                  className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                    room.isPublished
-                                      ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-700"
-                                      : "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-700"
-                                  }`}
-                                >
-                                  {room.isPublished ? "Published" : "Draft"}
-                                </span>
-                              </div>
+                              <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${r.isPublished ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                                {r.isPublished ? 'Live Protocol' : 'Draft Protocol'}
+                              </span>
                             </div>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 line-clamp-2 leading-relaxed">
-                              {room.description}
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 leading-relaxed mb-8 line-clamp-2">
+                              {r.description}
                             </p>
-                            <div className="flex items-center justify-between">
-                              <span
-                                className={`text-sm font-medium px-3 py-1 rounded-full ${diffStyle.color} ${diffStyle.darkColor} ${diffStyle.bg} ${diffStyle.darkBg} border ${diffStyle.border} ${diffStyle.darkBorder}`}
-                              >
-                                {room.difficulty}
+                            <div className="flex items-center justify-between pt-8 border-t border-gray-100 dark:border-white/5">
+                              <span className={`text-[10px] font-black px-4 py-1.5 rounded-full border ${diff.color} ${diff.darkColor} ${diff.bg} ${diff.darkBg} ${diff.border} ${diff.darkBorder} uppercase tracking-[0.2em]`}>
+                                {r.difficulty} LEVEL
                               </span>
-                              <span className="px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full border border-gray-200 dark:border-gray-600">
-                                {room.category}
-                              </span>
+                              <button className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-red-600 dark:text-red-500 hover:gap-4 transition-all group/btn">
+                                Inspect Forge <ArrowRight className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
                         );
@@ -1202,31 +1075,29 @@ const ProfilePage = () => {
                     </div>
                     {/* Pagination */}
                     {(createdRooms.length > 0 || roomsCurrentPage > 1) && (
-                      <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex justify-between items-center pt-8 border-t border-gray-100 dark:border-white/5">
+                        <div className="text-xs font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">
                           Page {roomsCurrentPage}{" "}
                           {totalCreatedRooms > 0 && `• ${totalCreatedRooms} rooms total`}
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex gap-4">
                           <button
                             onClick={handleRoomsPrevPage}
                             disabled={roomsCurrentPage === 1 || roomsLoading}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              roomsCurrentPage === 1 || roomsLoading
-                                ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                                : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
+                            className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${roomsCurrentPage === 1 || roomsLoading
+                              ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                              : "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20 active:scale-95"
+                              }`}
                           >
                             Previous
                           </button>
                           <button
                             onClick={handleRoomsNextPage}
                             disabled={!roomsHasNextPage || roomsLoading}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                              !roomsHasNextPage || roomsLoading
-                                ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                                : "bg-red-600 text-white hover:bg-red-700"
-                            }`}
+                            className={`px-6 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${!roomsHasNextPage || roomsLoading
+                              ? "bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                              : "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20 active:scale-95"
+                              }`}
                           >
                             Next
                           </button>
@@ -1235,22 +1106,22 @@ const ProfilePage = () => {
                     )}
                   </div>
                 ) : !roomsLoading && createdRooms.length === 0 ? (
-                  <div className="text-center py-16">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Star className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                  <div className="text-center py-20 bg-white/60 dark:bg-white/[0.02] border border-white dark:border-white/10 rounded-[3rem]">
+                    <div className="w-20 h-20 bg-gray-50 dark:bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                      <Star className="w-10 h-10 text-gray-300 dark:text-gray-600" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-2">
                       {roomsCurrentPage === 1 ? "No Rooms Created Yet" : "No More Rooms"}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                    <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto font-medium">
                       {roomsCurrentPage === 1
                         ? "Share your knowledge by creating cybersecurity challenges for the community!"
                         : "You've reached the end of your created rooms."}
                     </p>
                     {roomsCurrentPage === 1 && (
-                      <button className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium inline-flex items-center">
-                        <Star className="w-4 h-4 mr-2" />
-                        Create Your First Room
+                      <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-red-600/20 transition-all active:scale-95 flex items-center gap-3 mx-auto">
+                        <Star className="w-4 h-4" />
+                        <span>Create Your First Room</span>
                       </button>
                     )}
                   </div>
@@ -1259,136 +1130,104 @@ const ProfilePage = () => {
             )}
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Identity & Share Section */}
+      <section className="relative z-10 py-12 border-t border-gray-100 dark:border-white/5">
+        <div className="w-[92%] lg:w-[80%] mx-auto bg-white/60 dark:bg-white/[0.02] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[3rem] p-12 text-center group">
+          <div className="inline-flex p-4 rounded-3xl bg-gray-50 dark:bg-white/5 mb-6 group-hover:scale-110 transition-transform text-red-600">
+            <Share2 className="w-8 h-8" />
+          </div>
+          <h3 className="text-3xl font-black uppercase tracking-tight text-gray-900 dark:text-gray-100 mb-4">Export Your Persona</h3>
+          <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto font-medium mb-10 leading-relaxed">
+            Generate a prestigious profile badge to showcase your system clearances on GitHub, LinkedIn, and professional networks.
+          </p>
+          <button
+            onClick={() => setShowShareModal(true)}
+            className="bg-red-600 hover:bg-red-700 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl shadow-red-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-4 mx-auto"
+          >
+            <Terminal className="w-4 h-4" />
+            <span>Generate Share Protocol</span>
+          </button>
+        </div>
+      </section>
 
       {/* Share Modal */}
       {showShareModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-gray-950/60 backdrop-blur-md transition-opacity animate-in fade-in"
+            onClick={() => setShowShareModal(false)}
+          />
+          <div className="relative w-full max-w-md bg-white dark:bg-[#0a0a0a] border border-gray-100 dark:border-white/10 rounded-[2.5rem] shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] overflow-hidden scale-95 animate-in zoom-in-95 duration-200">
             <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                  Share Your Badge
-                </h2>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-red-600 text-white">
+                    <Share2 className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-lg font-black uppercase tracking-tight text-gray-900 dark:text-white">Profile Protocol</h3>
+                </div>
                 <button
                   onClick={() => setShowShareModal(false)}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-full transition-colors"
                 >
-                  ✕
+                  <Shield className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
 
-              {/* Badge Preview */}
-              <div className="mb-6 text-center">
-                <Image
-                  src={`/api/badge/${encodeURIComponent(profileData?.name || '')}/svg`}
-                  alt="Profile Badge"
-                  width={400}
-                  height={200}
-                  unoptimized
-                  className="mx-auto border border-gray-200 dark:border-gray-700 rounded-lg"
-                />
-              </div>
-
-              {/* Share Options */}
               <div className="space-y-4">
-                {(() => {
-                  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://flagforge.xyz';
-                  const profileUrl = `${currentDomain}/user/${encodeURIComponent(profileData?.name || '')}`;
-                  const badgeSvgUrl = `${currentDomain}/api/badge/${encodeURIComponent(profileData?.name || '')}/svg`;
-                  
-                  return (
-                    <>
-                      {/* Profile Link */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Profile Link
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={profileUrl}
-                            readOnly
-                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm"
-                          />
-                          <button
-                            onClick={() => copyToClipboard(profileUrl, 'link')}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-1"
-                          >
-                            <Copy className="w-4 h-4" />
-                            {copiedText === 'link' ? <span>Copied!</span> : <span>Copy</span>}
-                          </button>
-                        </div>
-                      </div>
+                <div className="bg-gray-50 dark:bg-white/[0.03] rounded-2xl p-4 flex flex-col items-center border border-gray-100 dark:border-white/5">
+                  <div className="scale-90 mb-2">
+                    {getBadgeComponent(profileData?.totalScore || 0, 72)}
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-red-600">Current Standing</p>
+                  <p className="text-lg font-black tracking-tight text-gray-900 dark:text-white">{getCurrentBadgeName(profileData?.totalScore || 0)}</p>
+                </div>
 
-                      {/* SVG Badge URL */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Badge SVG URL (for GitHub README)
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={badgeSvgUrl}
-                            readOnly
-                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm"
-                          />
-                          <button
-                            onClick={() => copyToClipboard(badgeSvgUrl, 'svg')}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-1"
-                          >
-                            <Copy className="w-4 h-4" />
-                            {copiedText === 'svg' ? <span>Copied!</span> : <span>Copy</span>}
-                          </button>
+                <div className="space-y-3">
+                  {[
+                    {
+                      label: "Direct Link",
+                      value: `${window.location.origin}/user/${encodeURIComponent(profileData?.name || '')}`,
+                      icon: ExternalLink
+                    },
+                    {
+                      label: "Markdown",
+                      value: `[![${profileData?.name || ''}'s FlagForge Badge](${window.location.origin}/api/badge/${encodeURIComponent(profileData?.name || '')}/svg)](${window.location.origin}/user/${encodeURIComponent(profileData?.name || '')})`,
+                      icon: Terminal
+                    },
+                    {
+                      label: "HTML Snippet",
+                      value: `<a href="${window.location.origin}/user/${encodeURIComponent(profileData?.name || '')}"><img src="${window.location.origin}/api/badge/${encodeURIComponent(profileData?.name || '')}/svg" alt="${profileData?.name || ''}'s FlagForge Badge" /></a>`,
+                      icon: Lock
+                    }
+                  ].map((item, idx) => (
+                    <div key={idx} className="space-y-1.5">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 pl-1">{item.label}</label>
+                      <div className="flex gap-2">
+                        <div className="flex-1 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 rounded-xl px-3 py-2 text-[11px] font-medium text-gray-500 truncate">
+                          {item.value}
                         </div>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(item.value);
+                          }}
+                          className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all active:scale-90 shadow-lg shadow-red-600/20"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
                       </div>
+                    </div>
+                  ))}
+                </div>
 
-                      {/* Markdown for GitHub */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Markdown (GitHub)
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={`[![${profileData?.name || ''}'s FlagForge Badge](${badgeSvgUrl})](${profileUrl})`}
-                            readOnly
-                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm"
-                          />
-                          <button
-                            onClick={() => copyToClipboard(`[![${profileData?.name || ''}'s FlagForge Badge](${badgeSvgUrl})](${profileUrl})`, 'markdown')}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-1"
-                          >
-                            <Copy className="w-4 h-4" />
-                            {copiedText === 'markdown' ? <span>Copied!</span> : <span>Copy</span>}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* HTML */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          HTML
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="text"
-                            value={`<a href="${profileUrl}"><img src="${badgeSvgUrl}" alt="${profileData?.name || ''}'s FlagForge Badge" /></a>`}
-                            readOnly
-                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-sm"
-                          />
-                          <button
-                            onClick={() => copyToClipboard(`<a href="${profileUrl}"><img src="${badgeSvgUrl}" alt="${profileData?.name || ''}'s FlagForge Badge" /></a>`, 'html')}
-                            className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-1"
-                          >
-                            <Copy className="w-4 h-4" />
-                            {copiedText === 'html' ? <span>Copied!</span> : <span>Copy</span>}
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  );
-                })()}
+                <button
+                  onClick={() => setShowShareModal(false)}
+                  className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-90 transition-opacity mt-2"
+                >
+                  Protocol Terminated
+                </button>
               </div>
             </div>
           </div>

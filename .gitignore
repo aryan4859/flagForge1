@@ -45,3 +45,6 @@ recalculate.js
 sync-badges.js
 userroleupdate.js
 reset-user-point.js
+
+#test files
+app/(main)/testprofile/page.tsx

@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-  domains: ['writeup.flagforge.xyz'],
+    domains: ['writeup.flagforge.xyz', 'flagforge.xyz', 'github.com'],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
-       {
+      {
         protocol: "https",
         hostname: "prod-files-secure.s3.us-west-2.amazonaws.com",
       },
@@ -16,11 +16,11 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)", 
+        source: "/(.*)",
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://flagforge.xyz",  
+            value: "https://flagforge.xyz",
           },
           {
             key: "X-Frame-Options",
@@ -43,27 +43,27 @@ const nextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "no-referrer", 
+            value: "no-referrer",
           },
           {
             key: "Permissions-Policy",
-            value: "geolocation=(), microphone=(), camera=(), payment=()", 
+            value: "geolocation=(), microphone=(), camera=(), payment=()",
           },
           {
             key: "Cache-Control",
-            value: "no-store, no-cache, must-revalidate, proxy-revalidate", 
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate",
           },
           {
             key: "Pragma",
-            value: "no-cache", 
+            value: "no-cache",
           },
           {
             key: "Server",
-            value: "", 
+            value: "",
           },
           {
             key: "X-XSS-Protection",
-            value: "1; mode=block", 
+            value: "1; mode=block",
           },
         ],
       },

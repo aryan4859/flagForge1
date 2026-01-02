@@ -8,12 +8,17 @@ import React, { useState, useEffect } from "react";
 import nirmalImage from "@/public/NirmalDahal.jpeg";
 import sobitImage from "@/public/SobitThakuri.jpeg";
 
+import { Activity, Rocket, Target, Users, Layers, Clock } from "lucide-react";
+
 const Hero: React.FC = () => {
   const { status } = useSession();
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  // Icons for the stats section, mapped by index to preserve original data structure
+  const statIcons = [Target, Users, Layers, Clock];
 
   const testimonials = [
     {
@@ -210,245 +215,244 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <section className="pt-8 sm:pt-16 md:pt-20 px-4 sm:px-8 md:px-12 flex flex-col gap-12 sm:gap-20 md:gap-24 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300 pb-16">
-      {/* Hero Section */}
-      <header className="flex flex-col gap-6 sm:gap-10 md:gap-12">
-        <h1 className="w-full sm:w-[90%] md:w-[80%] mx-auto text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-center text-gray-600 dark:text-gray-100 leading-tight sm:leading-tight md:leading-tight tracking-tight transition-colors duration-300">
-          Welcome to
-          <span className="text-red-500 dark:text-red-500 font-extrabold">
-            {" "}
-            FlagForge{" "}
-          </span>
-          <span className="font-bold">Capture The Flag (CTF) </span>
-          playground!🏆
-        </h1>
-        <p className="w-full sm:w-[85%] md:w-[75%] mx-auto text-center text-sm sm:text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
-          <span className="text-red-500 dark:text-red-500 font-extrabold">
-            FlagForge
-          </span>{" "}
-          is a dynamic and engaging CTF platform dedicated to promoting
-          <span className="text-red-500 dark:text-red-500 font-extrabold">
-            {" "}
-            Cybersecurity{" "}
-          </span>
-          awareness and fostering a passion for coding among participants. Our
-          CTF competition offers a challenging environment for individuals to
-          sharpen their skills in cybersecurity, cryptography 🗝️, web
-          exploitation 💻, reverse engineering 🔍, & more.
-        </p>
-        <div className="flex justify-center">
-          <Link
-            href={status === "authenticated" ? "/problems" : "/authentication"}
-            className="w-full max-w-xs sm:max-w-sm"
-          >
-            <button className="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700 rounded-lg px-6 py-3 sm:px-8 sm:py-4 text-white text-center font-bold text-sm sm:text-base transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl touch-manipulation">
-              Start Solving 🚀
-            </button>
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white pb-20 relative overflow-hidden transition-colors duration-500">
 
-      {/* Stats Section */}
-      <div className="w-full mx-auto" aria-label="Key Statistics">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-6 sm:p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 text-center transition-all duration-300 hover:scale-105"
-            >
-              <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-red-500 dark:text-red-500 mb-2">
-                {stat.number}
-              </div>
-              <div className="text-sm sm:text-base text-gray-700 dark:text-gray-300 font-semibold">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Background Effects (Static) */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-5%] right-[-2%] w-[30%] h-[30%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[100px]" />
+        {/* Volumetric Spotlight */}
+        <div className="absolute top-[20%] left-[10%] w-[600px] h-[600px] bg-gradient-to-tr from-red-500/10 to-transparent rounded-full blur-[80px] opacity-40 mix-blend-screen" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.01] dark:opacity-[0.05] pointer-events-none" />
       </div>
 
-      {/* What We Provide Section */}
-      <section className="w-full mx-auto">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
-            What We Provide
-          </h2>
-          <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-            Everything you need to master cybersecurity through hands-on practice
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-          {features.map((feature, index) => (
-            <article
-              key={index}
-              className="bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-6 sm:p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-xl"
-            >
-              <div className="text-4xl sm:text-5xl mb-4" aria-hidden="true">{feature.icon}</div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                {feature.description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
+      <div className="relative z-10 w-full px-4 sm:px-8 md:px-12 pt-28 lg:pt-36 flex flex-col gap-24 lg:gap-32 pb-16">
 
-      {/* Challenge Categories Section */}
-      <section className="w-full mx-auto">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
-            Challenge Categories
-          </h2>
-          <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-            Explore diverse cybersecurity domains and build comprehensive skills
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-          {categories.map((category, index) => (
-            <article
-              key={index}
-              className="bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-6 sm:p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-xl group"
-            >
-              <div className="text-4xl sm:text-5xl mb-4 group-hover:scale-110 transition-transform duration-300" aria-hidden="true">
-                {category.icon}
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
-                {category.title}
-              </h3>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                {category.description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="w-full mx-auto">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
-            How It Works
-          </h2>
-          <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-            Get started in just four simple steps
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {howItWorks.map((item, index) => (
-            <div
-              key={index}
-              className="relative bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-6 sm:p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 transition-all duration-300 hover:scale-105"
-            >
-              <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-red-500 rounded-full flex items-center justify-center text-white font-extrabold text-xl shadow-lg">
-                {item.step}
-              </div>
-              <div className="mt-4">
-                <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-100 mb-3 text-center">
-                  {item.title}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed text-center">
-                  {item.description}
-                </p>
-              </div>
+        {/* Hero Section: Asymmetric Split */}
+        <section className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Left: Content */}
+          <div className="space-y-8 text-center lg:text-left relative">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 text-red-600 dark:text-red-400 text-xs font-black uppercase tracking-[0.2em]">
+              <Activity className="w-3.5 h-3.5" />
+              <span>Platform Online</span>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Why Choose FlagForge */}
-      <section className="w-full mx-auto flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-8 px-2 sm:px-4 md:px-6">
-        <div className="flex flex-col gap-2 sm:gap-3 justify-center shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border-gray-200/80 dark:border-gray-700 border p-4 sm:p-5 md:p-7 rounded-xl bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] transition-all duration-300 hover:scale-105">
-          <h3 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
-            Innovative Challenges 🧿
-          </h3>
-          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
-            <span className="text-red-500 dark:text-red-500 font-bold">
-              FlagForge
-            </span>{" "}
-            offers a variety of innovative challenges that test participants'
-            creativity and problem-solving abilities, ensuring an engaging and
-            rewarding experience for all.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:gap-3 justify-center p-4 sm:p-5 md:p-5 rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] border-gray-200/80 dark:border-gray-700 border transition-all duration-300 hover:scale-105">
-          <h3 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
-            Beginner-Friendly 🌐
-          </h3>
-          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
-            <span className="text-red-500 dark:text-red-500 font-extrabold">
-              FlagForge{" "}
-            </span>
-            welcomes participants of all skill levels, including beginners. The
-            platform offers challenges that cater to newcomers, providing a
-            supportive environment for learning and growth.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:gap-3 justify-center p-4 sm:p-5 md:p-5 rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] border-gray-200/80 dark:border-gray-700 border transition-all duration-300 hover:scale-105">
-          <h3 className="font-extrabold text-lg sm:text-xl md:text-2xl text-gray-800 dark:text-gray-100 transition-colors duration-300">
-            Continuous Improvement 🎁
-          </h3>
-          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed transition-colors duration-300">
-            <span className="text-red-500 dark:text-red-500 font-extrabold">
-              FlagForge
-            </span>{" "}
-            regularly updates its challenges and platform based on feedback from
-            participants, ensuring that the experience remains relevant and
-            engaging.
-          </p>
-        </div>
-      </section>
+            {/* Typography with fixed clipping */}
+            <h1 className="relative text-5xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-[0.9] text-gray-900 dark:text-white z-10">
+              WELCOME TO <br />
+              <span className="bg-gradient-to-r from-red-600 to-orange-500 bg-clip-text text-transparent italic pr-4 py-2 inline-block">FLAGFORGE</span> <br />
+              <span className="text-gray-400 dark:text-gray-600 text-3xl lg:text-5xl block mt-2">CTF PLAYGROUND</span>
+            </h1>
 
-      {/* Testimonial Carousel */}
-      <section className="w-full mx-auto" aria-labelledby="testimonials-title">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8 md:mb-12">
-            <h2 id="testimonials-title" className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-gray-100 transition-colors duration-300">
-              Trusted by Cybersecurity Experts
+            <p className="text-lg text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0 relative z-10">
+              <span className="text-red-500 font-black">FlagForge</span> is a dynamic platform for
+              <span className="text-gray-900 dark:text-white font-bold italic"> Cybersecurity </span>
+              excellence. Sharpen your skills in cryptography, web exploitation, reverse engineering, and more.
+            </p>
+
+            <div className="flex justify-center lg:justify-start pt-4 relative z-10">
+              <Link
+                href={status === "authenticated" ? "/problems" : "/authentication"}
+                className="group relative px-10 py-5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-black uppercase tracking-[0.2em] shadow-xl shadow-red-600/20 transition-all flex items-center gap-4 overflow-hidden"
+              >
+                <span>Start Solving</span>
+                <Rocket className="w-4 h-4 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: Clean Connected Stats Grid (Reference Style) */}
+          <div className="relative w-full flex items-center justify-center py-10">
+            <div className="relative grid grid-cols-2 gap-6 w-full max-w-lg shadow-[0_0_100px_-20px_rgba(220,38,38,0.1)] rounded-[3rem] p-4">
+
+              {/* Central Connector Lines */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 z-0 opacity-20">
+                <div className="absolute inset-0 border-t border-l border-red-500 rotate-45 scale-125" />
+                <div className="absolute inset-0 border-b border-r border-red-500 rotate-45 scale-125" />
+              </div>
+
+              {stats.map((stat, index) => {
+                const Icon = statIcons[index];
+                // Determine corner badge position based on index
+                // 0: top-left (badge bottom-right), 1: top-right (badge bottom-left)
+                // 2: bottom-left (badge top-right), 3: bottom-right (badge top-left)
+                const badgePosition =
+                  index === 0 ? "bottom-[-6px] right-[-6px]" :
+                    index === 1 ? "bottom-[-6px] left-[-6px]" :
+                      index === 2 ? "top-[-6px] right-[-6px]" :
+                        "top-[-6px] left-[-6px]";
+
+                return (
+                  <div key={index} className="relative bg-white dark:bg-[#050505] p-8 rounded-[2rem] shadow-xl flex flex-col items-center justify-center gap-4 z-10 hover:scale-[1.02] transition-transform duration-300">
+                    {/* Inner Corner Connection Dot */}
+                    <div className={`absolute ${badgePosition} w-3 h-3 rounded-full bg-red-100 dark:bg-[#050505] border-2 border-red-500 z-20`} />
+
+                    <Icon className="w-10 h-10 text-red-500 stroke-[1.5]" />
+                    <div className="text-center">
+                      <div className="text-4xl font-black text-gray-900 dark:text-white tracking-tighter mb-1">{stat.number}</div>
+                      <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">{stat.label}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section: Bento Grid */}
+        <section className="max-w-7xl mx-auto w-full space-y-16">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 dark:border-gray-800 pb-8">
+            <div className="max-w-2xl">
+              <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-4">
+                Why Choose <span className="text-red-500">FlagForge</span>
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">
+                Everything you need to master cybersecurity through hands-on practice
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(250px,auto)]">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className={`group relative overflow-hidden bg-gray-50 dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-3xl p-8 hover:border-red-500/30 transition-colors ${index === 0 || index === 3 || index === 4 ? "md:col-span-2" : "md:col-span-1"
+                  }`}
+              >
+                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <div className="text-9xl font-black">{index + 1}</div>
+                </div>
+                <div className="h-full flex flex-col justify-between relative z-10">
+                  <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/5 flex items-center justify-center text-2xl mb-6 shadow-sm">
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-gray-900 dark:text-white mb-3">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Challenge Categories: Hover Cards */}
+        <section className="max-w-7xl mx-auto w-full space-y-16">
+          <div className="text-left border-l-4 border-red-500 pl-6">
+            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-2">
+              Challenge <span className="block text-red-500">Categories</span>
             </h2>
           </div>
 
-          <div className="relative max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.map((category, index) => (
+              <div
+                key={index}
+                className="group relative h-64 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-300"
+              >
+                <div className="absolute inset-0 p-8 flex flex-col items-center justify-center text-center transition-all duration-300 group-hover:-translate-y-full opacity-100 group-hover:opacity-0">
+                  <div className="text-6xl mb-6 grayscale group-hover:grayscale-0 transition-all">{category.icon}</div>
+                  <h3 className="text-xl font-black uppercase tracking-widest text-gray-900 dark:text-white">
+                    {category.title}
+                  </h3>
+                </div>
+
+                <div className="absolute inset-0 p-8 bg-red-600 flex flex-col items-center justify-center text-center translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                  <h3 className="text-xl font-black uppercase tracking-widest text-white mb-4">
+                    {category.title}
+                  </h3>
+                  <p className="text-white/90 text-sm font-medium leading-relaxed">
+                    {category.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* How It Works: Horizontal Circuit Flow */}
+        <section className="max-w-7xl mx-auto w-full space-y-16">
+          <div className="text-center">
+            <h2 className="text-3xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white">
+              How It <span className="text-red-500">Works</span>
+            </h2>
+            <p className="text-lg text-gray-500 dark:text-gray-400 font-medium max-w-2xl mx-auto mt-4">
+              Get started in just four simple steps
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-[2rem] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-red-500/50 to-transparent" />
+
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
+              {howItWorks.map((item, index) => (
+                <div key={index} className="group relative flex flex-col items-center text-center">
+                  {/* Step Node */}
+                  <div className="w-16 h-16 rounded-2xl bg-white dark:bg-[#050505] border-2 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)] flex items-center justify-center text-2xl font-black text-red-500 mb-6 relative z-10 group-hover:scale-110 transition-transform duration-300">
+                    {item.step}
+                  </div>
+
+                  {/* Content Card */}
+                  <div className="bg-white/60 dark:bg-white/10 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl p-6 w-full h-full hover:border-red-500/30 transition-all hover:-translate-y-2">
+                    <h3 className="text-lg font-black tracking-tight uppercase text-gray-900 dark:text-white mb-3">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
+
+                  {/* Connecting Line (Mobile Vertical) */}
+                  {index !== howItWorks.length - 1 && (
+                    <div className="md:hidden absolute bottom-[-2rem] left-1/2 w-0.5 h-8 bg-red-500/30" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonial Carousel */}
+        <section className="w-full max-w-7xl mx-auto" aria-labelledby="testimonials-title">
+          <div className="text-center mb-16 space-y-4">
+            <h2 id="testimonials-title" className="text-3xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white">
+              Expert <span className="text-red-500">Vouches</span>
+            </h2>
+          </div>
+
+          <div className="relative max-w-5xl mx-auto">
             <div
-              className={`bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl p-4 sm:p-6 md:p-8 shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 transition-all duration-300 ease-in-out ${isAnimating
-                ? "opacity-40 scale-[0.98]"
-                : "opacity-100 scale-100"
-                }`}
+              className={`relative overflow-hidden bg-white/80 dark:bg-white/10 backdrop-blur-3xl border border-white dark:border-white/10 rounded-[3rem] p-8 lg:p-16 shadow-2xl transition-all duration-700 ease-in-out ${isAnimating ? "opacity-40 scale-95 blur-sm" : "opacity-100 scale-100 blur-0"}`}
               onMouseEnter={() => setIsAutoPlaying(false)}
               onMouseLeave={() => setIsAutoPlaying(true)}
             >
-              <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-8">
-                <div
-                  className={`flex-shrink-0 transition-all duration-300 ease-in-out ${isAnimating
-                    ? "opacity-0 translate-x-4"
-                    : "opacity-100 translate-x-0"
-                    }`}
-                >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/[0.03] rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
+              <div className="flex flex-col md:flex-row items-center gap-8 lg:gap-16">
+                <div className="relative flex-shrink-0">
+                  <div className="absolute inset-0 bg-red-600 rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity" />
                   <Image
                     src={testimonials[currentTestimonial].image}
                     alt={testimonials[currentTestimonial].name}
-                    width={96}
-                    height={96}
-                    className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-full object-cover transition-all duration-300 ease-in-out hover:scale-105 mx-auto"
+                    width={160}
+                    height={160}
+                    className="relative w-32 h-32 lg:w-48 lg:h-48 rounded-full object-cover border-4 border-white dark:border-white/5"
                   />
                 </div>
 
-                <div
-                  className={`flex-1 text-center md:text-left transition-all duration-300 ease-in-out ${isAnimating
-                    ? "opacity-0 translate-x-8"
-                    : "opacity-100 translate-x-0"
-                    }`}
-                >
-                  <blockquote className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 md:mb-6 leading-relaxed transition-all duration-300 ease-in-out">
+                <div className="flex-1 text-center md:text-left space-y-6">
+                  <blockquote className="text-xl lg:text-3xl font-medium italic text-gray-700 dark:text-gray-300 leading-tight">
                     "{testimonials[currentTestimonial].testimonial}"
                   </blockquote>
-
-                  <div className="transition-all duration-300 ease-in-out">
-                    <div className="font-bold text-base sm:text-lg md:text-xl text-gray-800 dark:text-gray-100">
+                  <div className="space-y-1">
+                    <div className="text-2xl font-black tracking-tighter uppercase text-red-500">
                       {testimonials[currentTestimonial].name}
                     </div>
-                    <div className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+                    <div className="text-sm font-black uppercase tracking-widest text-gray-400">
                       {testimonials[currentTestimonial].position}
                     </div>
                   </div>
@@ -456,154 +460,87 @@ const Hero: React.FC = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => handleManualNavigation(prevTestimonial)}
-              disabled={isAnimating}
-              className={`hidden md:block absolute left-[-20px] top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full p-3 shadow-lg border border-gray-200 dark:border-gray-600 transition-all duration-300 hover:scale-110 active:scale-95 ${isAnimating ? "opacity-50 cursor-not-allowed" : "opacity-100"
-                }`}
-              aria-label="Previous testimonial"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 8 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-gray-600 dark:text-gray-300"
+            {/* Controls */}
+            <div className="flex justify-center mt-12 gap-6">
+              <button
+                onClick={() => handleManualNavigation(prevTestimonial)}
+                disabled={isAnimating}
+                className="w-14 h-14 rounded-full bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-xl disabled:opacity-50"
               >
-                <path
-                  d="M6.35058 1.5043L2.21073 5.64415C1.46183 6.39306 1.46183 7.60734 2.21073 8.35624L6.35059 12.4961"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-
-            <button
-              onClick={() => handleManualNavigation(nextTestimonial)}
-              disabled={isAnimating}
-              className={`hidden md:block absolute right-[-20px] top-1/2 transform -translate-y-1/2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full p-3 shadow-lg border border-gray-200 dark:border-gray-600 transition-all duration-300 hover:scale-110 active:scale-95 ${isAnimating ? "opacity-50 cursor-not-allowed" : "opacity-100"
-                }`}
-              aria-label="Next testimonial"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 8 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-gray-600 dark:text-gray-300"
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+              </button>
+              <button
+                onClick={() => handleManualNavigation(nextTestimonial)}
+                disabled={isAnimating}
+                className="w-14 h-14 rounded-full bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-xl disabled:opacity-50"
               >
-                <path
-                  d="M1.64941 12.4957L5.78927 8.35585C6.53817 7.60694 6.53817 6.39266 5.78927 5.64376L1.64941 1.50391"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-
-            <div className="flex justify-center mt-4 sm:mt-6 gap-2 sm:gap-3">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() =>
-                    handleManualNavigation(() => changeTestimonial(index))
-                  }
-                  disabled={isAnimating}
-                  className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full transition-all duration-500 ease-out touch-manipulation ${index === currentTestimonial
-                    ? "bg-red-500 scale-125 shadow-lg shadow-red-500/30"
-                    : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 hover:scale-110 active:scale-95"
-                    } ${isAnimating
-                      ? "opacity-50 cursor-not-allowed"
-                      : "opacity-100"
-                    }`}
-                  aria-label={`Go to testimonial ${index + 1}`}
-                />
-              ))}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+              </button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FAQ Section */}
-      <section className="w-full mx-auto max-w-4xl" aria-labelledby="faq-title">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 id="faq-title" className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-100 mb-4">
-            Frequently Asked Questions
+        {/* CTA: Minimalist */}
+        <section className="max-w-4xl mx-auto w-full text-center py-20">
+          <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-8">
+            Ready to <span className="text-red-500">Hack?</span>
           </h2>
-          <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
-            Everything you need to know about FlagForge
-          </p>
-        </div>
-        <div className="flex flex-col gap-4">
-          {faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="bg-white/40 dark:bg-gray-800/90 backdrop-blur-[150px] rounded-xl shadow-lg shadow-gray-200/60 dark:shadow-gray-900/60 border border-gray-200/80 dark:border-gray-700 overflow-hidden transition-all duration-300"
+          <div className="flex justify-center">
+            <Link
+              href={status === "authenticated" ? "/problems" : "/authentication"}
+              className="group relative px-16 py-8 rounded-full bg-gray-900 dark:bg-white text-white dark:text-black text-lg font-black uppercase tracking-[0.25em] transition-transform hover:scale-105"
             >
-              <button
-                onClick={() => toggleFaq(index)}
-                aria-expanded={openFaqIndex === index}
-                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors duration-200"
-              >
-                <span className="text-base sm:text-lg font-bold text-gray-800 dark:text-gray-100 pr-4">
-                  {faq.question}
-                </span>
-                <svg
-                  className={`w-5 h-5 text-red-500 flex-shrink-0 transition-transform duration-300 ${openFaqIndex === index ? "rotate-180" : ""
-                    }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+              <span>Get Started Now</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* FAQ: Split Layout */}
+        <section className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-24">
+          {/* Sticky Header */}
+          <div className="lg:col-span-1">
+            <div className="lg:sticky lg:top-32">
+              <h2 className="text-4xl lg:text-7xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-6">
+                FAQ<span className="text-red-500">S</span>
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">
+                Common questions about the platform, challenges, and community.
+              </p>
+            </div>
+          </div>
+
+          {/* Accordion List */}
+          <div className="lg:col-span-2 space-y-4">
+            {faqs.map((faq, index) => (
               <div
-                className={`overflow-hidden transition-all duration-300 ${openFaqIndex === index ? "max-h-96" : "max-h-0"
-                  }`}
+                key={index}
+                className="group border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden bg-white dark:bg-white/10"
               >
-                <div className="px-6 pb-5 text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                  {faq.answer}
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                >
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
+                    {faq.question}
+                  </span>
+                  <div className={`w-6 h-6 flex items-center justify-center transition-transform duration-300 ${openFaqIndex === index ? "rotate-180 text-red-500" : "text-gray-400"}`}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                  </div>
+                </button>
+                <div
+                  className={`transition-all duration-300 ease-in-out ${openFaqIndex === index ? "max-h-[500px]" : "max-h-0"}`}
+                >
+                  <div className="px-8 pb-8 text-gray-500 dark:text-gray-400 leading-relaxed font-medium">
+                    {faq.answer}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* Final CTA Section */}
-      <section className="w-full mx-auto max-w-4xl">
-        <div className="bg-gradient-to-r from-red-500 to-red-600 dark:from-red-600 dark:to-red-700 rounded-2xl p-8 sm:p-12 md:p-16 shadow-2xl text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4 sm:mb-6">
-            Ready to Start Your Journey?
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 sm:mb-8 max-w-2xl mx-auto">
-            Join thousands of cybersecurity enthusiasts and start solving challenges today. It's completely free!
-          </p>
-          <Link
-            href={status === "authenticated" ? "/problems" : "/authentication"}
-            className="inline-block"
-          >
-            <button className="bg-white text-red-600 hover:bg-gray-100 active:bg-gray-200 rounded-lg px-8 py-4 sm:px-10 sm:py-5 font-bold text-base sm:text-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl">
-              Get Started Now 🚀
-            </button>
-          </Link>
-        </div>
-      </section>
-    </section>
+      </div>
+    </div>
   );
 };
 
