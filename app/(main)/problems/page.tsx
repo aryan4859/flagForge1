@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import QustionCards from "@/components/QustionCards";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
-import { IoFilter, IoChevronDown } from "react-icons/io5";
+import { IoFilter, IoChevronDown, IoSearch } from "react-icons/io5";
 import { useSession } from "next-auth/react";
 import { Questions } from "@/interfaces";
 
@@ -311,15 +311,54 @@ const MobileFilter: React.FC<{
   );
 };
 
+const SearchBar: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+  loading?: boolean;
+}> = ({ value, onChange, loading = false }) => (
+  <div className="w-full rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 py-3 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.45)]">
+    <div className="relative flex items-center">
+      <IoSearch
+        className={`absolute left-4 text-gray-500 ${
+          loading ? "animate-spin" : ""
+        }`}
+      />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Search challenges..."
+        aria-label="Search challenges"
+        className="w-full rounded-full border border-gray-200/80 dark:border-white/10 bg-white/90 dark:bg-gray-900/70 py-2.5 pl-11 pr-4 text-sm text-gray-700 dark:text-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-colors duration-300"
+      />
+    </div>
+  </div>
+);
+
 const FilterResultsInfo: React.FC<{
   selectedCategory: string;
   problemsCount: number;
   currentPage: number;
   totalPages: number;
-}> = ({ selectedCategory, problemsCount, currentPage, totalPages }) => (
+  searchQuery: string;
+  isSearching: boolean;
+}> = ({
+  selectedCategory,
+  problemsCount,
+  currentPage,
+  totalPages,
+  searchQuery,
+  isSearching,
+}) => (
   <div className="flex justify-between items-center mb-4 w-full">
     <div className="text-xs uppercase tracking-wide text-gray-600 dark:text-gray-400">
-      {selectedCategory !== "All" ? (
+      {searchQuery.trim() ? (
+        <span>
+          {isSearching
+            ? "Searching..."
+            : `Showing ${problemsCount} matching challenges`}
+        </span>
+      ) : selectedCategory !== "All" ? (
         <span>
           Showing {problemsCount} challenges in "{selectedCategory}" (Page{" "}
           {currentPage} of {totalPages})
@@ -427,6 +466,9 @@ const Page: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<QuestionWithExpiry[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const { categories, loading: categoriesLoading } = useCategories();
   const {
@@ -438,6 +480,89 @@ const Page: React.FC = () => {
     hasNextPage,
     totalPages,
   } = useProblems(currentPage, selectedCategory, categoriesLoading);
+
+  const fetchAllProblems = useCallback(
+    async (category: string) => {
+      let page = 1;
+      let hasNext = true;
+      const allProblems: QuestionWithExpiry[] = [];
+
+      while (hasNext) {
+        let apiUrl = `/api/problems?page=${page}&limit=1000`;
+        if (category && category !== "All") {
+          apiUrl += `&category=${encodeURIComponent(category)}`;
+        }
+
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error("Failed to fetch problems");
+        }
+
+        const { data, pagination }: ApiResponse = await response.json();
+        const sanitizedData = sanitizeProblems(data);
+        allProblems.push(...sanitizedData);
+
+        hasNext = Boolean(pagination?.hasNext);
+        page += 1;
+
+        if (!pagination || data.length === 0) {
+          hasNext = false;
+        }
+      }
+
+      return allProblems;
+    },
+    []
+  );
+
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (!query) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const allProblems = await fetchAllProblems(selectedCategory);
+        if (cancelled) return;
+        const normalizedQuery = query.toLowerCase();
+        const filtered = allProblems.filter((problem) => {
+          const title = problem.title?.toLowerCase() || "";
+          const description = problem.description?.toLowerCase() || "";
+          const category = problem.category?.toLowerCase() || "";
+          return (
+            title.includes(normalizedQuery) ||
+            description.includes(normalizedQuery) ||
+            category.includes(normalizedQuery)
+          );
+        });
+        setSearchResults(filtered);
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Failed to search problems:", error);
+          setSearchResults([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setSearchLoading(false);
+        }
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [fetchAllProblems, searchQuery, selectedCategory]);
+
+  const isSearchActive = searchQuery.trim().length > 0;
+  const visibleProblems = isSearchActive ? searchResults : problems;
+  const shouldShowNoProblems =
+    visibleProblems.length === 0 && !searchLoading;
 
   // Handle category filter change
   const handleCategoryChange = useCallback((category: string) => {
@@ -515,6 +640,12 @@ const Page: React.FC = () => {
 
       {/* Filter Section */}
       <div className="w-full">
+        <SearchBar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          loading={searchLoading}
+        />
+
         <DesktopFilter
           categories={categories}
           categoriesLoading={categoriesLoading}
@@ -532,9 +663,11 @@ const Page: React.FC = () => {
 
         <FilterResultsInfo
           selectedCategory={selectedCategory}
-          problemsCount={problems.length}
+          problemsCount={visibleProblems.length}
           currentPage={currentPage}
           totalPages={totalPages}
+          searchQuery={searchQuery}
+          isSearching={searchLoading}
         />
       </div>
 
@@ -544,8 +677,8 @@ const Page: React.FC = () => {
           className="w-full grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 items-stretch gap-5 sm:gap-6"
           aria-busy={problemsLoading}
         >
-          {problems.length > 0 ? (
-            problems.map(
+          {visibleProblems.length > 0 ? (
+            visibleProblems.map(
               ({
                 title,
                 category,
@@ -581,12 +714,12 @@ const Page: React.FC = () => {
                 </div>
               )
             )
-          ) : (
+          ) : shouldShowNoProblems ? (
             <NoProblemsMessage
               selectedCategory={selectedCategory}
               onShowAll={() => handleCategoryChange("All")}
             />
-          )}
+          ) : null}
         </div>
       </div>
 
