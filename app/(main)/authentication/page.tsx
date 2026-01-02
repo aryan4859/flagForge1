@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,6 +15,8 @@ const AuthPage = () => {
   const [errorStatus, setErrorStatus] = useState<string | null>(errorParam);
   const [isSigningIn, setIsSigningIn] = useState(false);
   const { data: session, status: sessionStatus } = useSession();
+  const authPopupRef = useRef<Window | null>(null);
+  const popupTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const getErrorMessage = (errorType: string) => {
     switch (errorType) {
@@ -32,6 +34,11 @@ const AuthPage = () => {
         return "Identity verification failed. Check your credentials.";
       case "SessionRequired":
         return "Please sign in to access this secure zone.";
+      case "AccessDenied":
+      case "AuthCancelled":
+        return "Authentication cancelled. Please try again.";
+      case "PopupBlocked":
+        return "Authentication popout was blocked. Please allow popups and try again.";
       default:
         return "An unexpected interference occurred. Access denied.";
     }
@@ -39,6 +46,9 @@ const AuthPage = () => {
 
   useEffect(() => {
     setErrorStatus(errorParam);
+    if (errorParam) {
+      setIsSigningIn(false);
+    }
   }, [errorParam]);
 
   useEffect(() => {
@@ -46,6 +56,101 @@ const AuthPage = () => {
       router.replace(callbackUrl);
     }
   }, [sessionStatus, router, errorStatus, callbackUrl]);
+
+  useEffect(() => {
+    if (sessionStatus === "authenticated") {
+      if (authPopupRef.current && !authPopupRef.current.closed) {
+        authPopupRef.current.close();
+      }
+      authPopupRef.current = null;
+      if (popupTimerRef.current) {
+        clearInterval(popupTimerRef.current);
+        popupTimerRef.current = null;
+      }
+      setIsSigningIn(false);
+    }
+  }, [sessionStatus]);
+
+  useEffect(() => {
+    return () => {
+      if (popupTimerRef.current) {
+        clearInterval(popupTimerRef.current);
+      }
+      if (authPopupRef.current && !authPopupRef.current.closed) {
+        authPopupRef.current.close();
+      }
+    };
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    if (isSigningIn) return;
+    setErrorStatus(null);
+    setIsSigningIn(true);
+
+    try {
+      const response = await signIn("google", { redirect: false, callbackUrl });
+      if (!response?.url) {
+        setErrorStatus(response?.error || "OAuthSignin");
+        setIsSigningIn(false);
+        return;
+      }
+
+      const popup = window.open(
+        response.url,
+        "flagforge-auth",
+        "popup,width=520,height=640,noopener,noreferrer"
+      );
+
+      if (!popup) {
+        setErrorStatus("PopupBlocked");
+        setIsSigningIn(false);
+        return;
+      }
+
+      authPopupRef.current = popup;
+      if (popupTimerRef.current) {
+        clearInterval(popupTimerRef.current);
+      }
+      popupTimerRef.current = setInterval(() => {
+        const popupWindow = authPopupRef.current;
+        if (!popupWindow) return;
+
+        if (popupWindow.closed) {
+          authPopupRef.current = null;
+          if (popupTimerRef.current) {
+            clearInterval(popupTimerRef.current);
+            popupTimerRef.current = null;
+          }
+          setIsSigningIn(false);
+          setErrorStatus("AuthCancelled");
+          return;
+        }
+
+        try {
+          const popupUrl = popupWindow.location.href;
+          if (popupUrl.startsWith(window.location.origin)) {
+            const params = new URLSearchParams(popupWindow.location.search);
+            const popupError = params.get("error");
+            if (popupError) {
+              setErrorStatus(popupError);
+            }
+            popupWindow.close();
+            authPopupRef.current = null;
+            if (popupTimerRef.current) {
+              clearInterval(popupTimerRef.current);
+              popupTimerRef.current = null;
+            }
+            setIsSigningIn(false);
+          }
+        } catch (error) {
+          // Ignore cross-origin access until the popout returns to our origin.
+        }
+      }, 500);
+    } catch (error) {
+      setErrorStatus("OAuthSignin");
+      setIsSigningIn(false);
+    }
+  };
 
   if (sessionStatus === "loading") {
     return <Loading />;
@@ -103,7 +208,12 @@ const AuthPage = () => {
         <div className="w-full max-w-[440px] relative">
           <div className="absolute -inset-4 bg-gradient-to-br from-red-500/20 via-transparent to-orange-500/10 blur-2xl opacity-50 pointer-events-none" />
 
-          <div className="relative bg-white/40 dark:bg-white/[0.02] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[3rem] p-8 md:p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] dark:shadow-[0_0_40px_rgba(255,255,255,0.05)] flex flex-col group/card transition-shadow duration-500">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Authentication"
+            className="relative bg-white/40 dark:bg-white/[0.02] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[3rem] p-8 md:p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)] dark:shadow-[0_0_40px_rgba(255,255,255,0.05)] flex flex-col group/card transition-shadow duration-500"
+          >
 
             {/* Header/Logo Section - Order 2 on Mobile, 1 on Desktop */}
             <div className="order-2 lg:order-1 flex flex-col items-center mb-10 lg:mb-12">
@@ -152,10 +262,7 @@ const AuthPage = () => {
             {/* Premium Red Google Button - Order 3 */}
             <div className="order-3">
               <button
-                onClick={() => {
-                  setIsSigningIn(true);
-                  signIn("google");
-                }}
+                onClick={handleGoogleSignIn}
                 disabled={isSigningIn}
                 className="relative w-full group isolate disabled:opacity-75 disabled:cursor-not-allowed"
               >
@@ -171,8 +278,11 @@ const AuthPage = () => {
 
                   {/* Centered Text Container - Perfectly Centered */}
                   <div className="flex-1 flex justify-center">
-                    <span className="font-extrabold text-lg tracking-tight whitespace-nowrap">
-                      {isSigningIn ? "Signing In..." : "Sign in with Google"}
+                    <span className="font-extrabold text-lg tracking-tight whitespace-nowrap flex items-center gap-3">
+                      {isSigningIn && (
+                        <span className="inline-flex h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                      )}
+                      {isSigningIn ? "Authenticating..." : "Sign in with Google"}
                     </span>
                   </div>
 
