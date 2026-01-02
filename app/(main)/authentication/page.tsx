@@ -13,6 +13,7 @@ const AuthPage = () => {
   const errorParam = searchParams?.get("error");
   const callbackUrl = searchParams?.get("callbackUrl") || "/home";
   const [errorStatus, setErrorStatus] = useState<string | null>(errorParam);
+  const [isSigningIn, setIsSigningIn] = useState(false);
   const { data: session, status: sessionStatus } = useSession();
 
   const getErrorMessage = (errorType: string) => {
@@ -151,8 +152,12 @@ const AuthPage = () => {
             {/* Premium Red Google Button - Order 3 */}
             <div className="order-3">
               <button
-                onClick={() => signIn("google")}
-                className="relative w-full group isolate"
+                onClick={() => {
+                  setIsSigningIn(true);
+                  signIn("google");
+                }}
+                disabled={isSigningIn}
+                className="relative w-full group isolate disabled:opacity-75 disabled:cursor-not-allowed"
               >
                 {/* Button Base - Red in both modes */}
                 <div className="absolute inset-0 bg-red-600 rounded-2xl transition-all duration-500 group-hover:bg-red-500 group-hover:shadow-[0_10px_40px_rgba(220,38,38,0.4)]" />
@@ -166,13 +171,17 @@ const AuthPage = () => {
 
                   {/* Centered Text Container - Perfectly Centered */}
                   <div className="flex-1 flex justify-center">
-                    <span className="font-extrabold text-lg tracking-tight whitespace-nowrap">Sign in with Google</span>
+                    <span className="font-extrabold text-lg tracking-tight whitespace-nowrap">
+                      {isSigningIn ? "Signing In..." : "Sign in with Google"}
+                    </span>
                   </div>
 
                   {/* Animated Arrow - Absolute to prevent block shift */}
-                  <div className="absolute right-4 transition-all duration-300 opacity-0 group-hover:opacity-100">
-                    <ArrowRight className="w-5 h-5 text-white/90" />
-                  </div>
+                  {!isSigningIn && (
+                    <div className="absolute right-4 transition-all duration-300 opacity-0 group-hover:opacity-100">
+                      <ArrowRight className="w-5 h-5 text-white/90" />
+                    </div>
+                  )}
                 </div>
               </button>
             </div>
