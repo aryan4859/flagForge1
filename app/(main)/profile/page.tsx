@@ -538,11 +538,13 @@ const ProfilePage = () => {
     if (!profileData?.customBadges || profileData.customBadges.length === 0) return null;
 
     return (
-      <div className="bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent border border-yellow-500/20 dark:border-yellow-500/10 rounded-[2.5rem] p-8 lg:p-12 overflow-hidden relative group mt-8">
-        <div className="absolute top-0 right-0 p-8 transform translate-x-12 -translate-y-12 opacity-[0.03] dark:opacity-[0.05] group-hover:translate-x-8 group-hover:-translate-y-8 transition-transform duration-700">
-          <Crown className="w-40 h-40 text-yellow-500" />
+      <div className="relative group mt-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-transparent border border-yellow-500/20 dark:border-yellow-500/10 rounded-[2.5rem] overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 transform translate-x-12 -translate-y-12 opacity-[0.03] dark:opacity-[0.05] group-hover:translate-x-8 group-hover:-translate-y-8 transition-transform duration-700">
+            <Crown className="w-40 h-40 text-yellow-500" />
+          </div>
         </div>
-        <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div className="relative p-8 lg:p-12 flex flex-col lg:flex-row items-center justify-between gap-8">
           <div className="space-y-2 text-center lg:text-left">
             <h3 className="text-sm font-black uppercase tracking-[0.25em] text-yellow-600 dark:text-yellow-500 flex items-center justify-center lg:justify-start gap-2">
               <Crown className="w-5 h-5" />
@@ -559,7 +561,7 @@ const ProfilePage = () => {
                 onMouseLeave={() => setShowCustomBadgeTooltip(null)}
               >
                 <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full p-1 bg-gradient-to-tr from-yellow-500 to-orange-500 animate-spin-slow opacity-20" />
-                <div className="absolute inset-1 rounded-full overflow-hidden border-2 border-white dark:border-[#0a0a0a] shadow-xl transform transition-transform group-hover/badge:scale-110">
+                <div className="absolute inset-1 rounded-full overflow-hidden border-2 border-white dark:border-[#0a0a0a] shadow-xl transform transition-transform group-hover/badge:scale-110 z-10">
                   <Image src={badge.icon} alt={badge.name} fill className="object-cover" unoptimized />
                 </div>
 
@@ -568,7 +570,7 @@ const ProfilePage = () => {
                     <p className="font-black uppercase text-[11px] text-yellow-500 tracking-widest mb-1">{badge.name}</p>
                     <p className="text-xs font-medium text-gray-300 leading-relaxed mb-2">{badge.description}</p>
                     <div className="border-t border-white/10 pt-2 mt-2 flex items-center justify-center gap-2 text-[9px] font-bold text-gray-500 uppercase">
-                      <span>Issued by: {badge.assignedBy}</span>
+                      <span>Awarded by: FlagForge</span>
                       <span className="w-1 h-1 rounded-full bg-white/20" />
                       <span>{formatDate(badge.assignedAt)}</span>
                     </div>

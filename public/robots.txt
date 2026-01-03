@@ -1,6 +1,7 @@
 # *
 User-agent: *
 Allow: /
+Allow: /sitemap.xml
 Allow: /llms.txt
 
 # Host
@@ -8,3 +9,4 @@ Host: https://flagforge.xyz
 
 # Sitemaps
 Sitemap: https://flagforge.xyz/sitemap.xml
+Sitemap: https://flagforge.xyz/llms.txt
