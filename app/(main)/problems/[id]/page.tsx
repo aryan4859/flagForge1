@@ -329,7 +329,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     isCorrect,
     isExpired,
     MIN_SUBMISSION_INTERVAL
-    });
+    ]);
 
   const handleSubmit = async () => {
     if (!canSubmit()) {
