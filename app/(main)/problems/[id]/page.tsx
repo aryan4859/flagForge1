@@ -301,32 +301,35 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     }
   }, [timeRemaining, isExpired, isDone]);
 
-  const canSubmit = () => {
+  const canSubmit = useCallback(() => {
     const now = Date.now();
     const timeSinceLastSubmission = now - lastSubmissionTime.current;
     const flagTrimmed = flag.trim();
 
     if (submitting || submissionInProgress.current || isCorrect || isExpired) {
-      return false;
+      return { allowed: false};
     }
 
     if (!flagTrimmed) {
-      setMessage("Please enter a flag");
-      return false;
+      return { allowed: false, reason: "Please enter a flag" };
     }
 
     if (lastSubmittedFlag.current === flagTrimmed) {
-      setMessage("This flag was already submitted");
-      return false;
+      return { allowed: false, reason: "This flag was already submitted" };
     }
 
     if (timeSinceLastSubmission < MIN_SUBMISSION_INTERVAL) {
-      setMessage("Please wait before submitting again");
-      return false;
+      return { allowed: false, reason: "Please wait before submitting again" };
     }
 
-    return true;
-  };
+    return { allowed: true };
+  }, [
+    flag,
+    submitting,
+    isCorrect,
+    isExpired,
+    MIN_SUBMISSION_INTERVAL
+    });
 
   const handleSubmit = async () => {
     if (!canSubmit()) {
