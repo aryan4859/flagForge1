@@ -184,6 +184,16 @@ const AuthPage = () => {
                   )}
                 </div>
               </button>
+              <Link href="/home" className="mt-4 w-full group">
+                <div
+                  className="relative h-16 flex items-center justify-center px-8 text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-white/20 group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-hover:-translate-y-0.5 group-active:translate-y-0"
+                >
+                    <HomeIcon className="w-5 h-5 mr-3 shrink-0" />
+                    <span className="font-bold text-lg tracking-tight whitespace-nowrap">
+                      Return to Home
+                    </span>
+                </div>
+              </Link>
             </div>
 
             <div className="order-4 mt-12 text-center space-y-6">
