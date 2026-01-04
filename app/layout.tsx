@@ -7,7 +7,11 @@ import Authprovider from "@/providers/auth-provider";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Analytics } from "@vercel/analytics/react";
 
-const dmSans = DM_Sans({ subsets: ["latin"] });
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+});
 
 export const metadata: Metadata = {
   title: "FlagForge - The Ultimate CTF Platform",
@@ -34,6 +38,13 @@ export const metadata: Metadata = {
     "Hacking Skills",
     "Cybersecurity Platform",
     "Online CTF Competitions",
+    "Nepal CTF",
+    "CTF Platform",
+    "Security Challenges",
+    "Learn Hacking",
+    "CTF Community",
+    "Cybersecurity Learning",
+    "CTF Events",
   ],
   authors: [{ name: "@Aryanstha", url: "https://github.com/aryan4859" }],
   publisher: "FlagForge",
@@ -108,7 +119,7 @@ export default function RootLayout({
             <div className="mx-auto grid min-h-[100dvh] grid-rows-[auto_1fr_auto]">
               <Navbar />
               <main className="flex-1">{children}</main>
-              <Analytics />
+              {typeof window !== "undefined" && <Analytics />}
               <Footer />
             </div>
           </Authprovider>

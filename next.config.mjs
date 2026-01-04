@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['writeup.flagforge.xyz', 'flagforge.xyz', 'github.com'],
+    domains: ["writeup.flagforge.xyz", "flagforge.xyz", "github.com"],
     remotePatterns: [
       {
         protocol: "https",
@@ -12,9 +12,26 @@ const nextConfig = {
         hostname: "prod-files-secure.s3.us-west-2.amazonaws.com",
       },
     ],
+    formats: [
+      "image/avif",
+      "image/webp",
+      "image/png",
+      "image/jpeg",
+      "image/svg+xml",
+    ],
+    minimumCacheTTL: 60,
   },
   async headers() {
     return [
+      {
+        source: "/_next/static/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
       {
         source: "/(.*)",
         headers: [
@@ -51,7 +68,7 @@ const nextConfig = {
           },
           {
             key: "Cache-Control",
-            value: "no-store, no-cache, must-revalidate, proxy-revalidate",
+            value: "public, max-age=3600, must-revalidate",
           },
           {
             key: "Pragma",

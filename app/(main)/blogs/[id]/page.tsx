@@ -56,6 +56,9 @@ export default function BlogPostPage() {
   const [suggestedLoading, setSuggestedLoading] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
+  // Controls whether images above the fold should be loaded with priority. .
+  const isAboveFold = true;
+
   // Fetch post data
   useEffect(() => {
     if (!params?.id) return;
@@ -292,6 +295,8 @@ export default function BlogPostPage() {
               width={800}
               height={400}
               className="rounded-2xl w-full h-auto shadow-2xl border border-white/30 dark:border-white/10"
+              priority={isAboveFold}
+              loading="lazy"
             />
           )}
           {value.caption?.length > 0 && (
@@ -316,9 +321,11 @@ export default function BlogPostPage() {
 
     // Limit content length as a security measure
     const maxLength = 100000; // 100KB limit
-    const sanitizedContent = content.length > maxLength
-      ? content.substring(0, maxLength) + '\n\n*[Content truncated for security]*'
-      : content;
+    const sanitizedContent =
+      content.length > maxLength
+        ? content.substring(0, maxLength) +
+          "\n\n*[Content truncated for security]*"
+        : content;
 
     return (
       <ReactMarkdown
@@ -358,16 +365,12 @@ export default function BlogPostPage() {
             </p>
           ),
           ul: ({ children }) => (
-            <ul
-              className={` list-disc list-inside mb-6 space-y-2 pl-4`}
-            >
+            <ul className={` list-disc list-inside mb-6 space-y-2 pl-4`}>
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol
-              className={` list-decimal list-inside mb-6 space-y-2 pl-4`}
-            >
+            <ol className={` list-decimal list-inside mb-6 space-y-2 pl-4`}>
               {children}
             </ol>
           ),
@@ -387,7 +390,7 @@ export default function BlogPostPage() {
           ),
           code: ({ children, className }) => {
             // Check if it's inline code (no language class) or block code
-            const isInline = !className || !className.startsWith('language-');
+            const isInline = !className || !className.startsWith("language-");
 
             return isInline ? (
               <code className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-200">
@@ -551,9 +554,7 @@ export default function BlogPostPage() {
     ? seoText.split(/\s+/).filter(Boolean).length
     : undefined;
   const seoImage =
-    heroImage ||
-    post.image ||
-    "https://flagforge.xyz/flagforge-logo.png";
+    heroImage || post.image || "https://flagforge.xyz/flagforge-logo.png";
 
   return (
     <div
