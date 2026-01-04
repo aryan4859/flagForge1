@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Flame, ShieldCheck, Sparkles, Orbit, ArrowRight, AlertCircle, Home as HomeIcon, X } from "lucide-react";
+import { Flame, ShieldCheck, Sparkles, Orbit, ArrowRight, AlertCircle, Home as HomeIcon, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Loading from "@/components/loading";
 
@@ -140,6 +140,7 @@ const AuthPage = () => {
                     </div>
                     <button
                       onClick={() => setErrorStatus(null)}
+                      aria-label="Dismiss error"
                       className="absolute top-0 right-0 p-1 hover:bg-red-500/10 rounded-lg transition-colors group/btn"
                     >
                       <X className="w-4 h-4 text-gray-400 group-hover/btn:text-red-500" />
@@ -150,7 +151,7 @@ const AuthPage = () => {
             )}
 
             {/* Premium Red Google Button - Order 3 */}
-            <div className="order-3">
+            <div className="order-3 flex flex-col gap-6">
               <button
                 onClick={() => {
                   setIsSigningIn(true);
@@ -170,9 +171,16 @@ const AuthPage = () => {
                   </div>
 
                   {/* Centered Text Container - Perfectly Centered */}
-                  <div className="flex-1 flex justify-center">
-                    <span className="font-extrabold text-lg tracking-tight whitespace-nowrap">
-                      {isSigningIn ? "Signing In..." : "Sign in with Google"}
+                  <div className="flex-1 flex justify-center items-center">
+                    <span className="font-extrabold text-lg tracking-tight whitespace-nowrap flex items-center gap-2">
+                      {isSigningIn ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Signing In...</span>
+                        </>
+                      ) : (
+                        "Sign in with Google"
+                      )}
                     </span>
                   </div>
 
@@ -184,6 +192,16 @@ const AuthPage = () => {
                   )}
                 </div>
               </button>
+              <Link href="/home" className="w-full group">
+                <div
+                  className="relative h-12 flex items-center justify-center px-6 text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-white/20 group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-hover:-translate-y-0.5 group-active:translate-y-0"
+                >
+                    <HomeIcon className="w-4 h-4 mr-2.5 shrink-0" />
+                    <span className="font-bold text-base tracking-tight whitespace-nowrap">
+                      Return to Home
+                    </span>
+                </div>
+              </Link>
             </div>
 
             <div className="order-4 mt-12 text-center space-y-6">

@@ -94,6 +94,18 @@ module.exports = {
       {
         userAgent: '*',
         allow: ['/', '/sitemap.xml', '/llms.txt'],
+        disallow: [
+          '/roles/developers/*',
+          '/roles/developers',
+          '/resources/*',
+          '/resources',
+          '/profile',
+          '/problems',
+          '/leaderboard',
+          '/home',
+          '/unauthorized',
+          '/authentication',
+        ],
       },
     ],
     additionalSitemaps: [
