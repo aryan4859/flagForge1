@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis';
-import { randomBytes } from 'crypto';
+
 
 // Initialize Redis client
 const redis = new Redis({
@@ -21,28 +21,28 @@ export class TokenBlacklistService {
    * @param userId - Optional user ID for tracking
    */
   static async addToBlacklist(
-    sessionToken: string, 
+    sessionToken: string,
     expiresAt: Date,
     userId?: string
   ): Promise<void> {
     try {
       const ttl = Math.floor((expiresAt.getTime() - Date.now()) / 1000);
-      
+
       if (ttl > 0) {
         const data: BlacklistData = {
           userId,
           blacklistedAt: new Date().toISOString(),
           expiresAt: expiresAt.toISOString(),
         };
-        
+
         await redis.setex(
           `blacklist:${sessionToken}`,
           ttl,
           JSON.stringify(data)
         );
-        
-        console.log('✅ Token blacklisted:', { 
-          token: sessionToken.substring(0, 20) + '...', 
+
+        console.log('✅ Token blacklisted:', {
+          token: sessionToken.substring(0, 20) + '...',
           userId,
           expiresIn: `${ttl}s`,
           expiresAt: expiresAt.toISOString()
@@ -50,7 +50,7 @@ export class TokenBlacklistService {
       } else {
         console.log('⏰ Token already expired, not adding to blacklist');
       }
-      
+
     } catch (error) {
       console.error('❌ Error adding token to blacklist:', error);
       throw error;
@@ -61,11 +61,11 @@ export class TokenBlacklistService {
     try {
       const result = await redis.get(`blacklist:${sessionToken}`);
       const isBlacklisted = result !== null;
-      
+
       if (isBlacklisted) {
         console.log('🚫 Token is blacklisted:', sessionToken.substring(0, 20) + '...');
       }
-      
+
       return isBlacklisted;
     } catch (error) {
       console.error('❌ Error checking token blacklist:', error);
@@ -121,6 +121,10 @@ export class TokenBlacklistService {
    * Generate a unique JTI (JWT ID)
    */
   static generateJTI(): string {
-    return randomBytes(16).toString('hex');
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    return Array.from(array)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
   }
 }

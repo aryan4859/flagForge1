@@ -24,7 +24,7 @@ async function connect() {
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGO_URL, {
-      maxPoolSize: 5,
+      maxPoolSize: 10,
       minPoolSize: 1,
       maxIdleTimeMS: 30000,
       bufferCommands: false,
