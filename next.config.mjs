@@ -12,13 +12,7 @@ const nextConfig = {
         hostname: "prod-files-secure.s3.us-west-2.amazonaws.com",
       },
     ],
-    formats: [
-      "image/avif",
-      "image/webp",
-      "image/png",
-      "image/jpeg",
-      "image/svg+xml",
-    ],
+    formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60,
   },
   async headers() {
