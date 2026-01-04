@@ -1230,12 +1230,18 @@ const ProfilePage = () => {
                                 {item.value}
                               </div>
                               <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(item.value);
-                                }}
-                                className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all active:scale-90 shadow-lg shadow-red-600/20"
+                                onClick={() => copyToClipboard(item.value, item.label)}
+                                aria-label={`Copy ${item.label}`}
+                                className="relative group p-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all active:scale-90 shadow-lg shadow-red-600/20"
                               >
-                                <Copy className="w-3.5 h-3.5" />
+                                {copiedText === item.label ? (
+                                  <CheckCircle className="w-3.5 h-3.5" />
+                                ) : (
+                                  <Copy className="w-3.5 h-3.5" />
+                                )}
+                                <span className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-950 px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
+                                  {copiedText === item.label ? 'Copied!' : `Copy ${item.label}`}
+                                </span>
                               </button>
                             </div>
                           </div>
