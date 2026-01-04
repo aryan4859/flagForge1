@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CookieConsent from "@/components/CookieConsent";
 import Authprovider from "@/providers/auth-provider";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { Analytics } from "@vercel/analytics/react";
@@ -120,10 +122,17 @@ export default function RootLayout({
               <Navbar />
               <main className="flex-1">{children}</main>
               {typeof window !== "undefined" && <Analytics />}
+              <CookieConsent />
               <Footer />
             </div>
           </Authprovider>
         </ThemeProvider>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2506540900080142"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
