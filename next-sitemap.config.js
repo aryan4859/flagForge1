@@ -51,6 +51,20 @@ const buildRouteLastmod = () => {
 
 const routeLastmod = buildRouteLastmod();
 
+const SITEMAP_EXCLUDE = [
+  '/roles/developers/*',
+  '/roles/developers',
+  '/resources/*',
+  '/resources',
+  '/profile',
+  '/problems',
+  '/leaderboard',
+  '/home',
+  '/unauthorized',
+  '/authentication',
+];
+
+
 module.exports = {
   siteUrl: 'https://flagforge.xyz',
   generateRobotsTxt: true,
@@ -58,18 +72,7 @@ module.exports = {
   changefreq: 'monthly',
   priority: 0.7,
   autoLastmod: false,
-  exclude: [
-    '/roles/developers/*',
-    '/roles/developers',
-    '/resources/*',
-    '/resources',
-    '/profile',
-    '/problems',
-    '/leaderboard',
-    '/home',
-    '/unauthorized',
-    '/authentication',
-  ],
+  exclude: SITEMAP_EXCLUDE,
   transform: async (config, path) => {
     // Custom priority for landing and global pages
     let priority = config.priority;
@@ -93,24 +96,19 @@ module.exports = {
     policies: [
       {
         userAgent: '*',
-        allow: ['/', '/sitemap.xml', '/llms.txt'],
-        disallow: [
-          '/roles/developers/*',
-          '/roles/developers',
-          '/resources/*',
-          '/resources',
-          '/profile',
-          '/problems',
-          '/leaderboard',
-          '/home',
-          '/unauthorized',
-          '/authentication',
-        ],
+        disallow: [],
       },
     ],
-    additionalSitemaps: [
-      'https://flagforge.xyz/sitemap.xml',
-      'https://flagforge.xyz/llms.txt',
-    ],
+    transformRobotsTxt: async (config) => {
+      const lines = [
+        'User-agent: *',
+        'Disallow:',
+        '',
+        `Sitemap: ${config.siteUrl}/sitemap.xml`,
+        '',
+      ];
+
+      return lines.join('\n');
+    },
   },
 };
