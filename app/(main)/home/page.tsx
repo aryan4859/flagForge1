@@ -80,7 +80,7 @@ const Home = () => {
 
   const fetchLatestRoom = async () => {
     try {
-      const response = await fetch("/api/problems?limit=1");
+      const response = await fetch("/api/problems?limit=400");
 
       if (response.ok) {
         const data = await response.json();
