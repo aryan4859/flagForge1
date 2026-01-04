@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Flame, ShieldCheck, Sparkles, Orbit, ArrowRight, AlertCircle, Home as HomeIcon, X } from "lucide-react";
+import { Flame, ShieldCheck, Sparkles, Orbit, ArrowRight, AlertCircle, Home as HomeIcon, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Loading from "@/components/loading";
 
@@ -171,9 +171,16 @@ const AuthPage = () => {
                   </div>
 
                   {/* Centered Text Container - Perfectly Centered */}
-                  <div className="flex-1 flex justify-center">
-                    <span className="font-extrabold text-lg tracking-tight whitespace-nowrap">
-                      {isSigningIn ? "Signing In..." : "Sign in with Google"}
+                  <div className="flex-1 flex justify-center items-center">
+                    <span className="font-extrabold text-lg tracking-tight whitespace-nowrap flex items-center gap-2">
+                      {isSigningIn ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span>Signing In...</span>
+                        </>
+                      ) : (
+                        "Sign in with Google"
+                      )}
                     </span>
                   </div>
 
