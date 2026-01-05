@@ -34,13 +34,8 @@ export async function adminMiddleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
-  console.log("🧭 Admin Middleware Check:", {
-    pathname,
-    hasToken: !!token,
-    tokenKeys: token ? Object.keys(token) : [],
-    role: token?.role,
-    email: token?.email,
-  });
+  // Removed sensitive logging
+  // console.log("🧭 Admin Middleware Check:", { ... });
 
   if (!token) {
     const url = new URL('/authentication', request.url);
@@ -56,12 +51,8 @@ export async function adminMiddleware(request: NextRequest) {
     const role = (token.role as string | undefined) || 'User';
     const isAdmin = role === 'Admin';
     
-    console.log("🔐 Authorization Check:", {
-      pathname,
-      role,
-      isAdmin,
-      requiredRole: 'Admin',
-    });
+    // Removed sensitive logging
+    // console.log("🔐 Authorization Check:", { ... });
 
     if (!isAdmin) {
       if (pathname.startsWith('/api/')) {

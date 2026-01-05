@@ -19,10 +19,15 @@ export async function GET(
 
     const usernameWithSpaces = username.replace(/-/g, " ");
 
+    // Escape regex characters to prevent ReDoS/Injection
+    const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const safeUsername = escapeRegex(username);
+    const safeUsernameWithSpaces = escapeRegex(usernameWithSpaces);
+
     const user = await UserSchema.findOne({
       $or: [
-        { name: { $regex: new RegExp(`^${username}$`, "i") } },
-        { name: { $regex: new RegExp(`^${usernameWithSpaces}$`, "i") } },
+        { name: { $regex: new RegExp(`^${safeUsername}$`, "i") } },
+        { name: { $regex: new RegExp(`^${safeUsernameWithSpaces}$`, "i") } },
       ],
     }).select("name image totalScore customBadges createdAt role");
 
