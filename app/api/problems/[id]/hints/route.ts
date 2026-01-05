@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/authOptions";
 import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 // Model for tracking used hints per user
@@ -111,6 +112,10 @@ export async function GET(
     return NextResponse.json({
       hints: safeHints,
       usedHints: usedHints,
+    }, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
     });
   } catch (error) {
     console.error("Error fetching hints:", error);

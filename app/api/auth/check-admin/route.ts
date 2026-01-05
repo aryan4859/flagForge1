@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import connect from "@/utils/db";
 import User from "@/models/userSchema";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 interface SessionUser {
@@ -91,6 +92,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Return appropriate status code
     return NextResponse.json(response, {
       status: isAdmin ? 200 : 403,
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
     });
   } catch (error) {
     console.error("Admin check error:", error);

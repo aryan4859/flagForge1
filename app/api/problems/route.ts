@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import { sendDiscordNotification } from "@/utils/discordNotifier";
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
@@ -159,6 +160,10 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil(totalQuestions / limit),
         hasNext: page < Math.ceil(totalQuestions / limit),
         hasPrev: page > 1,
+      },
+    }, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
       },
     });
   } catch (error) {

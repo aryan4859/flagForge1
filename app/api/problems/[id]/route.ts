@@ -8,6 +8,7 @@ import userSchema from "@/models/userSchema";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import mongoose from "mongoose";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 // Schema for user hints tracking (same as in hints route)
@@ -134,6 +135,10 @@ export async function GET(
       timeRemaining,
       expiryDate: question.expiryDate,
       usedHints: usedHints,
+    }, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
     });
   } catch (error) {
     console.error("Error fetching question:", error);

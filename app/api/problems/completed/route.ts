@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
@@ -78,6 +79,10 @@ export async function GET(request: NextRequest) {
       hasMore,
       hasPrevious,
       itemsPerPage: limit,
+    }, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
     });
   } catch (error: any) {
     console.error("Error fetching completed problems:", error);

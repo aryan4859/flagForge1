@@ -4,10 +4,11 @@ import UserQuestionModel from "@/models/userQuestionSchema";
 import connect from "@/utils/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 // GET /api/profile
-export async function GET(_req: any) {
+export async function GET(req: Request) {
   try {
     await connect();
     const session = await getServerSession(authOptions);
@@ -158,7 +159,11 @@ export async function GET(_req: any) {
       },
     };
 
-    return NextResponse.json(profileData);
+    return NextResponse.json(profileData, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
   } catch (error) {
     console.error("Profile API error:", error);
     return NextResponse.json(

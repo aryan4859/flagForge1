@@ -7,6 +7,7 @@ import UserQuestionModel from "@/models/userQuestionSchema";
 import QuestionModel from "@/models/qustionsSchema";
 import { HttpStatusCode } from "axios";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
@@ -65,7 +66,11 @@ export async function GET(req: NextRequest) {
       })
       .filter((item) => item !== null); // Remove null entries
 
-    return NextResponse.json(recentSolved);
+    return NextResponse.json(recentSolved, {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
   } catch (error) {
     console.error("Error fetching recent solved questions:", error);
     return NextResponse.json(
