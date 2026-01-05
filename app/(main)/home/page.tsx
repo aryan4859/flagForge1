@@ -221,8 +221,8 @@ const Home = () => {
             <div className="w-4 h-4 bg-red-100 dark:bg-red-600 rounded-full"></div>
           </div>
 
-          <div className="relative max-w-7xl mx-auto px-6 py-16">
-            <div className="relative overflow-hidden rounded-[2.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(15,23,42,0.45)] p-8 md:p-12">
+          <div className="relative max-w-7xl mx-auto px-6 py-12">
+            <div className="relative overflow-hidden rounded-[2.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(15,23,42,0.45)] p-6 md:p-10">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.18),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.14),rgba(2,6,23,0))]" />
               <div className="relative grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-12 items-center">
                 <div className="text-center lg:text-left">
@@ -236,7 +236,7 @@ const Home = () => {
                         className="rounded-lg shadow-2xl"
                       />
                     </div>
-                    <h1 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-gray-100 tracking-tight drop-shadow-sm transition-colors duration-300">
+                    <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-gray-100 tracking-tight drop-shadow-sm transition-colors duration-300">
                       Flag
                       <span className="text-red-500 dark:text-red-500">Forge</span>
                     </h1>
@@ -299,7 +299,7 @@ const Home = () => {
                       <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
                         <Trophy className="h-5 w-5" />
                       </div>
-                      <div className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300">
+                      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300">
                         {userStats.totalScore.toLocaleString()}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
@@ -311,7 +311,7 @@ const Home = () => {
                       <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
                         <TrendingUp className="h-5 w-5" />
                       </div>
-                      <div className="text-3xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
+                      <div className="text-2xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
                         #{userStats.rank}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
@@ -323,7 +323,7 @@ const Home = () => {
                       <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
                         <CheckCircle className="h-5 w-5" />
                       </div>
-                      <div className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300">
+                      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 transition-colors duration-300">
                         {userStats.completedQuestions}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">
@@ -335,7 +335,7 @@ const Home = () => {
                       <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
                         <Zap className="h-5 w-5" />
                       </div>
-                      <div className="text-3xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
+                      <div className="text-2xl font-bold text-red-500 dark:text-red-500 mb-1 transition-colors duration-300">
                         {userStats.streak}
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400 font-medium transition-colors duration-300">

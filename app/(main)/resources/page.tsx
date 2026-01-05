@@ -138,9 +138,9 @@ const ResourcesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Learning Resources
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
@@ -157,7 +157,7 @@ const ResourcesPage: React.FC = () => {
               placeholder="Search resources, categories, or topics..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+              className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
             />
           </div>
         </div>
@@ -194,7 +194,7 @@ const ResourcesPage: React.FC = () => {
                   <div className="kg-toggle-heading">
                     <button
                       onClick={() => toggleCategory(category)}
-                      className="w-full flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      className="w-full flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <h4 className="kg-toggle-heading-text text-xl font-semibold text-gray-900 dark:text-white">
@@ -206,16 +206,15 @@ const ResourcesPage: React.FC = () => {
                       </div>
                       <div className="kg-toggle-card-icon">
                         <ChevronDown
-                          className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
-                            isExpanded ? "rotate-180" : ""
-                          }`}
+                          className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
+                            }`}
                         />
                       </div>
                     </button>
                   </div>
                   {isExpanded && (
                     <div className="border-t border-gray-200 dark:border-gray-700">
-                      <div className="p-6 space-y-4">
+                      <div className="p-5 space-y-4">
                         {categoryResources.map((resource) => {
                           const IconComponent = getResourceIcon(
                             resource.category

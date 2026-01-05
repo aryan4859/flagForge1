@@ -56,7 +56,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-50 w-full transition-all duration-500">
-      <nav className="flex justify-between items-center w-[92%] lg:w-[80%] mx-auto h-20 md:h-24 transition-all duration-300">
+      <nav className="flex justify-between items-center w-[92%] lg:w-[80%] mx-auto h-16 md:h-20 transition-all duration-300">
         <Link href="/" className="group outline-none">
           <div className="flex items-center gap-3 transition-transform duration-300 group-hover:scale-[1.02] active:scale-95">
             <div className="relative">
@@ -64,12 +64,12 @@ const Navbar: React.FC = () => {
               <Image
                 src={logo}
                 alt="logo"
-                height={50}
-                width={50}
-                className="relative h-10 w-10 md:h-12 md:w-12 object-contain"
+                height={40}
+                width={40}
+                className="relative h-8 w-8 md:h-10 md:w-10 object-contain"
               />
             </div>
-            <span className="text-xl md:text-2xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors">
+            <span className="text-lg md:text-xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors">
               FlagForge
             </span>
           </div>
@@ -84,7 +84,7 @@ const Navbar: React.FC = () => {
                   key={href}
                   href={href}
                   tags={tags}
-                  style="px-5 py-2.5 text-sm font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all"
+                  style="px-4 py-2 text-xs md:text-sm font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all"
                 />
               ))
             ) : (

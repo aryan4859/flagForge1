@@ -116,10 +116,10 @@ export default function BlogsPage() {
         }}
       />
       <div className="max-w-7xl mx-auto px-4 py-10 relative z-10">
-        <header className="relative overflow-hidden rounded-[2.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(15,23,42,0.45)] p-10 md:p-14 mb-12">
+        <header className="relative overflow-hidden rounded-[2.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(15,23,42,0.45)] p-8 md:p-10 mb-12">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.15),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.12),rgba(2,6,23,0))]" />
           <div className="relative">
-            <h1 className="text-4xl md:text-5xl font-bold text-red-500 mb-3 transition-colors duration-300 tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-bold text-red-500 mb-3 transition-colors duration-300 tracking-tight">
               Blog Posts
             </h1>
             <p
@@ -152,7 +152,7 @@ export default function BlogsPage() {
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.12),rgba(255,255,255,0))] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                 {/* Thumbnail Image */}
                 {post.thumbnail && (
-                  <div className="relative h-52 overflow-hidden">
+                  <div className="relative h-48 overflow-hidden">
                     <Image
                       src={post.thumbnail}
                       alt={post.title}
@@ -162,12 +162,12 @@ export default function BlogsPage() {
                   </div>
                 )}
                 {!post.thumbnail && (
-                  <div className="relative h-52 overflow-hidden bg-[linear-gradient(120deg,rgba(248,113,113,0.15),rgba(251,146,60,0.08),rgba(255,255,255,0))] dark:bg-[linear-gradient(120deg,rgba(248,113,113,0.2),rgba(251,146,60,0.08),rgba(2,6,23,0))]">
+                  <div className="relative h-48 overflow-hidden bg-[linear-gradient(120deg,rgba(248,113,113,0.15),rgba(251,146,60,0.08),rgba(255,255,255,0))] dark:bg-[linear-gradient(120deg,rgba(248,113,113,0.2),rgba(251,146,60,0.08),rgba(2,6,23,0))]">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.6),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),rgba(2,6,23,0))]" />
                   </div>
                 )}
 
-                <div className="p-7 flex flex-col flex-1 relative">
+                <div className="p-6 flex flex-col flex-1 relative">
                   <div className="flex items-center justify-between mb-4">
                     <time className="text-xs uppercase tracking-[0.2em] text-red-500 font-semibold transition-colors duration-300">
                       {formatDate(post.created)}

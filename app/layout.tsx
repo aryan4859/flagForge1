@@ -20,14 +20,6 @@ export const metadata: Metadata = {
   description:
     "Join FlagForge, the premier Capture The Flag (CTF) platform designed to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
   metadataBase: new URL("https://flagforge.xyz"),
-  alternates: {
-    canonical: "/",
-    languages: {
-      en: "/en",
-      hi: "/hi",
-      bn: "/bn",
-    },
-  },
   applicationName: "FlagForge CTF",
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -60,9 +52,6 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
-  },
-  verification: {
-    google: "your-google-verification-code",
   },
   other: {
     "google-adsense-account": "ca-pub-2506540900080142",

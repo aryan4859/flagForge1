@@ -39,7 +39,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-white dark:bg-[#050505] border-t border-gray-100 dark:border-white/5 transition-colors duration-500 overflow-hidden">
-      <div className="w-[92%] lg:w-[80%] mx-auto py-10 md:py-14">
+      <div className="w-[92%] lg:w-[80%] mx-auto py-8 md:py-10">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
 
@@ -51,12 +51,12 @@ export default function Footer() {
                 <Image
                   src={logo}
                   alt="FlagForge Logo"
-                  height={48}
-                  width={48}
-                  className="relative h-10 w-10 md:h-12 md:w-12 object-contain transition-all duration-500 group-hover:rotate-6"
+                  height={40}
+                  width={40}
+                  className="relative h-8 w-8 md:h-10 md:w-10 object-contain transition-all duration-500 group-hover:rotate-6"
                 />
               </div>
-              <span className="text-xl md:text-2xl font-black tracking-tighter text-gray-950 dark:text-white">
+              <span className="text-lg md:text-xl font-black tracking-tighter text-gray-950 dark:text-white">
                 FlagForge
               </span>
             </Link>

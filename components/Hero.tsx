@@ -226,10 +226,10 @@ const Hero: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.01] dark:opacity-[0.05] pointer-events-none" />
       </div>
 
-      <div className="relative z-10 w-full px-4 sm:px-8 md:px-12 pt-28 lg:pt-36 flex flex-col gap-24 lg:gap-32 pb-16">
+      <div className="relative z-10 w-full px-4 sm:px-8 md:px-12 flex flex-col gap-16 lg:gap-24 pb-16">
 
         {/* Hero Section: Asymmetric Split */}
-        <section className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <section className="max-w-7xl mx-auto w-full min-h-[calc(100vh-5rem)] grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 content-center">
           {/* Left: Content */}
           <div className="space-y-8 text-center lg:text-left relative">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 text-red-600 dark:text-red-400 text-xs font-black uppercase tracking-[0.2em]">
@@ -238,10 +238,10 @@ const Hero: React.FC = () => {
             </div>
 
             {/* Typography with fixed clipping */}
-            <h1 className="relative text-5xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-[0.9] text-gray-900 dark:text-white z-10">
+            <h1 className="relative text-4xl lg:text-6xl xl:text-7xl font-black tracking-tighter leading-[0.9] text-gray-900 dark:text-white z-10">
               WELCOME TO <br />
               <span className="bg-gradient-to-r from-red-600 to-orange-500 bg-clip-text text-transparent italic pr-4 py-2 inline-block">FLAGFORGE</span> <br />
-              <span className="text-gray-400 dark:text-gray-600 text-3xl lg:text-5xl block mt-2">CTF PLAYGROUND</span>
+              <span className="text-gray-400 dark:text-gray-600 text-2xl lg:text-4xl block mt-2">CTF PLAYGROUND</span>
             </h1>
 
             <p className="text-lg text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0 relative z-10">
@@ -303,7 +303,7 @@ const Hero: React.FC = () => {
         <section className="max-w-7xl mx-auto w-full space-y-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-gray-200 dark:border-gray-800 pb-8">
             <div className="max-w-2xl">
-              <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-4">
+              <h2 className="text-3xl lg:text-5xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-4">
                 Why Choose <span className="text-red-500">FlagForge</span>
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium">
@@ -343,7 +343,7 @@ const Hero: React.FC = () => {
         {/* Challenge Categories: Hover Cards */}
         <section className="max-w-7xl mx-auto w-full space-y-16">
           <div className="text-left border-l-4 border-red-500 pl-6">
-            <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-2">
+            <h2 className="text-3xl lg:text-5xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-2">
               Challenge <span className="block text-red-500">Categories</span>
             </h2>
           </div>
@@ -377,7 +377,7 @@ const Hero: React.FC = () => {
         {/* How It Works: Horizontal Circuit Flow */}
         <section className="max-w-7xl mx-auto w-full space-y-16">
           <div className="text-center">
-            <h2 className="text-3xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white">
+            <h2 className="text-3xl lg:text-5xl font-black tracking-tighter uppercase text-gray-900 dark:text-white">
               How It <span className="text-red-500">Works</span>
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-400 font-medium max-w-2xl mx-auto mt-4">
@@ -420,14 +420,14 @@ const Hero: React.FC = () => {
         {/* Testimonial Carousel */}
         <section className="w-full max-w-7xl mx-auto" aria-labelledby="testimonials-title">
           <div className="text-center mb-16 space-y-4">
-            <h2 id="testimonials-title" className="text-3xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white">
+            <h2 id="testimonials-title" className="text-3xl lg:text-5xl font-black tracking-tighter uppercase text-gray-900 dark:text-white">
               Expert <span className="text-red-500">Vouches</span>
             </h2>
           </div>
 
           <div className="relative max-w-5xl mx-auto">
             <div
-              className={`relative overflow-hidden bg-white/80 dark:bg-white/10 backdrop-blur-3xl border border-white dark:border-white/10 rounded-[3rem] p-8 lg:p-16 shadow-2xl transition-all duration-700 ease-in-out ${isAnimating ? "opacity-40 scale-95 blur-sm" : "opacity-100 scale-100 blur-0"}`}
+              className={`relative overflow-hidden bg-white/80 dark:bg-white/10 backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem] p-6 lg:p-10 shadow-2xl transition-all duration-700 ease-in-out ${isAnimating ? "opacity-40 scale-95 blur-sm" : "opacity-100 scale-100 blur-0"}`}
               onMouseEnter={() => setIsAutoPlaying(false)}
               onMouseLeave={() => setIsAutoPlaying(true)}
             >
@@ -440,16 +440,16 @@ const Hero: React.FC = () => {
                     alt={testimonials[currentTestimonial].name}
                     width={160}
                     height={160}
-                    className="relative w-32 h-32 lg:w-48 lg:h-48 rounded-full object-cover border-4 border-white dark:border-white/5"
+                    className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-full object-cover border-4 border-white dark:border-white/5"
                   />
                 </div>
 
                 <div className="flex-1 text-center md:text-left space-y-6">
-                  <blockquote className="text-xl lg:text-3xl font-medium italic text-gray-700 dark:text-gray-300 leading-tight">
+                  <blockquote className="text-lg lg:text-xl font-medium italic text-gray-700 dark:text-gray-300 leading-tight">
                     "{testimonials[currentTestimonial].testimonial}"
                   </blockquote>
                   <div className="space-y-1">
-                    <div className="text-2xl font-black tracking-tighter uppercase text-red-500">
+                    <div className="text-xl font-black tracking-tighter uppercase text-red-500">
                       {testimonials[currentTestimonial].name}
                     </div>
                     <div className="text-sm font-black uppercase tracking-widest text-gray-400">
@@ -461,20 +461,20 @@ const Hero: React.FC = () => {
             </div>
 
             {/* Controls */}
-            <div className="flex justify-center mt-12 gap-6">
+            <div className="flex justify-center mt-8 gap-4">
               <button
                 onClick={() => handleManualNavigation(prevTestimonial)}
                 disabled={isAnimating}
-                className="w-14 h-14 rounded-full bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-xl disabled:opacity-50"
+                className="w-10 h-10 rounded-full bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-xl disabled:opacity-50"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
               </button>
               <button
                 onClick={() => handleManualNavigation(nextTestimonial)}
                 disabled={isAnimating}
-                className="w-14 h-14 rounded-full bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-xl disabled:opacity-50"
+                className="w-10 h-10 rounded-full bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-xl disabled:opacity-50"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
               </button>
             </div>
           </div>
@@ -482,7 +482,7 @@ const Hero: React.FC = () => {
 
         {/* CTA: Minimalist */}
         <section className="max-w-4xl mx-auto w-full text-center py-20">
-          <h2 className="text-4xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-8">
+          <h2 className="text-3xl lg:text-5xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-8">
             Ready to <span className="text-red-500">Hack?</span>
           </h2>
           <div className="flex justify-center">
@@ -500,7 +500,7 @@ const Hero: React.FC = () => {
           {/* Sticky Header */}
           <div className="lg:col-span-1">
             <div className="lg:sticky lg:top-32">
-              <h2 className="text-4xl lg:text-7xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-6">
+              <h2 className="text-3xl lg:text-6xl font-black tracking-tighter uppercase text-gray-900 dark:text-white mb-6">
                 FAQ<span className="text-red-500">S</span>
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">
