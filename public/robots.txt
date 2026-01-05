@@ -1,4 +1,8 @@
 User-agent: *
+Allow: /
+Allow: /llms.txt
 Disallow:
 
 Sitemap: https://flagforge.xyz/sitemap.xml
+Sitemap: https://flagforge.xyz/sitemap1.xml
+Sitemap: https://flagforge.xyz/sitemap.txt
