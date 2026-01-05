@@ -105,6 +105,7 @@ module.exports = {
         'Disallow:',
         '',
         `Sitemap: ${config.siteUrl}/sitemap.xml`,
+        `Sitemap: ${config.siteUrl}/sitemap1.xml`,
         '',
       ];
 
