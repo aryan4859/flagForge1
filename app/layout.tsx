@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -14,7 +15,10 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "FlagForge - The Ultimate CTF Platform",
+  title: {
+    default: "FlagForge - The Ultimate CTF Platform",
+    template: "%s | FlagForge",
+  },
   description:
     "Join FlagForge, the premier Capture The Flag (CTF) platform designed to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
   metadataBase: new URL("https://flagforge.xyz"),
@@ -104,6 +108,32 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://flagforge.xyz/#website",
+      url: "https://flagforge.xyz",
+      name: "FlagForge",
+      alternateName: "FlagForge CTF Platform",
+      publisher: {
+        "@id": "https://flagforge.xyz/#organization",
+      },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://flagforge.xyz/#organization",
+      name: "FlagForge",
+      url: "https://flagforge.xyz",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://flagforge.xyz/flagforge-logo.png",
+      },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -114,6 +144,12 @@ export default function RootLayout({
       <body
         className={`${dmSans.className} antialiased transition-colors duration-300 bg-white dark:bg-gray-900 overflow-x-hidden sm:overflow-x-visible`}
       >
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
         <ThemeProvider>
           <Authprovider>
             <div className="mx-auto grid min-h-[100dvh] grid-rows-[auto_1fr_auto]">
