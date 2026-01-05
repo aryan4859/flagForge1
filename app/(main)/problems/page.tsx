@@ -224,45 +224,45 @@ const DesktopFilter: React.FC<{
   selectedCategory,
   onCategoryChange,
 }) => (
-  <div className="hidden sm:flex items-center justify-between gap-4 w-full rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 py-3 mb-4 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.45)] flex-wrap">
-    <div className="flex items-center gap-2">
-      <IoFilter className="text-xl text-gray-500 dark:text-gray-300" />
-      <span className="text-gray-600 dark:text-gray-300 font-semibold">
-        Filter by Category:
-      </span>
-    </div>
+    <div className="hidden sm:flex items-center justify-between gap-4 w-full rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 py-3 mb-4 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.45)] flex-wrap">
+      <div className="flex items-center gap-2">
+        <IoFilter className="text-xl text-gray-500 dark:text-gray-300" />
+        <span className="text-gray-600 dark:text-gray-300 font-semibold">
+          Filter by Category:
+        </span>
+      </div>
 
-    <div className="relative">
-      {categoriesLoading ? (
-        <div className="bg-white/80 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-full px-4 py-2 text-gray-500">
-          Loading categories...
-        </div>
-      ) : (
-        <select
-          value={selectedCategory}
-          onChange={(e) => onCategoryChange(e.target.value)}
-          className="appearance-none bg-white/90 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-full px-4 py-2 pr-10 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-colors duration-300 shadow-sm"
+      <div className="relative">
+        {categoriesLoading ? (
+          <div className="bg-white/80 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-full px-4 py-2 text-gray-500">
+            Loading categories...
+          </div>
+        ) : (
+          <select
+            value={selectedCategory}
+            onChange={(e) => onCategoryChange(e.target.value)}
+            className="appearance-none bg-white/90 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-full px-4 py-2 pr-10 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-colors duration-300 shadow-sm"
+          >
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        )}
+        <IoChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
+      </div>
+
+      {selectedCategory !== "All" && (
+        <button
+          onClick={() => onCategoryChange("All")}
+          className="text-sm bg-red-500/90 hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-sm transition-colors duration-300"
         >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
+          Clear Filter
+        </button>
       )}
-      <IoChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none" />
     </div>
-
-    {selectedCategory !== "All" && (
-      <button
-        onClick={() => onCategoryChange("All")}
-        className="text-sm bg-red-500/90 hover:bg-red-600 text-white px-4 py-2 rounded-full shadow-sm transition-colors duration-300"
-      >
-        Clear Filter
-      </button>
-    )}
-  </div>
-);
+  );
 
 const MobileFilter: React.FC<{
   show: boolean;
@@ -277,39 +277,38 @@ const MobileFilter: React.FC<{
   selectedCategory,
   onCategoryChange,
 }) => {
-  if (!show) return null;
+    if (!show) return null;
 
-  return (
-    <div className="sm:hidden mb-4">
-      <div className="bg-white/80 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg p-4 backdrop-blur-xl">
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">
-          Filter by Category
-        </h3>
-        {categoriesLoading ? (
-          <div className="text-center py-4 text-gray-500">
-            Loading categories...
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-2">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => onCategoryChange(category)}
-                className={`px-3 py-2 text-sm rounded-xl transition-colors duration-300 ${
-                  selectedCategory === category
-                    ? "bg-red-500 text-white shadow-sm"
-                    : "bg-gray-100/90 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-gray-700"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        )}
+    return (
+      <div className="sm:hidden mb-4">
+        <div className="bg-white/80 dark:bg-gray-900/70 border border-gray-200 dark:border-white/10 rounded-2xl shadow-lg p-4 backdrop-blur-xl">
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">
+            Filter by Category
+          </h3>
+          {categoriesLoading ? (
+            <div className="text-center py-4 text-gray-500">
+              Loading categories...
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => onCategoryChange(category)}
+                  className={`px-3 py-2 text-sm rounded-xl transition-colors duration-300 ${selectedCategory === category
+                      ? "bg-red-500 text-white shadow-sm"
+                      : "bg-gray-100/90 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200/80 dark:hover:bg-gray-700"
+                    }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 const SearchBar: React.FC<{
   value: string;
@@ -319,9 +318,8 @@ const SearchBar: React.FC<{
   <div className="w-full rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 py-3 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.45)]">
     <div className="relative flex items-center">
       <IoSearch
-        className={`absolute left-4 text-gray-500 ${
-          loading ? "animate-spin" : ""
-        }`}
+        className={`absolute left-4 text-gray-500 ${loading ? "animate-spin" : ""
+          }`}
       />
       <input
         type="text"
@@ -350,27 +348,27 @@ const FilterResultsInfo: React.FC<{
   searchQuery,
   isSearching,
 }) => (
-  <div className="flex justify-between items-center mb-4 w-full">
-    <div className="text-xs uppercase tracking-wide text-gray-600 dark:text-gray-400">
-      {searchQuery.trim() ? (
-        <span>
-          {isSearching
-            ? "Searching..."
-            : `Showing ${problemsCount} matching challenges`}
-        </span>
-      ) : selectedCategory !== "All" ? (
-        <span>
-          Showing {problemsCount} challenges in "{selectedCategory}" (Page{" "}
-          {currentPage} of {totalPages})
-        </span>
-      ) : (
-        <span>
-          Showing all challenges (Page {currentPage} of {totalPages})
-        </span>
-      )}
+    <div className="flex justify-between items-center mb-4 w-full">
+      <div className="text-xs uppercase tracking-wide text-gray-600 dark:text-gray-400">
+        {searchQuery.trim() ? (
+          <span>
+            {isSearching
+              ? "Searching..."
+              : `Showing ${problemsCount} matching challenges`}
+          </span>
+        ) : selectedCategory !== "All" ? (
+          <span>
+            Showing {problemsCount} challenges in "{selectedCategory}" (Page{" "}
+            {currentPage} of {totalPages})
+          </span>
+        ) : (
+          <span>
+            Showing all challenges (Page {currentPage} of {totalPages})
+          </span>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
 
 const ExpiryOverlay: React.FC<{
   expiryDate?: string;
@@ -382,17 +380,16 @@ const ExpiryOverlay: React.FC<{
   return (
     <>
       <div
-        className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-semibold shadow-sm backdrop-blur ${
-          expired
+        className={`absolute top-2 right-2 px-3 py-1 rounded-full text-xs font-semibold shadow-sm backdrop-blur ${expired
             ? "bg-red-500/90 text-white"
             : "bg-yellow-400/90 text-black"
-        }`}
+          }`}
       >
         {expired
           ? "EXPIRED"
           : timeRemaining
-          ? formatTimeRemaining(timeRemaining)
-          : "Limited Time"}
+            ? formatTimeRemaining(timeRemaining)
+            : "Limited Time"}
       </div>
 
       {expired && (
@@ -439,22 +436,20 @@ const PaginationControls: React.FC<{
     <button
       onClick={onPrevious}
       disabled={currentPage === 1}
-      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${
-        currentPage === 1
+      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${currentPage === 1
           ? "bg-gray-300 text-gray-500 cursor-not-allowed"
           : "bg-red-500/90 hover:bg-red-600"
-      }`}
+        }`}
     >
       Previous
     </button>
     <button
       onClick={onNext}
       disabled={!hasNextPage}
-      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${
-        !hasNextPage
+      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${!hasNextPage
           ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
           : "bg-red-500/90 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600"
-      }`}
+        }`}
     >
       Next
     </button>
@@ -626,8 +621,8 @@ const Page: React.FC = () => {
   const shouldShowPagination = problems.length > 0 || currentPage > 1;
 
   return (
-    <div className="relative flex flex-col justify-center items-center gap-8 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10 sm:py-12 min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 animate-in fade-in duration-500">
-      <h1 className="text-4xl sm:text-5xl lg:text-6xl tracking-tight text-center text-red-500 font-bold drop-shadow-sm">
+    <div className="relative flex flex-col justify-center items-center gap-8 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 animate-in fade-in duration-500">
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl tracking-tight text-center text-red-500 font-bold drop-shadow-sm">
         Challenges
       </h1>
 

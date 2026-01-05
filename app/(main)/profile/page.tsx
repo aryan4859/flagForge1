@@ -516,7 +516,7 @@ const ProfilePage = () => {
     return (
       <div className="relative group">
         <div className="absolute -inset-4 bg-gradient-to-br from-red-600 to-orange-500 rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700" />
-        <div className="relative w-40 h-40 lg:w-48 lg:h-48 rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-[#0f0f0f] shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] group-hover:rotate-2">
+        <div className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-[#0f0f0f] shadow-2xl transition-transform duration-500 group-hover:scale-[1.02] group-hover:rotate-2">
           <Image
             src={(!hasError && imageSrc) ? imageSrc : Flagforge}
             alt={`${displayName} Profile Picture`}
@@ -717,7 +717,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-30 pt-16 pb-12 border-b border-gray-100 dark:border-white/5">
+      <section className="relative z-30 pt-12 pb-10 border-b border-gray-100 dark:border-white/5">
         <div className="w-[92%] lg:w-[80%] mx-auto">
           <div className="flex flex-col lg:flex-row items-center gap-12">
 
@@ -733,7 +733,7 @@ const ProfilePage = () => {
                   <Terminal className="w-3.5 h-3.5" />
                   <span>Verified Operator</span>
                 </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1.1] lg:leading-[0.9] text-gray-900 dark:text-white">
+                <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black tracking-tighter leading-[1.1] lg:leading-[0.9] text-gray-900 dark:text-white">
                   {profileData?.name || session?.user?.name || "User"}
                 </h1>
                 <p className="text-lg lg:text-xl font-bold text-red-600 dark:text-red-500 flex items-center justify-center lg:justify-start gap-2">
@@ -789,7 +789,7 @@ const ProfilePage = () => {
               <div className="space-y-1 text-center md:text-left">
                 <h3 className="text-sm font-black uppercase tracking-[0.25em] text-gray-400 dark:text-gray-500">Capture Mastery</h3>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-6xl font-black tracking-tighter text-gray-900 dark:text-white">{profileData?.totalScore?.toLocaleString() || 0}</span>
+                  <span className="text-5xl font-black tracking-tighter text-gray-900 dark:text-white">{profileData?.totalScore?.toLocaleString() || 0}</span>
                   <span className="text-xl font-bold text-red-600">PTS</span>
                 </div>
               </div>
