@@ -7,6 +7,7 @@ import React, { useState, useEffect } from "react";
 // Import images statically
 import nirmalImage from "@/public/NirmalDahal.jpeg";
 import sobitImage from "@/public/SobitThakuri.jpeg";
+import bibekImage from "@/public/bibekghimire.jpeg"; 
 
 import { Activity, Rocket, Target, Users, Layers, Clock } from "lucide-react";
 
@@ -36,6 +37,14 @@ const Hero: React.FC = () => {
       image: sobitImage,
       testimonial:
         "I appreciate FlagForge's comprehensive approach to security training. The platform effectively bridges the gap between theoretical knowledge and practical application in cybersecurity.",
+    },
+    {
+      id: 3,
+      name: "Bibek Ghimire",
+      position: "CTO of Bardali Creation",
+      image: bibekImage,
+      testimonial:
+        "FlagForge is an engaging and fun CTF platform that helped me sharpen my cybersecurity and problem-solving skills in web exploitation and cryptography. A great place to learn, compete, and grow as a hacker!",
     },
   ];
 
