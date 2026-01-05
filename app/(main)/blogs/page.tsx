@@ -24,6 +24,25 @@ export default function BlogsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://flagforge.xyz/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blogs",
+        "item": "https://flagforge.xyz/blogs"
+      }
+    ]
+  };
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -115,6 +134,7 @@ export default function BlogsPage() {
           })),
         }}
       />
+      <JsonLd data={breadcrumbData} />
       <div className="max-w-7xl mx-auto px-4 py-10 relative z-10">
         <header className="relative overflow-hidden rounded-[2.75rem] border border-white/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl shadow-[0_40px_90px_-35px_rgba(15,23,42,0.45)] p-8 md:p-10 mb-12">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.15),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.12),rgba(2,6,23,0))]" />

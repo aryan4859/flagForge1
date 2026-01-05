@@ -539,10 +539,36 @@ export default function BlogPostPage() {
   if (!post) {
     return (
       <div
-        className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300`}
+        className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300 relative overflow-hidden px-4 py-16`}
       >
-        <div className="text-gray-600 dark:text-gray-400 text-lg transition-colors duration-300">
-          Post not found.
+        <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(244,63,94,0.12),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.14),rgba(2,6,23,0))]" />
+        <div className="relative z-10 w-full max-w-lg rounded-[2.5rem] border border-white/60 bg-white/80 p-10 text-center shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100/80 text-red-600 shadow-inner dark:bg-red-900/30 dark:text-red-400">
+            <Sparkles className="h-7 w-7" />
+          </div>
+          <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+            Post not found.
+          </p>
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Try heading back to the blog index and browse the latest posts.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link
+              href="/blogs"
+              className="inline-flex items-center gap-2 rounded-full bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-red-500/30 transition hover:bg-red-700"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to blogs
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-5 py-2.5 text-sm font-semibold text-gray-700 transition hover:border-gray-300 hover:text-gray-900 dark:border-white/10 dark:bg-white/[0.02] dark:text-gray-300 dark:hover:text-white"
+            >
+              Go home
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -609,12 +635,18 @@ export default function BlogPostPage() {
             {
               "@type": "ListItem",
               position: 1,
+              name: "Home",
+              item: "https://flagforge.xyz/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
               name: "Blogs",
               item: "https://flagforge.xyz/blogs",
             },
             {
               "@type": "ListItem",
-              position: 2,
+              position: 3,
               name: post.title,
               item: `https://flagforge.xyz/blogs/${post.id}`,
             },

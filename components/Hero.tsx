@@ -3,6 +3,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
+import { landingFaqItems } from "@/lib/faq";
 
 // Import images statically
 import nirmalImage from "@/public/NirmalDahal.jpeg";
@@ -142,41 +143,6 @@ const Hero: React.FC = () => {
     { number: "1000+", label: "Active Users" },
     { number: "6", label: "Categories" },
     { number: "24/7", label: "Availability" },
-  ];
-
-  const faqs = [
-    {
-      question: "Is FlagForge completely free?",
-      answer: "Yes! FlagForge is completely free to use. All challenges, features, and competitions are available at no cost. We believe in making cybersecurity education accessible to everyone.",
-    },
-    {
-      question: "Do I need prior experience in cybersecurity?",
-      answer: "No! We welcome participants of all skill levels. We have challenges ranging from beginner-friendly to advanced. Start with easier challenges and progressively work your way up as you learn.",
-    },
-    {
-      question: "How does the hint system work?",
-      answer: "When you're stuck on a challenge, you can request hints. You have two options: watch a short advertisement to get a hint for free, or use your earned points to unlock hints instantly. This system keeps the platform free while helping you learn.",
-    },
-    {
-      question: "What are CTF challenges?",
-      answer: "CTF (Capture The Flag) challenges are cybersecurity exercises where you solve problems to find hidden 'flags' - special strings that prove you've solved the challenge. They're designed to teach real-world security skills in a safe, legal environment.",
-    },
-    {
-      question: "Can I compete with others?",
-      answer: "Absolutely! FlagForge features a global leaderboard where you can see how you rank against other users. Earn points by solving challenges and climb the ranks to showcase your skills.",
-    },
-    {
-      question: "How often are new challenges added?",
-      answer: "We regularly update our platform with new challenges based on user feedback and emerging cybersecurity trends. Follow our updates to stay informed about new content.",
-    },
-    {
-      question: "What if I get stuck on a challenge?",
-      answer: "Don't worry! You can use our hint system to get guidance. Additionally, our community is active and supportive - you can discuss challenges (without spoilers) and learn from others.",
-    },
-    {
-      question: "Are the challenges based on real-world scenarios?",
-      answer: "Yes! Our challenges are designed to mirror real-world security vulnerabilities and attack vectors. This ensures that the skills you learn are directly applicable to actual cybersecurity work.",
-    },
   ];
 
   const changeTestimonial = (newIndex: number) => {
@@ -520,7 +486,7 @@ const Hero: React.FC = () => {
 
           {/* Accordion List */}
           <div className="lg:col-span-2 space-y-4">
-            {faqs.map((faq, index) => (
+            {landingFaqItems.map((faq, index) => (
               <div
                 key={index}
                 className="group border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden bg-white dark:bg-white/10"

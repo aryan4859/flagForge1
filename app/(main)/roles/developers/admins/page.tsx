@@ -42,32 +42,32 @@ interface AdminCardProps {
   onClick: () => void;
 }
 
-const AdminCard: React.FC<AdminCardProps> = ({ 
-  title, 
-  description, 
-  icon, 
-  color, 
-  path, 
-  onClick 
+const AdminCard: React.FC<AdminCardProps> = ({
+  title,
+  description,
+  icon,
+  color,
+  path,
+  onClick,
 }) => (
-  <div 
+  <div
     onClick={onClick}
-    className={`group relative overflow-hidden rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl ${color}`}
+    className={`group relative overflow-hidden rounded-3xl border border-white/20 p-6 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${color}`}
   >
+    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-white/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
     <div className="relative z-10">
-      <div className="flex items-center justify-between mb-4">
-        <div className="p-3 rounded-xl bg-white/20 backdrop-blur-sm">
+      <div className="flex items-center justify-between mb-5">
+        <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm shadow-inner">
           {icon}
         </div>
         <ChevronRight className="w-5 h-5 text-white/70 group-hover:text-white group-hover:translate-x-1 transition-all duration-200" />
       </div>
-      <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-      <p className="text-white/80 text-sm leading-relaxed">{description}</p>
-      <div className="mt-4 text-xs text-white/60 font-medium">
+      <h3 className="text-2xl font-bold text-white mb-2">{title}</h3>
+      <p className="text-white/85 text-sm leading-relaxed">{description}</p>
+      <div className="mt-5 text-xs text-white/60 font-semibold tracking-wide">
         Navigate to {path}
       </div>
     </div>
-    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
   </div>
 );
 
@@ -81,8 +81,9 @@ interface StatsCardProps {
 }
 
 const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, trend }) => (
-  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-    <div className="flex items-center justify-between">
+  <div className="group relative overflow-hidden rounded-2xl border border-white/70 bg-white/80 p-6 shadow-lg backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-white/10 dark:bg-slate-900/70">
+    <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:from-white/5" />
+    <div className="relative flex items-center justify-between">
       <div className="flex-1">
         <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">{title}</p>
         <div className="flex items-baseline space-x-2">
@@ -94,7 +95,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color, trend 
           )}
         </div>
       </div>
-      <div className={`p-3 rounded-xl ${color}`}>
+      <div className={`p-3 rounded-2xl shadow-inner ${color}`}>
         {icon}
       </div>
     </div>
@@ -238,7 +239,7 @@ const AdminDashboard: React.FC = () => {
       title: "Resources",
       description: "Add resources for user to learn more about cybersecurity.",
       icon: <LayoutTemplate className="w-6 h-6 text-white" />,
-      color: "bg-gradient-to-br from-emraid-500 to-emraid-600",
+      color: "bg-gradient-to-br from-emerald-500 to-emerald-600",
       path: "/resources/upload",
       onClick: () => router.push('/resources/upload')
     }
@@ -257,59 +258,65 @@ const AdminDashboard: React.FC = () => {
   const userName = session.user.name || session.user.email?.split('@')[0] || 'Admin';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-10 dark:bg-slate-950">
+      <div className="pointer-events-none absolute -top-24 right-[-10%] h-80 w-80 rounded-full bg-blue-200/70 blur-3xl dark:bg-blue-900/30" />
+      <div className="pointer-events-none absolute -bottom-28 left-[-10%] h-96 w-96 rounded-full bg-rose-200/60 blur-3xl dark:bg-rose-900/30" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.18),transparent_55%)] dark:bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.15),transparent_55%)]" />
+      <div className="relative max-w-7xl mx-auto space-y-8">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
-          <div>
-            <div className="flex items-center space-x-3 mb-2">
-              <div className="p-2 bg-blue-500 rounded-lg">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-gray-100">
-                  Admin Dashboard
-                </h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">
-                  Welcome back, {userName}
-                </p>
-                {stats.lastUpdated && (
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    Last updated: {new Date(stats.lastUpdated).toLocaleString()}
+        <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70 sm:p-8">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/60 via-transparent to-white/40 opacity-70 dark:from-blue-900/20 dark:to-slate-950/10" />
+          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="p-3 bg-slate-900 rounded-2xl shadow-lg shadow-slate-900/20 dark:bg-white">
+                  <Shield className="w-7 h-7 text-white dark:text-slate-900" />
+                </div>
+                <div>
+                  <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-gray-100">
+                    Admin Dashboard
+                  </h1>
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    Welcome back, {userName}
                   </p>
-                )}
+                  {stats.lastUpdated && (
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                      Last updated: {new Date(stats.lastUpdated).toLocaleString()}
+                    </p>
+                  )}
+                </div>
               </div>
+              <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
+                Manage CTF challenges, assign badges, and oversee platform activities from your central control panel.
+              </p>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 max-w-2xl">
-              Manage CTF challenges, assign badges, and oversee platform activities from your central control panel.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => router.push('/problems')}
-              className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center space-x-2"
-            >
-              <Activity className="w-4 h-4" />
-              <span>View Challenges</span>
-            </button>
-            <button
-              onClick={fetchDashboardStats}
-              className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center space-x-2"
-            >
-              <TrendingUp className="w-4 h-4" />
-              <span>Refresh Stats</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200"
-            >
-              Logout
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => router.push('/problems')}
+                className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-slate-900/25 transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+              >
+                <Activity className="w-4 h-4" />
+                <span>View Challenges</span>
+              </button>
+              <button
+                onClick={fetchDashboardStats}
+                className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/30 transition hover:bg-emerald-600 dark:bg-emerald-400 dark:hover:bg-emerald-500"
+              >
+                <TrendingUp className="w-4 h-4" />
+                <span>Refresh Stats</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-5 py-2.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900 dark:border-white/10 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:text-white"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           <StatsCard
             title="Total Challenges"
             value={stats.totalChallenges}
@@ -340,9 +347,10 @@ const AdminDashboard: React.FC = () => {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Main Admin Actions */}
           <div className="xl:col-span-2">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="p-2 bg-blue-500 rounded-lg">
+            <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70 sm:p-8">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-100/50 via-transparent to-transparent opacity-70 dark:from-blue-900/20" />
+              <div className="relative flex items-center space-x-3 mb-8">
+                <div className="p-3 bg-blue-500 rounded-2xl shadow-lg shadow-blue-500/30">
                   <Settings className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -350,7 +358,7 @@ const AdminDashboard: React.FC = () => {
                 </h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1 gap-6">
+              <div className="relative grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-1">
                 {adminCards.map((card, index) => (
                   <AdminCard
                     key={index}
@@ -369,9 +377,9 @@ const AdminDashboard: React.FC = () => {
           {/* Quick Info Sidebar */}
           <div className="space-y-6">
             {/* System Status */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="p-2 bg-green-500 rounded-lg">
+            <div className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
+              <div className="flex items-center space-x-3 mb-5">
+                <div className="p-2 bg-emerald-500 rounded-2xl shadow-md shadow-emerald-500/30">
                   <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -380,7 +388,7 @@ const AdminDashboard: React.FC = () => {
               </div>
               
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <div className="flex items-center justify-between rounded-2xl border border-emerald-100 bg-emerald-50/80 p-3 dark:border-emerald-900/40 dark:bg-emerald-900/20">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Platform Health
                   </span>
@@ -388,7 +396,7 @@ const AdminDashboard: React.FC = () => {
                     Excellent
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="flex items-center justify-between rounded-2xl border border-blue-100 bg-blue-50/80 p-3 dark:border-blue-900/40 dark:bg-blue-900/20">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Active Sessions
                   </span>
@@ -396,7 +404,7 @@ const AdminDashboard: React.FC = () => {
                     {stats.recentActivity}
                   </span>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                <div className="flex items-center justify-between rounded-2xl border border-purple-100 bg-purple-50/80 p-3 dark:border-purple-900/40 dark:bg-purple-900/20">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Badge Assignments
                   </span>
@@ -409,9 +417,9 @@ const AdminDashboard: React.FC = () => {
 
             {/* Category Insights */}
             {stats.topCategories.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="p-2 bg-indigo-500 rounded-lg">
+              <div className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
+                <div className="flex items-center space-x-3 mb-5">
+                  <div className="p-2 bg-indigo-500 rounded-2xl shadow-md shadow-indigo-500/30">
                     <BarChart3 className="w-5 h-5 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -421,7 +429,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <div className="space-y-3">
                   {stats.topCategories.slice(0, 3).map((category, index) => (
-                    <div key={category._id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div key={category._id} className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-800/60">
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {category._id}
                       </span>
@@ -438,9 +446,9 @@ const AdminDashboard: React.FC = () => {
             )}
 
             {/* Quick Actions */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="p-2 bg-amber-500 rounded-lg">
+            <div className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
+              <div className="flex items-center space-x-3 mb-5">
+                <div className="p-2 bg-amber-500 rounded-2xl shadow-md shadow-amber-500/30">
                   <Clock className="w-5 h-5 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -451,7 +459,7 @@ const AdminDashboard: React.FC = () => {
               <div className="space-y-3">
                 <button
                   onClick={() => router.push('/roles/developers/admins/uploads')}
-                  className="w-full text-left p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors duration-200 group"
+                  className="w-full text-left p-3 rounded-2xl border border-rose-100 bg-rose-50/80 transition duration-200 group hover:bg-rose-100/80 dark:border-rose-900/40 dark:bg-rose-900/20 dark:hover:bg-rose-900/30"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -463,7 +471,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => router.push('/roles/developers/admins/badges')}
-                  className="w-full text-left p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors duration-200 group"
+                  className="w-full text-left p-3 rounded-2xl border border-amber-100 bg-amber-50/80 transition duration-200 group hover:bg-amber-100/80 dark:border-amber-900/40 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -475,7 +483,7 @@ const AdminDashboard: React.FC = () => {
                 
                 <button
                   onClick={() => router.push('/roles/developers/admins/badge-templates')}
-                  className="w-full text-left p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors duration-200 group"
+                  className="w-full text-left p-3 rounded-2xl border border-purple-100 bg-purple-50/80 transition duration-200 group hover:bg-purple-100/80 dark:border-purple-900/40 dark:bg-purple-900/20 dark:hover:bg-purple-900/30"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -488,8 +496,8 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Tips */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
-              <div className="flex items-center space-x-3 mb-4">
+            <div className="rounded-3xl border border-blue-200 bg-gradient-to-br from-blue-50/90 via-indigo-50/60 to-white/60 p-6 shadow-lg dark:border-blue-900/40 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-slate-950/10">
+              <div className="flex items-center space-x-3 mb-5">
                 <AlertCircle className="w-5 h-5 text-blue-500" />
                 <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
                   Admin Tips
