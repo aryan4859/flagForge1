@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
 import {
   Info,
   ShieldAlert,
@@ -41,8 +42,28 @@ export const metadata: Metadata = {
 };
 
 export default function About() {
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://flagforge.xyz/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": "https://flagforge.xyz/about"
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white pb-20 relative overflow-hidden transition-colors duration-500">
+      <JsonLd data={breadcrumbData} />
 
       {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none z-0">

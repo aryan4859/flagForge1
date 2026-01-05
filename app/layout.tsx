@@ -107,6 +107,11 @@ const structuredData = {
       url: "https://flagforge.xyz",
       name: "FlagForge",
       alternateName: "FlagForge CTF Platform",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://flagforge.xyz/search?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
       publisher: {
         "@id": "https://flagforge.xyz/#organization",
       },

@@ -609,12 +609,18 @@ export default function BlogPostPage() {
             {
               "@type": "ListItem",
               position: 1,
+              name: "Home",
+              item: "https://flagforge.xyz/",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
               name: "Blogs",
               item: "https://flagforge.xyz/blogs",
             },
             {
               "@type": "ListItem",
-              position: 2,
+              position: 3,
               name: post.title,
               item: `https://flagforge.xyz/blogs/${post.id}`,
             },
