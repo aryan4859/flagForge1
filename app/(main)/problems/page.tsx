@@ -121,9 +121,11 @@ const useProblems = (
   const [questionDone, setQuestionDone] = useState<any>();
   const [hasNextPage, setHasNextPage] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fetchProblems = useCallback(async () => {
     setLoading(true);
+    setErrorMessage(null);
 
     try {
       let apiUrl = `/api/problems?page=${currentPage}`;
@@ -134,8 +136,18 @@ const useProblems = (
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
-        const errorDetails = await response.json();
-        throw new Error(errorDetails.message || "Failed to fetch problems");
+        const contentType = response.headers.get("content-type") || "";
+        let message = "Failed to fetch problems";
+
+        if (contentType.includes("application/json")) {
+          const errorDetails = await response.json();
+          message = errorDetails.message || message;
+        } else {
+          const text = await response.text();
+          if (text) message = text;
+        }
+
+        throw new Error(message);
       }
 
       const { data, totalScore, questionDone, pagination }: ApiResponse =
@@ -149,9 +161,16 @@ const useProblems = (
       setTotalPages(pagination.totalPages);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert("Unable to fetch problems. Please try again later.");
+        const message = error.message || "Unable to fetch problems.";
+        if (message.toLowerCase().includes("unauthorized")) {
+          setErrorMessage(null);
+        } else {
+          console.error("Failed to fetch problems:", message);
+          setErrorMessage("Unable to fetch problems. Please try again later.");
+        }
       } else {
         console.error("An unknown error occurred:", error);
+        setErrorMessage("Unable to fetch problems. Please try again later.");
       }
     } finally {
       setLoading(false);
@@ -173,6 +192,7 @@ const useProblems = (
     hasNextPage,
     totalPages,
     fetchProblems,
+    errorMessage,
   };
 };
 
@@ -474,6 +494,7 @@ const Page: React.FC = () => {
     questionDone,
     hasNextPage,
     totalPages,
+    errorMessage,
   } = useProblems(currentPage, selectedCategory, categoriesLoading);
 
   const fetchAllProblems = useCallback(
@@ -626,6 +647,12 @@ const Page: React.FC = () => {
         Challenges
       </h1>
 
+      {errorMessage && (
+        <div className="w-full rounded-2xl border border-red-200/80 bg-red-50/80 px-4 py-3 text-center text-sm font-semibold text-red-700 shadow-sm dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+          {errorMessage}
+        </div>
+      )}
+
       <StatsSection
         score={score}
         questionDone={questionDone}
@@ -727,6 +754,82 @@ const Page: React.FC = () => {
           onNext={handleNextPage}
         />
       )}
+
+      <div className="w-full grid gap-4 lg:grid-cols-3 pt-4">
+        <div className="lg:col-span-2 rounded-2xl border border-red-100/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl px-5 sm:px-6 py-5 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.6)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+            Mission Briefing
+          </p>
+          <p className="mt-2 text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-100">
+            Choose a challenge, solve it, and climb the board. Filter by
+            category or search to find your next target fast.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold text-gray-600 dark:text-gray-300">
+            <span className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
+              Category: {selectedCategory}
+            </span>
+            <span className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
+              Page {currentPage} of {totalPages}
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl px-5 sm:px-6 py-5 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.6)]">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+            Legend
+          </p>
+          <div className="mt-4 space-y-3 text-sm font-semibold">
+            <div className="flex items-center gap-3 text-gray-700 dark:text-gray-200">
+              <span className="inline-flex items-center rounded-full bg-yellow-400/90 px-3 py-1 text-xs font-semibold text-black">
+                Limited Time
+              </span>
+              Timed challenge window
+            </div>
+            <div className="flex items-center gap-3 text-gray-700 dark:text-gray-200">
+              <span className="inline-flex items-center rounded-full bg-red-500/90 px-3 py-1 text-xs font-semibold text-white">
+                Expired
+              </span>
+              No longer available
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl px-5 py-5 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.55)]">
+          <div className="flex items-center gap-3">
+            <IoSearch className="text-2xl text-red-500" />
+            <p className="text-base font-semibold text-gray-700 dark:text-gray-100">
+              Search Fast
+            </p>
+          </div>
+          <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+            Use keywords to find challenges by title, description, or category.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl px-5 py-5 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.55)]">
+          <div className="flex items-center gap-3">
+            <IoFilter className="text-2xl text-red-500" />
+            <p className="text-base font-semibold text-gray-700 dark:text-gray-100">
+              Filter Smart
+            </p>
+          </div>
+          <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+            Narrow down by category to focus on the skills you want to train.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl px-5 py-5 shadow-[0_16px_40px_-30px_rgba(15,23,42,0.55)]">
+          <div className="flex items-center gap-3">
+            <IoChevronDown className="text-2xl text-red-500" />
+            <p className="text-base font-semibold text-gray-700 dark:text-gray-100">
+              Pick + Solve
+            </p>
+          </div>
+          <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+            Open a challenge, read the brief, and start hunting the flag.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

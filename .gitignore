@@ -49,3 +49,9 @@ reset-user-point.js
 
 #test files
 app/(main)/testprofile/page.tsx
+
+#sitemap and robots 
+public/sitemap.xml
+public/robots.txt
+public/sitemap.txt
+public/sitemap1.xml

@@ -1,17 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import {
-  Search,
-  ChevronDown,
-  BookOpen,
-  ExternalLink,
-  Video,
-  FileText,
-  Code,
-  Globe,
-} from "lucide-react";
+import React, { useState, useEffect, useMemo } from "react";
+import { Search, ChevronDown, BookOpen } from "lucide-react";
 import Loading from "@/components/loading";
 import { Resource } from "@/models/Resource";
+import ResourceCard from "@/components/ResourceCard";
 
 interface ResourcesResponse {
   success: boolean;
@@ -28,8 +20,11 @@ interface ResourcesResponse {
 
 const ResourcesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState<string>("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set()
   );
@@ -37,13 +32,17 @@ const ResourcesPage: React.FC = () => {
     Record<string, Resource[]>
   >({});
 
-  const fetchResources = async () => {
-    setLoading(true);
+  const fetchResources = async (term: string) => {
+    if (hasLoadedOnce) {
+      setIsSearching(true);
+    } else {
+      setLoading(true);
+    }
     setError("");
     try {
       const params = new URLSearchParams();
-      if (searchTerm.trim()) {
-        params.append("search", searchTerm.trim());
+      if (term.trim()) {
+        params.append("search", term.trim());
       }
       const response = await fetch(`/api/resources?${params}`);
       if (!response.ok) {
@@ -70,13 +69,26 @@ const ResourcesPage: React.FC = () => {
       console.error("Error fetching resources:", err);
       setError("Failed to load resources. Please try again.");
     } finally {
-      setLoading(false);
+      if (hasLoadedOnce) {
+        setIsSearching(false);
+      } else {
+        setLoading(false);
+        setHasLoadedOnce(true);
+      }
     }
   };
 
   useEffect(() => {
-    fetchResources();
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 700);
+
+    return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  useEffect(() => {
+    fetchResources(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -102,21 +114,6 @@ const ResourcesPage: React.FC = () => {
     );
   };
 
-  const getResourceIcon = (type: string) => {
-    switch (type?.toLowerCase()) {
-      case "video":
-        return Video;
-      case "article":
-        return FileText;
-      case "code":
-        return Code;
-      case "website":
-        return Globe;
-      default:
-        return BookOpen;
-    }
-  };
-
   const filteredCategories = Object.keys(resourcesByCategory).filter(
     (category) => {
       if (!searchTerm) return true;
@@ -132,44 +129,79 @@ const ResourcesPage: React.FC = () => {
     }
   );
 
-  if (loading) {
+  const totalResources = useMemo(
+    () =>
+      Object.values(resourcesByCategory).reduce(
+        (sum, list) => sum + list.length,
+        0
+      ),
+    [resourcesByCategory]
+  );
+
+  const totalCategories = useMemo(
+    () => Object.keys(resourcesByCategory).length,
+    [resourcesByCategory]
+  );
+
+  if (loading && totalResources === 0) {
     return <Loading />;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-6">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Learning Resources
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-            Explore our curated collection of learning materials organized by
-            category
-          </p>
+    <div className="min-h-screen transform-gpu bg-gradient-to-b from-white via-rose-50/30 to-white dark:from-gray-950 dark:via-gray-900/30 dark:to-gray-950">
+      <div className="mx-auto max-w-7xl px-4 py-10 space-y-8">
+        <div className="rounded-3xl border border-red-100/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl px-6 py-6 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.6)]">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-500 dark:text-gray-400">
+                Resources Library
+              </p>
+              <h1 className="mt-2 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                Learning Resources
+              </h1>
+              <p className="mt-2 text-base text-gray-600 dark:text-gray-300 max-w-2xl">
+                Explore our curated collection of learning materials organized by
+                category.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3 text-sm font-semibold text-gray-600 dark:text-gray-300">
+              <span className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
+                {totalResources} resources
+              </span>
+              <span className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
+                {totalCategories} categories
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="max-w-2xl mx-auto mb-12">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="w-full rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl px-4 py-3 shadow-[0_12px_35px_-28px_rgba(15,23,42,0.45)]">
+          <div className="relative flex items-center">
+            <Search className="absolute left-4 text-gray-500" />
             <input
               type="text"
               placeholder="Search resources, categories, or topics..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+              className="w-full rounded-full border border-gray-200/80 dark:border-white/10 bg-white/90 dark:bg-gray-900/70 py-2.5 pl-11 pr-24 text-sm text-gray-700 dark:text-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 transition-colors duration-300"
             />
+            {isSearching && (
+              <div className="absolute right-4 flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                <span className="h-2 w-2 rounded-full bg-rose-400 animate-pulse" />
+                Searching...
+              </div>
+            )}
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-8">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4">
             <p className="text-red-700 dark:text-red-300">{error}</p>
           </div>
         )}
 
         {filteredCategories.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {filteredCategories.map((category) => {
               const categoryResources = resourcesByCategory[category].filter(
                 (resource) => {
@@ -189,18 +221,19 @@ const ResourcesPage: React.FC = () => {
               return (
                 <div
                   key={category}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+                  className="rounded-3xl border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl shadow-[0_18px_45px_-35px_rgba(15,23,42,0.6)] overflow-hidden"
                 >
                   <div className="kg-toggle-heading">
                     <button
                       onClick={() => toggleCategory(category)}
-                      className="w-full flex items-center justify-between p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      className="w-full flex items-center justify-between p-5 hover:bg-white/80 dark:hover:bg-gray-900/80 transition-colors"
+                      aria-expanded={isExpanded}
                     >
                       <div className="flex items-center gap-3">
                         <h4 className="kg-toggle-heading-text text-xl font-semibold text-gray-900 dark:text-white">
                           {category}
                         </h4>
-                        <span className="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 px-2 py-1 rounded-full text-sm font-medium">
+                        <span className="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 px-3 py-1 rounded-full text-xs font-semibold">
                           {categoryResources.length}
                         </span>
                       </div>
@@ -213,48 +246,15 @@ const ResourcesPage: React.FC = () => {
                     </button>
                   </div>
                   {isExpanded && (
-                    <div className="border-t border-gray-200 dark:border-gray-700">
-                      <div className="p-5 space-y-4">
-                        {categoryResources.map((resource) => {
-                          const IconComponent = getResourceIcon(
-                            resource.category
-                          );
-                          return (
-                            <div
-                              key={resource._id}
-                              className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer"
-                              onClick={() => handleResourceClick(resource)}
-                            >
-                              <div className="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                <IconComponent className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between gap-4">
-                                  <div className="flex-1">
-                                    <h5 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                      {resource.title}
-                                    </h5>
-                                    {resource.description && (
-                                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
-                                        {resource.description}
-                                      </p>
-                                    )}
-                                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                      {resource.category && (
-                                        <span className="capitalize">
-                                          {resource.category}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
+                    <div className="border-t border-gray-200/70 dark:border-white/10">
+                      <div className="p-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {categoryResources.map((resource) => (
+                          <ResourceCard
+                            key={resource._id}
+                            resource={resource}
+                            onView={handleResourceClick}
+                          />
+                        ))}
                       </div>
                     </div>
                   )}

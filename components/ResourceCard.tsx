@@ -46,7 +46,7 @@ const formatDate = (dateString?: string): string => {
 const CategoryBadge: React.FC<{ category: string }> = ({ category }) => (
   <div className="mb-3">
     <span 
-      className={`inline-block px-3 py-1 rounded-full text-sm font-medium border ${getCategoryColor(category)}`}
+      className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${getCategoryColor(category)} dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700`}
       aria-label={`Category: ${category}`}
     >
       {category}
@@ -56,7 +56,7 @@ const CategoryBadge: React.FC<{ category: string }> = ({ category }) => (
 
 const ResourceDescription: React.FC<{ description: string }> = ({ description }) => (
   <div className="flex-1 mb-4">
-    <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3">
       {description}
     </p>
   </div>
@@ -66,8 +66,8 @@ const ResourceFooter: React.FC<{ createdAt?: string; uploadedBy?: string }> = ({
   createdAt, 
   uploadedBy 
 }) => (
-  <div className="border-t border-gray-100 pt-4 mt-auto">
-    <div className="flex items-center justify-between text-xs text-gray-500">
+  <div className="border-t border-gray-100 dark:border-gray-800 pt-4 mt-auto">
+    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
       <div className="flex items-center gap-1" title={`Created on ${formatDate(createdAt)}`}>
         <Calendar className="w-3 h-3" aria-hidden="true" />
         <span>{formatDate(createdAt)}</span>
@@ -105,11 +105,13 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onView }) => {
     : `Open ${resource.title} in new tab`;
 
   const baseCardClasses = [
-    "relative bg-white rounded-xl shadow-lg border-2 border-gray-100",
-    "hover:border-rose-300 hover:shadow-xl hover:bg-gradient-to-br hover:from-rose-50/20 hover:to-rose-100/10",
-    "focus:border-rose-300 focus:shadow-xl focus:bg-gradient-to-br focus:from-rose-50/20 focus:to-rose-100/10",
+    "relative flex h-full flex-col rounded-3xl border border-gray-200/80 bg-white/80 p-6",
+    "shadow-[0_18px_45px_-35px_rgba(15,23,42,0.6)] backdrop-blur-xl",
+    "hover:-translate-y-1 hover:border-rose-200/80 hover:bg-white hover:shadow-[0_24px_55px_-35px_rgba(15,23,42,0.6)]",
+    "focus:border-rose-300 focus:shadow-[0_24px_55px_-35px_rgba(15,23,42,0.6)]",
     "focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2",
-    "transition-all duration-300 cursor-pointer group p-6 h-full flex flex-col overflow-hidden"
+    "transition-all duration-300 cursor-pointer group overflow-hidden",
+    "dark:border-gray-700/80 dark:bg-gray-900/70 dark:hover:border-rose-400/50"
   ].join(" ");
 
   return (
@@ -122,14 +124,14 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, onView }) => {
       aria-label={ariaLabel}
     >
       {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-4 gap-3">
         <div className="flex-1">
-          <h3 className="text-lg font-bold text-red-800 group-hover:text-rose-600 group-focus:text-rose-600 transition-colors duration-300 line-clamp-2">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 group-hover:text-rose-600 group-focus:text-rose-600 transition-colors duration-300 line-clamp-2">
             {resource.title}
           </h3>
         </div>
         <ExternalLink 
-          className="w-5 h-5 text-gray-400 group-hover:text-rose-500 group-focus:text-rose-500 transition-colors duration-300 ml-2 flex-shrink-0" 
+          className="w-5 h-5 text-gray-400 group-hover:text-rose-500 group-focus:text-rose-500 transition-colors duration-300 flex-shrink-0" 
           aria-hidden="true"
         />
       </div>
