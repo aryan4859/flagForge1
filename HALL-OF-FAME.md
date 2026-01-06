@@ -25,6 +25,7 @@ _These amazing individuals have responsibly disclosed vulnerabilities, strengthe
 | **Rijan Poudel**    | @At0mXploit  | 2    | 🔴 High, 🟠 Medium              | 🥈 Silver | [GitHub](https://github.com/At0mXploit)  | CVE-2025-59843, CVE-2025-59932                 |
 | **Sarthak KC**      | @sarthakkc36 | 1    | 🔴 High                         | 🥈 Silver | [GitHub](https://github.com/sarthakkc36) | CVE-2025-59827                                 |
 | **Sarams Rauniyar** | @0x0w1z      | 1    | 🔴 Critical                     | 🥇 Gold   | [GitHub](https://github.com/0x0w1z)      | CVE-2025-61777                                 |
+| **Sambat Lama**     | @Tokyo-stack | 1    | 🔴 High                         | 🥈 Silver | [Github](https://github.com/Tokyo-stack)       | CVE-2026-21868                                 |
 
 </details>
 
@@ -34,10 +35,10 @@ _These amazing individuals have responsibly disclosed vulnerabilities, strengthe
 
 | **Metric**                     | **Count** |
 | ------------------------------ | --------- |
-| Total Bug Hunters              | 4         |
-| Total Vulnerabilities Reported | 7         |
+| Total Bug Hunters              | 5         |
+| Total Vulnerabilities Reported | 8         |
 | Critical                       | 2         |
-| High                           | 4         |
+| High                           | 5         |
 | Medium                         | 1         |
 | Low                            | 0         |
 
@@ -71,4 +72,4 @@ _These amazing individuals have responsibly disclosed vulnerabilities, strengthe
 
 ---
 
-_Last Updated: September 2025_
+_Last Updated: January 2026_
