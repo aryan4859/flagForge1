@@ -56,8 +56,6 @@ const routeLastmod = buildRouteLastmod();
 const SITEMAP_EXCLUDE = [
   '/roles/developers/*',
   '/roles/developers',
-  '/resources/*',
-  '/resources',
   '/profile',
   '/problems',
   '/leaderboard',
@@ -183,7 +181,7 @@ module.exports = {
     let priority = config.priority;
     if (path === '/') {
       priority = 1.0;
-    } else if (['/about', '/contact', '/blogs', '/authentication'].includes(path)) {
+    } else if (['/about', '/contact', '/blogs', '/authentication', '/resources'].includes(path)) {
       priority = 0.9;
     }
 
