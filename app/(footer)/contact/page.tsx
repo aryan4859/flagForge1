@@ -11,8 +11,15 @@ import {
 export const metadata: Metadata = {
   title: "Contact Us - FlagForge CTF Platform",
   description:
-    "Get in touch with FlagForge. Contact us via email at info@flagforge.xyz, phone at +977 9828137085, or visit us in Lalitpur, Nepal. We'd love to hear from you!",
-  keywords: ["contact FlagForge", "CTF support", "cybersecurity help", "FlagForge team", "Nepal CTF"],
+    "Contact FlagForge for CTF support and cybersecurity inquiries via email, phone, or our Lalitpur office.",
+  keywords: [
+    "contact FlagForge",
+    "CTF support",
+    "cybersecurity help",
+    "FlagForge team",
+    "Nepal cybersecurity support",
+    "Nepal CTF community",
+  ],
   authors: [{ name: "FlagForge Team" }],
   openGraph: {
     title: "Contact FlagForge - Get in Touch",
@@ -64,6 +71,8 @@ export default function Contact() {
                 <p className="text-base font-medium text-gray-500 dark:text-gray-400 max-w-sm">
                   Get in touch with us. We'd love to hear from you!
                 </p>
+                <h3 className="sr-only">FlagForge Contact Details</h3>
+                <h4 className="sr-only">Email, phone, and office location</h4>
               </div>
 
               <div className="space-y-8">

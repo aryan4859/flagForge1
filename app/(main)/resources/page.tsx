@@ -144,7 +144,18 @@ const ResourcesPage: React.FC = () => {
   );
 
   if (loading && totalResources === 0) {
-    return <Loading />;
+    return (
+      <>
+        <h1 className="sr-only">Learning Resources</h1>
+        <h2 className="sr-only">Resources Library</h2>
+        <h3 className="sr-only">
+          Explore our curated collection of learning materials organized by
+          category.
+        </h3>
+        <h4 className="sr-only">Resource Categories</h4>
+        <Loading />
+      </>
+    );
   }
 
   return (
@@ -153,24 +164,24 @@ const ResourcesPage: React.FC = () => {
         <div className="rounded-3xl border border-red-100/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl px-6 py-6 shadow-[0_18px_45px_-35px_rgba(15,23,42,0.6)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-500 dark:text-gray-400">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-500 dark:text-gray-400">
                 Resources Library
-              </p>
+              </h2>
               <h1 className="mt-2 text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
                 Learning Resources
               </h1>
-              <p className="mt-2 text-base text-gray-600 dark:text-gray-300 max-w-2xl">
+              <h3 className="mt-2 text-base text-gray-600 dark:text-gray-300 max-w-2xl">
                 Explore our curated collection of learning materials organized by
                 category.
-              </p>
+              </h3>
             </div>
             <div className="flex flex-wrap gap-3 text-sm font-semibold text-gray-600 dark:text-gray-300">
-              <span className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
+              <h4 className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
                 {totalResources} resources
-              </span>
-              <span className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
+              </h4>
+              <h4 className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
                 {totalCategories} categories
-              </span>
+              </h4>
             </div>
           </div>
         </div>

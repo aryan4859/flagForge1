@@ -4,14 +4,22 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Cookie Policy - FlagForge CTF Platform",
   description:
-    "Learn about how FlagForge uses cookies to enhance your experience. Understand what cookies we use, why we use them, and how you can control them.",
-  keywords: ["cookie policy", "cookies", "tracking", "browser cookies", "FlagForge cookies", "privacy"],
+    "FlagForge cookie policy explains what cookies we use, why we use them, and how you can control them.",
+  keywords: [
+    "cookie policy",
+    "cookies",
+    "tracking",
+    "browser cookies",
+    "FlagForge cookies",
+    "privacy",
+    "Nepal cybersecurity platform",
+  ],
   authors: [{ name: "FlagForge Team" }],
   openGraph: {
     title: "FlagForge Cookie Policy",
     description:
       "Understand how FlagForge uses cookies to improve your experience and protect your privacy.",
-    url: "https://flagforge.xyz/cookie-policy",
+    url: "https://flagforge.xyz/cookie-consent",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",
@@ -22,7 +30,7 @@ export const metadata: Metadata = {
     description: "Learn about cookies and how we use them on FlagForge.",
   },
   alternates: {
-    canonical: "/cookie-policy",
+    canonical: "/cookie-consent",
   },
   robots: {
     index: true,
@@ -42,6 +50,7 @@ export default function CookiePolicy() {
         <p className="text-lg text-center text-gray-600 dark:text-gray-300 max-w-3xl">
           Last updated: October 28, 2025
         </p>
+        <h4 className="sr-only">Cookie usage, categories, and controls</h4>
       </div>
 
       {/* Main Content */}

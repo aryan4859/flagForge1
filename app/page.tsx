@@ -78,6 +78,7 @@ export default function Home() {
         <JsonLd data={websiteData} />
         <JsonLd data={faqData} />
         <JsonLd data={breadcrumbData} />
+        <h4 className="sr-only">FlagForge CTF Platform Overview</h4>
         <main>
           <Hero />
         </main>

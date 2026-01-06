@@ -6,6 +6,38 @@ const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 });
 
+const isLikelyPageId = (value: string) => {
+  const normalized = value.replace(/-/g, "");
+  return /^[0-9a-f]{32}$/i.test(normalized);
+};
+
+const resolvePageId = async (slug: string, databaseId: string) => {
+  try {
+    const response = await notion.databases.query({
+      database_id: databaseId,
+      filter: {
+        property: "Slug",
+        rich_text: {
+          equals: slug,
+        },
+      },
+      page_size: 1,
+    });
+    const page = response.results[0];
+    if (page) {
+      return page.id;
+    }
+  } catch (error) {
+    console.warn("Failed to query Notion slug:", error);
+  }
+
+  if (isLikelyPageId(slug)) {
+    return slug;
+  }
+
+  return null;
+};
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -13,7 +45,25 @@ export async function GET(
   try {
     // Await the params since they're now a Promise
     const { id } = await params;
-    const pageId = id;
+    if (!process.env.NOTION_API_KEY) {
+      return NextResponse.json(
+        { error: "NOTION_API_KEY is not configured" },
+        { status: 500 }
+      );
+    }
+    const databaseId = process.env.NOTION_DATABASE_ID;
+    if (!databaseId) {
+      return NextResponse.json(
+        { error: "NOTION_DATABASE_ID is not configured" },
+        { status: 500 }
+      );
+    }
+
+    const slug = decodeURIComponent(id);
+    const pageId = await resolvePageId(slug, databaseId);
+    if (!pageId) {
+      return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
+    }
 
     // Get page properties
     const page = await notion.pages.retrieve({ page_id: pageId });
@@ -91,15 +141,20 @@ export async function GET(
       title: properties.Title?.title?.[0]?.plain_text || 'Untitled',
       thumbnail: thumbnailUrl,
       image: imageUrl,
-      slug: properties.Slug?.rich_text?.[0]?.plain_text || pageData.id,
+      slug: properties.Slug?.rich_text?.[0]?.plain_text || slug || pageData.id,
       excerpt: extractExcerpt(blocks.results) || fallbackContent.substring(0, 150),
       tags: properties.Tags?.multi_select?.map((tag: any) => tag.name) || [],
       status: properties.Status?.select?.name || 'Published',
-      created: properties['Publish Date']?.date?.start || pageData.created_time,
+      created:
+        properties['Publish Date']?.date?.start ||
+        properties['Published Date']?.date?.start ||
+        pageData.created_time,
       updated: pageData.last_edited_time,
       content: extractedContent || fallbackContent || "No Content",
       cover: properties['Files & media']?.files?.[0]?.external?.url ||
              properties['Files & media']?.files?.[0]?.file?.url ||
+             properties['File and Media']?.files?.[0]?.external?.url ||
+             properties['File and Media']?.files?.[0]?.file?.url ||
              pageData.cover?.external?.url ||
              pageData.cover?.file?.url ||
              thumbnailUrl || 

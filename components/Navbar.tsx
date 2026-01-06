@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import logo from "@/public/flagforge-logo.png";
 import { CgMenuRightAlt } from "react-icons/cg";
 import { NavbarData } from "@/utils/data";
@@ -50,9 +51,77 @@ const NavItem = ({ href, tags, onClick, style }: NavbarItems) => (
 const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const session = useSession();
+  const [standing, setStanding] = useState("");
   const { theme, toggleTheme } = useTheme();
+  const pathname = usePathname();
+  const pendingCloseRef = React.useRef(false);
+  const closeTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleMenuClick = () => setOpen(!open);
+  const handleMobileItemClick = () => {
+    pendingCloseRef.current = true;
+  };
+
+  const handleMobileSignOut = async () => {
+    handleMobileItemClick();
+    await signOut();
+  };
+
+  const handleSheetOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      pendingCloseRef.current = false;
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    if (!pendingCloseRef.current) return;
+    pendingCloseRef.current = false;
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    closeTimeoutRef.current = setTimeout(() => setOpen(false), 200);
+  }, [pathname]);
+
+  React.useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (session.status !== "authenticated") {
+      setStanding("");
+      return;
+    }
+
+    let active = true;
+    const loadStanding = async () => {
+      try {
+        const response = await fetch("/api/profile");
+        if (!response.ok) return;
+        const data = await response.json();
+        const rankValue = typeof data?.rank === "number" ? data.rank : null;
+        const level = typeof data?.level === "string" ? data.level : "";
+        const match = level.match(/\[[^\]]+\]\[([^\]]+)\]/);
+        const label = match?.[1] || level || "";
+        const nextStanding = rankValue ? `Rank #${rankValue}` : label;
+        if (active) setStanding(nextStanding);
+      } catch (error) {
+        if (active) setStanding("");
+      }
+    };
+
+    loadStanding();
+    return () => {
+      active = false;
+    };
+  }, [session.status]);
 
   return (
     <header className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-100 dark:border-white/5 sticky top-0 z-50 w-full transition-all duration-500">
@@ -129,7 +198,9 @@ const Navbar: React.FC = () => {
                       <span className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-red-500 transition-colors">
                         {session.data?.user?.name ?? "Arena User"}
                       </span>
-                      <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tight">Active Seeker</span>
+                      <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-tight">
+                        {standing}
+                      </span>
                     </div>
                   </div>
                 </DropdownMenuTrigger>
@@ -176,7 +247,7 @@ const Navbar: React.FC = () => {
             {theme === "dark" ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
           </button>
 
-          <Sheet>
+          <Sheet open={open} onOpenChange={handleSheetOpenChange}>
             <SheetTrigger asChild>
               <button className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 active:scale-90 transition-all">
                 <CgMenuRightAlt className="text-3xl text-gray-900 dark:text-white" />
@@ -210,6 +281,7 @@ const Navbar: React.FC = () => {
                           <li key={href}>
                             <Link
                               href={href}
+                              onClick={handleMobileItemClick}
                               className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 transition-all border border-transparent hover:border-red-500/10"
                             >
                               <span className="p-2 rounded-xl bg-gray-50 dark:bg-white/5 group-hover:bg-white dark:group-hover:bg-white/10 transition-colors">
@@ -223,7 +295,11 @@ const Navbar: React.FC = () => {
                     ) : (
                       <>
                         <li>
-                          <Link href="/blogs" className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-100 dark:hover:border-white/10">
+                          <Link
+                            href="/blogs"
+                            onClick={handleMobileItemClick}
+                            className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-100 dark:hover:border-white/10"
+                          >
                             <span className="p-2 rounded-xl bg-gray-50 dark:bg-white/5">
                               <BookText className="w-5 h-5" />
                             </span>
@@ -231,7 +307,11 @@ const Navbar: React.FC = () => {
                           </Link>
                         </li>
                         <li className="pt-6">
-                          <Link href="/authentication" className="group relative flex items-center justify-center w-full py-5 overflow-hidden rounded-2xl transition-all active:scale-[0.98]">
+                          <Link
+                            href="/authentication"
+                            onClick={handleMobileItemClick}
+                            className="group relative flex items-center justify-center w-full py-5 overflow-hidden rounded-2xl transition-all active:scale-[0.98]"
+                          >
                             <div className="absolute inset-0 bg-red-600 transition-transform group-hover:scale-105" />
                             <div className="relative flex items-center gap-3 font-black text-lg text-white">
                               <LogIn className="w-6 h-6" />
@@ -253,13 +333,24 @@ const Navbar: React.FC = () => {
                         <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-white dark:border-gray-950" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-gray-950 dark:text-white truncate">{session.data?.user?.name}</h4>
-                        <p className="text-xs text-gray-500 truncate">{session.data?.user?.email}</p>
+                        <h4 className="font-bold text-gray-950 dark:text-white truncate">
+                          {session.data?.user?.name}
+                        </h4>
+                        <p className="text-xs text-gray-500 truncate">
+                          {session.data?.user?.email}
+                        </p>
+                        <p className="text-[10px] font-bold uppercase tracking-tight text-gray-400 dark:text-gray-500">
+                          {standing}
+                        </p>
                       </div>
                     </div>
 
                     <div className="space-y-3">
-                      <Link href="/profile" className="flex items-center justify-between w-full p-4 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-red-500/20 transition-all group">
+                      <Link
+                        href="/profile"
+                        onClick={handleMobileItemClick}
+                        className="flex items-center justify-between w-full p-4 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 hover:border-red-500/20 transition-all group"
+                      >
                         <div className="flex items-center gap-3">
                           <LayoutDashboard className="w-5 h-5 text-gray-400 group-hover:text-red-500 transition-colors" />
                           <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Workspace</span>
@@ -268,7 +359,7 @@ const Navbar: React.FC = () => {
                       </Link>
 
                       <button
-                        onClick={async () => await signOut()}
+                        onClick={handleMobileSignOut}
                         className="flex items-center justify-center gap-3 w-full py-4 text-sm font-black uppercase tracking-widest text-red-500 bg-red-50 dark:bg-red-500/10 border-2 border-red-500/20 rounded-2xl hover:bg-red-500 hover:text-white transition-all group"
                       >
                         <LogOut className="w-4 h-4 transition-transform group-hover:translate-x-1" />

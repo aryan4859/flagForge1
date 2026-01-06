@@ -16,8 +16,16 @@ import {
 export const metadata: Metadata = {
   title: "Licensing Information - FlagForge CTF Platform",
   description:
-    "FlagForge is open source software released under the GNU General Public License v3.0. Learn about your rights to use, modify, and distribute our CTF platform freely.",
-  keywords: ["GPL-3.0", "open source", "software license", "FlagForge license", "CTF open source", "free software"],
+    "FlagForge is open source under GPL-3.0. Learn your rights to use, modify, and distribute the CTF platform.",
+  keywords: [
+    "GPL-3.0",
+    "open source",
+    "software license",
+    "FlagForge license",
+    "CTF open source",
+    "free software",
+    "Nepal cybersecurity open source",
+  ],
   authors: [{ name: "FlagForge Team" }],
   openGraph: {
     title: "FlagForge Licensing - GPL-3.0 Open Source",
@@ -68,6 +76,8 @@ export default function Licensing() {
             <p className="text-base font-medium text-gray-500 dark:text-gray-400 max-w-3xl leading-relaxed">
               FlagForge is open source software released under the GNU General Public License
             </p>
+            <h3 className="sr-only">FlagForge Licensing Summary</h3>
+            <h4 className="sr-only">GPL-3.0 rights and open source terms</h4>
           </div>
         </div>
 

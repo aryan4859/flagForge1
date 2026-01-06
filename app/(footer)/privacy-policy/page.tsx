@@ -19,8 +19,16 @@ import {
 export const metadata: Metadata = {
   title: "Privacy Policy - FlagForge CTF Platform",
   description:
-    "Learn how FlagForge collects, uses, and protects your personal information. We prioritize data security and never sell your information to third parties. Last updated: August 28, 2025.",
-  keywords: ["privacy policy", "data protection", "GDPR", "user privacy", "FlagForge privacy", "data security"],
+    "FlagForge privacy policy explains how we collect, use, and protect personal data with strong security practices.",
+  keywords: [
+    "privacy policy",
+    "data protection",
+    "GDPR",
+    "user privacy",
+    "FlagForge privacy",
+    "data security",
+    "Nepal cybersecurity privacy",
+  ],
   authors: [{ name: "FlagForge Team" }],
   openGraph: {
     title: "FlagForge Privacy Policy",
@@ -71,6 +79,8 @@ export default function PrivacyPolicy() {
             <p className="text-base font-medium text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
               Last updated: August 28, 2025
             </p>
+            <h3 className="sr-only">FlagForge Privacy Practices</h3>
+            <h4 className="sr-only">Data collection, usage, and security</h4>
           </div>
         </div>
 
