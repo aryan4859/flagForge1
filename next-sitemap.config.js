@@ -82,10 +82,15 @@ const fetchBlogEntries = async () => {
       .map((page) => {
         const properties = page.properties ?? {};
         const status = properties.Status?.select?.name;
-        const publishedDate = properties['Published Date']?.date?.start;
+        const publishedDate =
+          properties['Publish Date']?.date?.start ||
+          properties['Published Date']?.date?.start;
+        const slug =
+          properties.Slug?.rich_text?.[0]?.plain_text?.trim() || page.id;
 
         return {
           id: page.id,
+          slug,
           status,
           lastmod: page.last_edited_time || publishedDate || page.created_time,
         };
@@ -95,7 +100,7 @@ const fetchBlogEntries = async () => {
         return post.status.toLowerCase() === 'published';
       })
       .map((post) => ({
-        loc: `/blogs/${post.id}`,
+        loc: `/blogs/${encodeURIComponent(post.slug)}`,
         lastmod: post.lastmod,
         changefreq: 'monthly',
         priority: 0.6,

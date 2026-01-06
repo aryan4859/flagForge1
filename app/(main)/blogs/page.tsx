@@ -139,7 +139,7 @@ export default function BlogsPage() {
           blogPost: posts.map((post) => ({
             "@type": "BlogPosting",
             headline: post.title,
-            url: `https://flagforge.xyz/blogs/${post.id}`,
+            url: `https://flagforge.xyz/blogs/${post.slug || post.id}`,
             datePublished: post.created,
             description: post.excerpt,
           })),
@@ -175,7 +175,9 @@ export default function BlogsPage() {
           </div>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            {posts.map((post) => (
+            {posts.map((post) => {
+              const postSlug = post.slug || post.id;
+              return (
               <article
                 key={post.id}
                 className="group relative overflow-hidden rounded-[2rem] border border-white/60 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_35px_70px_-30px_rgba(15,23,42,0.5)] hover:border-red-200/80 dark:hover:border-red-500/30 h-full flex flex-col"
@@ -211,7 +213,7 @@ export default function BlogsPage() {
                   </div>
 
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors duration-300 line-clamp-2">
-                    <Link href={`/blogs/${post.id}`}>{post.title}</Link>
+                    <Link href={`/blogs/${postSlug}`}>{post.title}</Link>
                   </h2>
 
                   {post.excerpt && (
@@ -224,7 +226,7 @@ export default function BlogsPage() {
 
                   <div className="mt-auto flex items-center justify-between pt-5 border-t border-gray-100 dark:border-white/5">
                     <Link
-                      href={`/blogs/${post.id}`}
+                      href={`/blogs/${postSlug}`}
                       className="inline-flex items-center text-red-500 font-semibold hover:text-red-600 transition-colors duration-300"
                     >
                       Read more
@@ -245,7 +247,8 @@ export default function BlogsPage() {
                   </div>
                 </div>
               </article>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>
