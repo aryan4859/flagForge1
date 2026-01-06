@@ -230,12 +230,12 @@ export default function BlogPostPage() {
         </p>
       ),
       heading_1: (
-        <h1
+        <h2
           className={`text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 mt-12 first:mt-0 tracking-tight transition-colors duration-300`}
         >
           {value.rich_text?.map((text: RichText) => text.plain_text).join("") ||
             ""}
-        </h1>
+        </h2>
       ),
       heading_2: (
         <h2
@@ -337,11 +337,11 @@ export default function BlogPostPage() {
         components={{
           // Custom component styling
           h1: ({ children }) => (
-            <h1
+            <h2
               className={`text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 mt-12 first:mt-0 tracking-tight transition-colors duration-300`}
             >
               {children}
-            </h1>
+            </h2>
           ),
           h2: ({ children }) => (
             <h2
@@ -505,6 +505,10 @@ export default function BlogPostPage() {
       <div
         className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
       >
+        <h1 className="sr-only">FlagForge Blog Post</h1>
+        <h2 className="sr-only">CTF tutorials and cybersecurity insights</h2>
+        <h3 className="sr-only">Loading blog content</h3>
+        <h4 className="sr-only">Please wait</h4>
         <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
         <div className="relative z-10 flex min-h-screen items-center justify-center">
@@ -519,6 +523,10 @@ export default function BlogPostPage() {
       <div
         className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300 relative overflow-hidden px-4`}
       >
+        <h1 className="sr-only">FlagForge Blog Post</h1>
+        <h2 className="sr-only">Blog post unavailable</h2>
+        <h3 className="sr-only">Error loading content</h3>
+        <h4 className="sr-only">Return to blogs</h4>
         <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
         <div className="text-center bg-white/80 dark:bg-white/[0.03] backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-2xl rounded-[2.5rem] p-10 max-w-md w-full relative z-10">
@@ -541,6 +549,10 @@ export default function BlogPostPage() {
       <div
         className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] flex items-center justify-center transition-colors duration-300 relative overflow-hidden px-4 py-16`}
       >
+        <h1 className="sr-only">FlagForge Blog Post</h1>
+        <h2 className="sr-only">Post not found</h2>
+        <h3 className="sr-only">Browse other CTF articles</h3>
+        <h4 className="sr-only">Back to blogs</h4>
         <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.25),rgba(248,113,113,0))] blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.2),rgba(251,146,60,0))] blur-3xl" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(244,63,94,0.12),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top,rgba(248,113,113,0.14),rgba(2,6,23,0))]" />
@@ -586,6 +598,8 @@ export default function BlogPostPage() {
     <div
       className={`min-h-screen bg-[#f8f4f1] dark:bg-[#0b0b0b] transition-colors duration-300 relative overflow-hidden`}
     >
+      <h3 className="sr-only">FlagForge blog insights</h3>
+      <h4 className="sr-only">Cybersecurity article content</h4>
       <div className="pointer-events-none absolute -top-48 -right-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(248,113,113,0.2),rgba(248,113,113,0))] blur-3xl" />
       <div className="pointer-events-none absolute top-20 left-10 h-56 w-56 rounded-full bg-[radial-gradient(circle_at_center,rgba(251,146,60,0.18),rgba(251,146,60,0))] blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.18),rgba(244,63,94,0))] blur-3xl" />

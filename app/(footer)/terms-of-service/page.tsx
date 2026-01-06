@@ -18,8 +18,15 @@ import {
 export const metadata: Metadata = {
   title: "Terms of Service - FlagForge CTF Platform",
   description:
-    "Read FlagForge's Terms of Service. Understand the rules, responsibilities, and guidelines for using our CTF platform. Last updated: October 28, 2025.",
-  keywords: ["terms of service", "user agreement", "terms and conditions", "FlagForge terms", "CTF rules"],
+    "Read FlagForge's Terms of Service for CTF platform rules, responsibilities, and user guidelines.",
+  keywords: [
+    "terms of service",
+    "user agreement",
+    "terms and conditions",
+    "FlagForge terms",
+    "CTF rules",
+    "Nepal cybersecurity policy",
+  ],
   authors: [{ name: "FlagForge Team" }],
   openGraph: {
     title: "FlagForge Terms of Service",
@@ -66,6 +73,8 @@ export default function TermsOfService() {
             <p className="text-base font-medium text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
               Last updated: October 28, 2025
             </p>
+            <h3 className="sr-only">FlagForge Terms Overview</h3>
+            <h4 className="sr-only">Usage rules and platform guidelines</h4>
           </div>
         </div>
 

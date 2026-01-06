@@ -263,11 +263,23 @@ const PublicUserPage = () => {
     });
   };
 
-  if (loading) return <Loading />;
+  if (loading)
+    return (
+      <>
+        <h1 className="sr-only">FlagForge User Profile</h1>
+        <h2 className="sr-only">Public CTF profile</h2>
+        <h3 className="sr-only">Loading user details</h3>
+        <h4 className="sr-only">Please wait</h4>
+        <Loading />
+      </>
+    );
 
   if (error) {
     return (
       <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white flex items-center justify-center p-6 overflow-x-hidden">
+        <h2 className="sr-only">Profile not available</h2>
+        <h3 className="sr-only">User data could not be loaded</h3>
+        <h4 className="sr-only">Search for another profile</h4>
         <div className="max-w-md w-full bg-white/60 dark:bg-white/[0.03] backdrop-blur-3xl border border-white dark:border-white/10 rounded-[2.5rem] p-10 text-center shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)]">
           <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <User className="w-8 h-8 text-gray-600 dark:text-gray-400" />
@@ -292,6 +304,9 @@ const PublicUserPage = () => {
   return (
     <>
       <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white pb-20 overflow-x-hidden">
+        <h2 className="sr-only">FlagForge public profile</h2>
+        <h3 className="sr-only">CTF rank, badges, and achievements</h3>
+        <h4 className="sr-only">Profile overview</h4>
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-[-5%] right-[-2%] w-[30%] h-[30%] bg-red-600/5 dark:bg-red-600/[0.03] rounded-full blur-[100px]" />
