@@ -48,7 +48,7 @@ export async function GET() {
 
     console.log(`Found ${response.results.length} pages`);
 
-     const getImageUrl = (property: any) => {
+    const getImageUrl = (property: any) => {
       if (!property) return null;
       
       // Handle different Notion file property formats
@@ -70,22 +70,33 @@ export async function GET() {
       return null;
     };
 
-    
+    const getExcerpt = (property: any) => {
+      const richText = property?.rich_text;
+      if (!Array.isArray(richText) || richText.length === 0) return "";
+      const text = richText.map((item: any) => item.plain_text).join("");
+      return text.length > 150 ? `${text.substring(0, 150)}...` : text;
+    };
  
     const posts = response.results.map((page: any) => {
       const properties = page.properties;
       console.log('Available properties:', Object.keys(properties));
-     const thumbnailUrl = getImageUrl(properties.Thumbnail);
+      const thumbnailUrl = getImageUrl(properties.Thumbnail);
+      const contentExcerpt = getExcerpt(properties.Content);
+      const slugValue =
+        properties.Slug?.rich_text?.[0]?.plain_text || page.id;
 
       return {
         id: page.id,
         title: properties.Title?.title?.[0]?.plain_text || 'Untitled',
         thumbnail: thumbnailUrl,
-        slug: properties.Slug?.rich_text?.[0]?.plain_text || page.id,
-        excerpt: '', // You don't have an excerpt field, we'll use first paragraph from content
-        tags: [], // You don't have tags, we'll leave empty
+        slug: slugValue,
+        excerpt: contentExcerpt,
+        tags: properties.Tags?.multi_select?.map((tag: any) => tag.name) || [],
         status: properties.Status?.select?.name || 'Published',
-        created: properties['Published Date']?.date?.start || page.created_time,
+        created:
+          properties['Publish Date']?.date?.start ||
+          properties['Published Date']?.date?.start ||
+          page.created_time,
         updated: page.last_edited_time,
         cover: properties['File and Media']?.files?.[0]?.external?.url || 
                properties['File and Media']?.files?.[0]?.file?.url ||

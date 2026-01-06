@@ -254,10 +254,10 @@ const Home = () => {
                     </span>
                     <Star className="h-5 w-5 text-red-500 dark:text-red-500 fill-red-500 dark:fill-red-500" />
                   </div>
-                  <div className="flex text-center justify-center pt-10">
+                  <div className="flex justify-center lg:justify-start pt-10 text-center lg:text-left">
                     {/* Enhanced User Level Display */}
                     {userStats && (
-                      <div className="text-end">
+                      <div>
                         <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-white/70 dark:bg-white/[0.06] border border-white/60 dark:border-white/10 shadow-xl transition-colors duration-300">
                           <div className="relative">
                             <Shield className="h-8 w-8 text-red-500 dark:text-red-500" />

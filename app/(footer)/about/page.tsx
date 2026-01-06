@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
 import {
   Info,
   ShieldAlert,
@@ -24,25 +25,58 @@ import {
 
 export const metadata: Metadata = {
   title: "About FlagForge | CTF Platform for Cybersecurity Learning",
-  description: "FlagForge is a dynamic CTF platform dedicated to promoting cybersecurity awareness and fostering a passion for coding. Join our global community of learners and compete in engaging challenges.",
-  keywords: ["CTF", "cybersecurity", "capture the flag", "coding challenges", "hacking", "security learning", "FlagForge"],
+  description: "FlagForge is a dynamic CTF platform promoting cybersecurity awareness and hands-on coding challenges. Join our global community of learners.",
+  keywords: [
+    "CTF",
+    "cybersecurity",
+    "capture the flag",
+    "coding challenges",
+    "hacking",
+    "security learning",
+    "FlagForge",
+    "Nepal cybersecurity community",
+  ],
   authors: [{ name: "FlagForge Team" }],
   openGraph: {
     title: "About FlagForge | CTF Platform",
     description: "Where curiosity meets cybersecurity. Learn, compete, and grow with our global community.",
     type: "website",
     siteName: "FlagForge",
+    url: "https://flagforge.xyz/about",
   },
   twitter: {
     card: "summary_large_image",
     title: "About FlagForge | CTF Platform",
     description: "Where curiosity meets cybersecurity. Learn, compete, and grow with our global community.",
   },
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 export default function About() {
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://flagforge.xyz/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": "https://flagforge.xyz/about"
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-950 dark:text-white pb-20 relative overflow-hidden transition-colors duration-500">
+      <JsonLd data={breadcrumbData} />
 
       {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -88,7 +122,7 @@ export default function About() {
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 text-red-500">
                       <Zap className="w-6 h-6" />
-                      <h3 className="text-2xl font-black tracking-tighter uppercase dark:text-white">Our Platform</h3>
+                      <h2 className="text-2xl font-black tracking-tighter uppercase dark:text-white">Our Platform</h2>
                     </div>
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
                       Our platform features a clean, responsive interface and an easy-to-use

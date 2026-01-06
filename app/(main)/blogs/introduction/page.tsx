@@ -3,12 +3,23 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Introduction to CTF Challenges for Beginners | FlagForge Blog",
-    description: "Learn what Capture The Flag (CTF) challenges are, how they work, and how to get started with cybersecurity competitions. A comprehensive guide for beginners.",
-    keywords: ["CTF", "capture the flag", "cybersecurity", "beginners guide", "hacking challenges", "CTF tutorial"],
+    description: "Learn what Capture The Flag (CTF) challenges are, how they work, and how to get started in cybersecurity competitions.",
+    keywords: [
+        "CTF",
+        "capture the flag",
+        "cybersecurity",
+        "beginners guide",
+        "hacking challenges",
+        "CTF tutorial",
+        "Nepal cybersecurity beginners",
+    ],
     openGraph: {
         title: "Introduction to CTF Challenges for Beginners",
         description: "Your complete guide to getting started with CTF competitions and cybersecurity challenges.",
         type: "article",
+    },
+    alternates: {
+        canonical: "/blogs/introduction",
     },
 };
 

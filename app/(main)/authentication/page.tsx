@@ -192,20 +192,24 @@ const AuthPage = () => {
                   )}
                 </div>
               </button>
-              <button
-                onClick={() => router.push("/home")}
-                disabled={isSigningIn}
-                className="w-full group transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              <Link
+                href="/home"
+                onClick={(e) => {
+                  if (isSigningIn) {
+                    e.preventDefault();
+                  }
+                }}
+                aria-disabled={isSigningIn}
+                tabIndex={isSigningIn ? -1 : 0}
+                className="w-full group transition-opacity aria-disabled:opacity-50 aria-disabled:cursor-not-allowed"
               >
-                <div
-                  className="relative h-12 flex items-center justify-center px-6 text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-white/20 group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-hover:-translate-y-0.5 group-active:translate-y-0"
-                >
+                <div className="relative h-12 flex items-center justify-center px-6 text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl transition-all duration-300 group-hover:border-gray-300 dark:group-hover:border-white/20 group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-hover:-translate-y-0.5 group-active:translate-y-0">
                   <HomeIcon className="w-4 h-4 mr-2.5 shrink-0" />
                   <span className="font-bold text-base tracking-tight whitespace-nowrap">
                     Return to Home
                   </span>
                 </div>
-              </button>
+              </Link>
             </div>
 
             <div className="order-4 mt-12 text-center space-y-6">

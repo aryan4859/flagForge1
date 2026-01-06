@@ -2,13 +2,14 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Hero from "@/components/Hero";
 import Loading from "@/components/loading";
 import JsonLd from "@/components/JsonLd";
+import { landingFaqItems } from "@/lib/faq";
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -43,30 +44,25 @@ export default function Home() {
   const faqData = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": [
+    "mainEntity": landingFaqItems.map((item) => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer
+      }
+    }))
+  };
+
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
       {
-        "@type": "Question",
-        "name": "Is FlagForge completely free?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes! FlagForge is completely free to use. All challenges, features, and competitions are available at no cost. We believe in making cybersecurity education accessible to everyone."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "Do I need prior experience in cybersecurity?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "No! We welcome participants of all skill levels. We have challenges ranging from beginner-friendly to advanced. Start with easier challenges and progressively work your way up as you learn."
-        }
-      },
-      {
-        "@type": "Question",
-        "name": "How does the hint system work?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "When you're stuck on a challenge, you can request hints. You have two options: watch a short advertisement to get a hint for free, or use your earned points to unlock hints instantly. This system keeps the platform free while helping you learn."
-        }
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://flagforge.xyz/"
       }
     ]
   };
@@ -81,6 +77,8 @@ export default function Home() {
         <JsonLd data={organizationData} />
         <JsonLd data={websiteData} />
         <JsonLd data={faqData} />
+        <JsonLd data={breadcrumbData} />
+        <h4 className="sr-only">FlagForge CTF Platform Overview</h4>
         <main>
           <Hero />
         </main>
