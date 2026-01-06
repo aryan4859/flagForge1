@@ -41,11 +41,7 @@ package-lock.json
 k6-test.js
 
 bun.lockb
-remove-duplicate.js
-recalculate.js
-sync-badges.js
-userroleupdate.js
-reset-user-point.js
+scripts/delete-problem.js
 
 #test files
 app/(main)/testprofile/page.tsx
