@@ -63,7 +63,6 @@ const SITEMAP_EXCLUDE = [
   '/leaderboard',
   '/home',
   '/unauthorized',
-  '/authentication',
 ];
 
 const fetchBlogEntries = async () => {
@@ -179,7 +178,7 @@ module.exports = {
     let priority = config.priority;
     if (path === '/') {
       priority = 1.0;
-    } else if (['/about', '/contact', '/blogs'].includes(path)) {
+    } else if (['/about', '/contact', '/blogs', '/authentication'].includes(path)) {
       priority = 0.9;
     }
 
