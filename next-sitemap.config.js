@@ -60,6 +60,7 @@ const SITEMAP_EXCLUDE = [
   '/problems',
   '/leaderboard',
   '/home',
+  'resources/uploads',
   '/unauthorized',
 ];
 
