@@ -141,7 +141,7 @@ const AuthPage = () => {
                     <button
                       onClick={() => setErrorStatus(null)}
                       aria-label="Dismiss error"
-                      className="absolute top-0 right-0 p-1 hover:bg-red-500/10 rounded-lg transition-colors group/btn"
+                      className="absolute top-0 right-0 p-1 hover:bg-red-500/10 rounded-lg transition-colors group/btn focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 focus-visible:ring-offset-red-500/10"
                     >
                       <X className="w-4 h-4 text-gray-400 group-hover/btn:text-red-500" />
                     </button>
