@@ -197,26 +197,22 @@ module.exports = {
     };
   },
   robotsTxtOptions: {
-    policies: [
-      {
-        userAgent: '*',
-        disallow: [],
-      },
-    ],
     transformRobotsTxt: async (config) => {
-      const lines = [
-        'User-agent: *',
-        'Allow: /',
-        'Allow: /llms.txt',
-        'Disallow:',
-        '',
+      const disallowRules = SITEMAP_EXCLUDE.map((path) => `Disallow: ${path}`);
+
+      const sitemapRules = [
         `Sitemap: ${config.siteUrl}/sitemap.xml`,
         `Sitemap: ${config.siteUrl}/sitemap1.xml`,
         `Sitemap: ${config.siteUrl}/sitemap.txt`,
-        '',
       ];
 
-      return lines.join('\n');
+      const customRules = [
+        'User-agent: *',
+        'Allow: /llms.txt',
+        ...disallowRules,
+      ];
+
+      return [...customRules, '', ...sitemapRules].join('\n');
     },
   },
 };

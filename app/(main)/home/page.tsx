@@ -21,8 +21,7 @@ import {
   Zap,
   Star,
 } from "lucide-react";
-
-
+import InstagramFeed from "@/components/InstagramFeed";
 
 interface UserStats {
   totalScore: number;
@@ -576,6 +575,9 @@ const Home = () => {
               </div>
             </div>
           </div>
+
+          {/* Instagram Feed Section */}
+          <InstagramFeed />
         </div>
       </div>
     </div>
