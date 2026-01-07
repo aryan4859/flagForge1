@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Flame, ShieldCheck, Sparkles, Orbit, ArrowRight, AlertCircle, Home as HomeIcon, X, Loader2 } from "lucide-react";
+import { Flame, ShieldCheck, Sparkles, Orbit, ArrowRight, AlertCircle, Home as HomeIcon, X, Loader2, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import Loading from "@/components/loading";
 
@@ -222,9 +222,17 @@ const AuthPage = () => {
 
               <p className="text-[10px] leading-relaxed text-gray-400 dark:text-white-600 font-bold uppercase tracking-wider">
                 <span className="mx-2 opacity-70">By signing up, you agree to our <br></br></span>
-                <Link href="/privacy-policy" className="text-red-500/80 hover:text-red-500 hover:underline underline-offset-4 decoration-2 transition-colors">Privacy Policy</Link>
+                <Link href="/privacy-policy" className="text-red-500/80 hover:text-red-500 hover:underline underline-offset-4 decoration-2 transition-colors inline-flex items-center gap-1" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                  <ExternalLink className="w-3 h-3" />
+                  <span className="sr-only">(opens in new tab)</span>
+                </Link>
                 <span className="mx-2 opacity-50">&</span>
-                <Link href="/terms-of-service" className="text-red-500/80 hover:text-red-500 hover:underline underline-offset-4 decoration-2 transition-colors">Terms & Conditions</Link>
+                <Link href="/terms-of-service" className="text-red-500/80 hover:text-red-500 hover:underline underline-offset-4 decoration-2 transition-colors inline-flex items-center gap-1" target="_blank" rel="noopener noreferrer">
+                  Terms & Conditions
+                  <ExternalLink className="w-3 h-3" />
+                  <span className="sr-only">(opens in new tab)</span>
+                </Link>
               </p>
             </div>
 
