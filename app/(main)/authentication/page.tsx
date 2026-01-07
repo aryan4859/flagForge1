@@ -5,7 +5,6 @@ import { FcGoogle } from "react-icons/fc";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Flame, ShieldCheck, Sparkles, Orbit, ArrowRight, AlertCircle, Home as HomeIcon, X, Loader2 } from "lucide-react";
 import Link from "next/link";
-import Loading from "@/components/loading";
 
 const AuthPage = () => {
   const router = useRouter();
@@ -46,10 +45,6 @@ const AuthPage = () => {
       router.replace(callbackUrl);
     }
   }, [sessionStatus, router, errorStatus, callbackUrl]);
-
-  if (sessionStatus === "loading") {
-    return <Loading />;
-  }
 
   if (sessionStatus === "authenticated" && !errorStatus) {
     return null;
