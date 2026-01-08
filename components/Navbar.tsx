@@ -175,11 +175,24 @@ const Navbar: React.FC = () => {
               className="p-2.5 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 active:scale-90"
               aria-label="Toggle dark mode"
             >
-              {theme === "dark" ? (
-                <SunIcon className="h-5 w-5" />
-              ) : (
-                <MoonIcon className="h-5 w-5" />
-              )}
+              <div className="relative h-5 w-5">
+                <SunIcon
+                  className={cn(
+                    "absolute h-full w-full transition-all duration-300",
+                    theme === "dark"
+                      ? "rotate-0 scale-100"
+                      : "-rotate-90 scale-0"
+                  )}
+                />
+                <MoonIcon
+                  className={cn(
+                    "absolute h-full w-full transition-all duration-300",
+                    theme === "dark"
+                      ? "rotate-90 scale-0"
+                      : "rotate-0 scale-100"
+                  )}
+                />
+              </div>
             </button>
 
             {session.status === "authenticated" ? (
@@ -242,9 +255,23 @@ const Navbar: React.FC = () => {
         <div className="md:hidden flex items-center gap-4">
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all active:scale-90"
+            className="p-2.5 rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 active:scale-90"
+            aria-label="Toggle dark mode"
           >
-            {theme === "dark" ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
+            <div className="relative h-6 w-6">
+              <SunIcon
+                className={cn(
+                  "absolute h-full w-full transition-all duration-300",
+                  theme === "dark" ? "rotate-0 scale-100" : "-rotate-90 scale-0"
+                )}
+              />
+              <MoonIcon
+                className={cn(
+                  "absolute h-full w-full transition-all duration-300",
+                  theme === "dark" ? "rotate-90 scale-0" : "rotate-0 scale-100"
+                )}
+              />
+            </div>
           </button>
 
           <Sheet open={open} onOpenChange={handleSheetOpenChange}>
