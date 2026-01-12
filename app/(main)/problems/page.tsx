@@ -639,7 +639,8 @@ const Page: React.FC = () => {
     return <AuthError />;
   }
 
-  const shouldShowPagination = problems.length > 0 || currentPage > 1;
+  const shouldShowPagination =
+    !isSearchActive && (problems.length > 0 || currentPage > 1);
 
   return (
     <div className="relative flex flex-col justify-center items-center gap-8 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 animate-in fade-in duration-500">
