@@ -570,7 +570,7 @@ const ProfilePage = () => {
                     <p className="font-black uppercase text-[11px] text-yellow-500 tracking-widest mb-1">{badge.name}</p>
                     <p className="text-xs font-medium text-gray-300 leading-relaxed mb-2">{badge.description}</p>
                     <div className="border-t border-white/10 pt-2 mt-2 flex items-center justify-center gap-2 text-[9px] font-bold text-gray-500 uppercase">
-                      <span>Awarded by: FlagForge</span>
+                      {/* <span>Awarded by: FlagForge</span> */}
                       <span className="w-1 h-1 rounded-full bg-white/20" />
                       <span>{formatDate(badge.assignedAt)}</span>
                     </div>
@@ -1011,10 +1011,10 @@ const ProfilePage = () => {
                             {badge.description}
                           </p>
                           <div className="pt-6 border-t border-yellow-400/20 text-center space-y-1">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-yellow-600 dark:text-yellow-500">
+                            {/* <div className="text-[10px] font-black uppercase tracking-widest text-yellow-600 dark:text-yellow-500">
                               Awarded by: {badge.assignedBy}
-                            </div>
-                            <div className="text-[9px] font-bold text-yellow-600/60 dark:text-yellow-500/50">
+                            </div> */}
+                            <div className="text-[12px] font-bold text-yellow-600/60 dark:text-yellow-500/50">
                               {formatDate(badge.assignedAt)}
                             </div>
                           </div>

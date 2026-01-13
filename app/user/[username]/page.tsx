@@ -576,10 +576,10 @@ const PublicUserPage = () => {
                                 {badge.description}
                               </p>
                               <div className="pt-6 border-t border-yellow-400/20 text-center space-y-1">
-                                <div className="text-[10px] font-black uppercase tracking-widest text-yellow-600 dark:text-yellow-500">
+                                {/* <div className="text-[10px] font-black uppercase tracking-widest text-yellow-600 dark:text-yellow-500">
                                   Awarded by: <span className="font-semibold">Flagforge</span>
-                                </div>
-                                <div className="text-[9px] font-bold text-yellow-600/60 dark:text-yellow-500/50">
+                                </div> */}
+                                <div className="text-[12px] font-bold text-yellow-600/60 dark:text-yellow-500/50">
                                   {formatDate(badge.assignedAt)}
                                 </div>
                               </div>
@@ -590,9 +590,9 @@ const PublicUserPage = () => {
                                   <div className="text-center">
                                     <div className="font-semibold text-yellow-300">{badge.name}</div>
                                     <div className="text-gray-300">{badge.description}</div>
-                                    <div className="text-gray-400 mt-1">
+                                    {/* <div className="text-gray-400 mt-1">
                                       By: {badge.assignedBy}
-                                    </div>
+                                    </div> */}
                                     <div className="text-gray-400 text-[10px]">
                                       {formatDate(badge.assignedAt)}
                                     </div>
