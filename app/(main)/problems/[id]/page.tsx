@@ -76,6 +76,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const [isDone, setIsDone] = useState<boolean>(false);
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [isIncorrect, setIsIncorrect] = useState<boolean>(false);
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [showHint, setShowHint] = useState<boolean>(false);
@@ -371,12 +372,14 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
         setMessage(result.message);
         if (result.message.includes("Right")) {
           setIsCorrect(true);
+          setIsIncorrect(false);
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 3000);
           setFlag("");
           setTimeout(() => setIsDone(true), 5000);
           setTimeout(() => router.push("/problems"), 8000);
         } else {
+          setIsIncorrect(true);
           setTimeout(
             () => (lastSubmittedFlag.current = ""),
             MIN_SUBMISSION_INTERVAL
@@ -384,6 +387,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
         }
       } else {
         setMessage(result.message || "An error occurred");
+        setIsIncorrect(true);
         setTimeout(
           () => (lastSubmittedFlag.current = ""),
           MIN_SUBMISSION_INTERVAL
@@ -408,6 +412,13 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleSubmit();
+    }
+  };
+
+  const handleFlagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFlag(e.target.value);
+    if (isIncorrect) {
+      setIsIncorrect(false);
     }
   };
 
@@ -828,11 +839,13 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   type="text"
                   className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${submitting || isCorrect || isExpired
                     ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60"
-                    : "border-gray-300 dark:border-gray-700"
+                    : isIncorrect
+                      ? "border-red-500 dark:border-red-600"
+                      : "border-gray-300 dark:border-gray-700"
                     }`}
                   placeholder="Flag here!"
                   value={flag}
-                  onChange={(e) => setFlag(e.target.value)}
+                  onChange={handleFlagChange}
                   onKeyPress={handleKeyPress}
                   disabled={submitting || isCorrect || isExpired}
                   maxLength={100}
