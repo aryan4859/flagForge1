@@ -138,6 +138,7 @@ export default function FloatingChat({
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
+          aria-label="Open hint chat"
           className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 cursor-pointer relative"
         >
           <svg
@@ -193,6 +194,7 @@ export default function FloatingChat({
             </div>
             <button
               onClick={() => setIsOpen(false)}
+              aria-label="Close hint chat"
               className="text-white hover:bg-white hover:bg-opacity-20 rounded-full w-8 h-8 flex items-center justify-center transition-all"
             >
               <svg
