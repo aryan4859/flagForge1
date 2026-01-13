@@ -472,10 +472,13 @@ const Home = () => {
                     >
                       {latestRoom.category}
                     </span>
-                    <div className="flex items-center gap-2 text-sm text-red-500 dark:text-red-500 hover:text-red-600 dark:hover:text-red-500 transition-colors duration-300">
+                    <Link
+                      href="/problems"
+                      className="group flex items-center gap-2 text-sm text-red-500 dark:text-red-500 hover:text-red-600 dark:hover:text-red-500 transition-colors duration-300"
+                    >
                       <PlayCircle className="h-4 w-4" />
-                      <Link href="/problems"> Start Challenge </Link>
-                    </div>
+                      <span>Start Challenge</span>
+                    </Link>
                   </div>
                 </div>
               ) : (
