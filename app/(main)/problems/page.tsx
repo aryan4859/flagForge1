@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import QustionCards from "@/components/QustionCards";
+import QustionCards from "@/components/QuestionCards";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { IoFilter, IoChevronDown, IoSearch } from "react-icons/io5";
