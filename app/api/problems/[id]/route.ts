@@ -171,6 +171,7 @@ export async function POST(
     // Get the submitted flag from request body
     const body = await request.json();
     const { flag: submittedFlag } = body;
+    const isPractice = request.nextUrl.searchParams.get("practice") === "true";
 
     if (!submittedFlag || typeof submittedFlag !== "string") {
       return createErrorResponse("Flag is required", HttpStatusCode.BadRequest);
@@ -195,8 +196,24 @@ export async function POST(
     );
     if (userError) return userError;
 
+    const trimmedSubmittedFlag = submittedFlag.trim();
+    const correctFlag = question.flag.trim();
+
     // Check if user has already solved this question
     const existingSolution = await checkExistingSolution(user._id, id);
+    if (existingSolution && isPractice) {
+      const isCorrect = trimmedSubmittedFlag === correctFlag;
+      return NextResponse.json(
+        {
+          message: isCorrect
+            ? "Practice mode: Correct flag."
+            : "Practice mode: Incorrect flag. Try again!",
+          correct: isCorrect,
+          practice: true,
+        },
+        { status: HttpStatusCode.Ok }
+      );
+    }
     if (existingSolution) {
       return NextResponse.json(
         { message: "You have already solved this challenge!" },
@@ -205,9 +222,6 @@ export async function POST(
     }
 
     // Check if the submitted flag is correct
-    const trimmedSubmittedFlag = submittedFlag.trim();
-    const correctFlag = question.flag.trim();
-
     if (trimmedSubmittedFlag === correctFlag) {
       // Flag is correct - save the solution
       try {
@@ -261,6 +275,7 @@ export async function POST(
             message: "Right! Congratulations on solving the challenge!",
             points: finalPoints,
             success: true,
+            correct: true,
           },
           { status: HttpStatusCode.Ok }
         );
@@ -277,6 +292,7 @@ export async function POST(
         {
           message: "Incorrect flag. Try again!",
           success: false,
+          correct: false,
         },
         { status: HttpStatusCode.Ok }
       );

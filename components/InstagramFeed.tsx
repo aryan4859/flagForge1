@@ -16,6 +16,7 @@ interface InstaPost {
 export default function InstagramFeed() {
     const [posts, setPosts] = useState<InstaPost[]>([]);
     const [loading, setLoading] = useState(true);
+    const [fallbackImages, setFallbackImages] = useState<Record<string, string>>({});
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -74,41 +75,54 @@ export default function InstagramFeed() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {posts.map((post) => (
-                    <Link
-                        key={post.id}
-                        href={post.link}
-                        target="_blank"
-                        className="group relative aspect-square overflow-hidden rounded-[2rem] bg-gray-100 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
-                    >
-                        <Image
-                            src={post.imgUrl}
-                            alt={post.caption}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-110"
-                            unoptimized // Instagram URLs can be tricky with Next.js Image optimization sometimes
-                        />
+                {posts.map((post) => {
+                    const fallbackSrc =
+                        fallbackImages[post.id] ??
+                        post.imgUrl;
+                    const proxySrc = `/api/instagram/image?src=${encodeURIComponent(post.imgUrl)}`;
 
-                        {/* Overlay */}
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-6">
-                            <div className="flex items-center gap-2 text-white font-bold">
-                                <Heart className="h-6 w-6 fill-white" />
-                                <span>Like</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-white font-bold">
-                                <MessageCircle className="h-6 w-6 fill-white" />
-                                <span>Comment</span>
-                            </div>
-                        </div>
+                    return (
+                        <Link
+                            key={post.id}
+                            href={post.link}
+                            target="_blank"
+                            className="group relative aspect-square overflow-hidden rounded-[2rem] bg-gray-100 dark:bg-white/[0.03] border border-white/60 dark:border-white/10 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
+                        >
+                            <Image
+                                src={fallbackSrc}
+                                alt={post.caption}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                unoptimized // Instagram URLs can be tricky with Next.js Image optimization sometimes
+                                onError={() => {
+                                    setFallbackImages((prev) => {
+                                        if (prev[post.id]) return prev;
+                                        return { ...prev, [post.id]: proxySrc };
+                                    });
+                                }}
+                            />
 
-                        {/* Caption Gradient */}
-                        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 p-6 flex items-end">
-                            <p className="text-white text-xs line-clamp-2 font-medium">
-                                {post.caption}
-                            </p>
-                        </div>
-                    </Link>
-                ))}
+                            {/* Overlay */}
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-6">
+                                <div className="flex items-center gap-2 text-white font-bold">
+                                    <Heart className="h-6 w-6 fill-white" />
+                                    <span>Like</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-white font-bold">
+                                    <MessageCircle className="h-6 w-6 fill-white" />
+                                    <span>Comment</span>
+                                </div>
+                            </div>
+
+                            {/* Caption Gradient */}
+                            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 p-6 flex items-end">
+                                <p className="text-white text-xs line-clamp-2 font-medium">
+                                    {post.caption}
+                                </p>
+                            </div>
+                        </Link>
+                    );
+                })}
             </div>
         </section>
     );
