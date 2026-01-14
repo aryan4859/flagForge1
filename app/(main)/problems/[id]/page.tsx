@@ -557,22 +557,93 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       )}
       {isDone ? (
         <div className="max-w-screen-xl mx-auto px-4 sm:px-8 py-12 relative z-10">
-          <div className="flex flex-col gap-8 justify-center items-center text-center">
-            <div className="w-full max-w-xl rounded-2xl border border-green-200/70 dark:border-green-800/50 bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl p-6 sm:p-8 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.7)]">
-              <Image
-                src={doubt}
-                alt="Doubting skill"
-                className="w-72 mx-auto drop-shadow-xl"
-              />
-              <p className="w-full mx-auto text-center text-lg text-gray-800 dark:text-gray-300 transition-colors duration-300 mt-6">
-                Doubting your skills? Let's return to{" "}
-                <Link
-                  href="/problems"
-                  className="text-red-500 dark:text-red-500 hover:underline transition-colors duration-300"
-                >
-                  problems
-                </Link>
-              </p>
+          <div className="relative overflow-hidden rounded-[2.75rem] border border-emerald-200/70 dark:border-emerald-800/50 bg-gradient-to-br from-white/95 via-emerald-50/60 to-sky-50/60 dark:from-gray-950/90 dark:via-emerald-950/30 dark:to-gray-950/80 p-8 sm:p-12 shadow-[0_35px_90px_-55px_rgba(15,23,42,0.8)]">
+            <div className="pointer-events-none absolute -top-24 right-[-10%] h-64 w-64 rounded-full bg-emerald-300/30 blur-3xl dark:bg-emerald-500/10" />
+            <div className="pointer-events-none absolute -bottom-24 left-[-10%] h-64 w-64 rounded-full bg-sky-200/40 blur-3xl dark:bg-sky-500/10" />
+            <div className="relative z-10 grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-center">
+              <div className="flex flex-col gap-6">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
+                    <Trophy className="h-6 w-6" aria-hidden="true" />
+                  </div>
+                  <span className="rounded-full border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50/80 dark:bg-emerald-900/30 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700 dark:text-emerald-200">
+                    Challenge Completed
+                  </span>
+                </div>
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+                    {problems.title}
+                  </h1>
+                  <p className="mt-3 text-base sm:text-lg text-gray-700 dark:text-gray-300 max-w-xl">
+                    You already solved this challenge. Pick a new one and keep
+                    the momentum going.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="rounded-2xl border border-emerald-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                      Points Earned
+                    </p>
+                    <p className="mt-2 text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                      {problems.points}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-emerald-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                      Category
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
+                      {problems.category}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-emerald-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                      Hints Used
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
+                      {usedHints.length}
+                    </p>
+                  </div>
+                </div>
+                {problems.expiryDate && (
+                  <div className="rounded-2xl border border-yellow-200/70 dark:border-yellow-800/60 bg-yellow-50/80 dark:bg-yellow-900/20 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.2em] text-yellow-700 dark:text-yellow-200">
+                      Time Limited
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-yellow-800 dark:text-yellow-200">
+                      Expired on: {formatExpiryDate(problems.expiryDate)}
+                    </p>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href="/problems"
+                    className="inline-flex items-center gap-2 rounded-full bg-emerald-600 text-white px-5 py-2 text-sm font-semibold shadow-sm hover:bg-emerald-700 transition-colors"
+                  >
+                    Back to problems
+                  </Link>
+                  <Link
+                    href="/leaderboard"
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-200/80 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-5 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-900 transition-colors"
+                  >
+                    View leaderboard
+                  </Link>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="absolute -inset-6 rounded-[2.5rem] bg-emerald-200/30 blur-3xl dark:bg-emerald-500/10" />
+                <div className="relative rounded-[2rem] border border-emerald-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/70 p-6 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.7)]">
+                  <Image
+                    src={doubt}
+                    alt="Challenge completed"
+                    className="w-full max-w-sm mx-auto drop-shadow-xl"
+                  />
+                  <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
+                    Ready for another challenge? Explore the problem list and
+                    push your score higher.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
