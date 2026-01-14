@@ -159,7 +159,7 @@ const Navbar: React.FC = () => {
             ) : (
               <li>
                 <Link
-                  href="https://blog.flagforge.xyz"
+                  href="https://blogs.flagforge.xyz"
                   target="_blank"
                   className="px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:text-red-500 transition-colors"
                 >
@@ -327,7 +327,7 @@ const Navbar: React.FC = () => {
                       <>
                         <li>
                           <Link
-                            href="https://blog.flagforge.xyz"
+                            href="https://blogs.flagforge.xyz"
                             target="_blank"
                             onClick={handleMobileItemClick}
                             className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-100 dark:hover:border-white/10"

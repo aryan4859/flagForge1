@@ -113,6 +113,11 @@ export async function GET(
       );
     }
 
+    const hints = Array.isArray(question.hints) ? question.hints : [];
+    const hintCount = hints.filter((hint: any) => {
+      return hint?.text && String(hint.text).trim() !== "";
+    }).length;
+
     const questionData = question.toObject();
     delete questionData.flag;
     delete questionData.hints; // Remove hints from main data
@@ -130,6 +135,7 @@ export async function GET(
 
     return NextResponse.json({
       question: questionData,
+      hintCount,
       isDone,
       expired,
       timeRemaining,

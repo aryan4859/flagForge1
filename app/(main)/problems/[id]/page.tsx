@@ -83,6 +83,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const [availableHints, setAvailableHints] = useState<Hint[]>([]);
   const [hintLoading, setHintLoading] = useState<boolean>(false);
   const [usedHints, setUsedHints] = useState<number[]>([]);
+  const [hintCount, setHintCount] = useState<number>(0);
   const [chatHintStats, setChatHintStats] = useState({
     totalPointsDeducted: 0,
     totalHintsUsed: 0,
@@ -164,6 +165,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       setIsDone(data.isDone);
       setIsCorrect(data.isDone);
       setUsedHints(data.usedHints || []);
+      setHintCount(typeof data.hintCount === "number" ? data.hintCount : 0);
 
       // Ensure we have proper hints array
       const questionData = data.question || {};
@@ -211,6 +213,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       const data = await response.json();
       setAvailableHints(data.hints || []);
       setUsedHints(data.usedHints || []);
+      setHintCount(Array.isArray(data.hints) ? data.hints.length : 0);
     } catch (error) {
       console.error("Error fetching hints:", error);
       setMessage("Failed to load hints. Please try again.");
@@ -742,13 +745,13 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                       className="h-5 w-5 text-rose-600 dark:text-rose-300"
                       aria-hidden="true"
                     />
-                    <span>Available Hints ({availableHints.length})</span>
+                    <span>Available Hints</span>
                   </span>
                   <span className="flex items-center gap-3">
                     <span
                       className={`text-sm sm:text-md px-4 py-2 shadow-sm text-center bg-red-500/90 dark:bg-red-500 rounded-full text-white font-bold transition-colors duration-300 ${hintLoading ? "animate-pulse" : ""}`}
                     >
-                      {hintLoading ? "Loading..." : problems.hints?.length || 0}
+                      {hintLoading ? "Loading..." : hintCount}
                     </span>
                     <ChevronDown
                       className={`h-4 w-4 text-rose-600 dark:text-rose-300 transition-transform duration-300 ${showHint ? "rotate-180" : ""}`}

@@ -5,6 +5,19 @@ import fallbackPosts from "@/lib/instagram-data.json";
 let cache: { data: any; timestamp: number } | null = null;
 const CACHE_DURATION = 3600 * 1000; // 1 hour
 
+const buildFallbackPosts = () =>
+    fallbackPosts.map((post: any) => {
+        const shortcode =
+            post?.id ||
+            (typeof post?.link === "string"
+                ? post.link.match(/\/p\/([^/]+)/)?.[1]
+                : null);
+        const imgUrl = shortcode
+            ? `https://www.instagram.com/p/${shortcode}/media/?size=l`
+            : post.imgUrl;
+        return { ...post, imgUrl };
+    });
+
 export async function GET() {
     const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
     const businessId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
@@ -12,7 +25,7 @@ export async function GET() {
     // If credentials are not provided, use fallback data
     if (!accessToken || !businessId) {
         console.warn("Instagram credentials missing. Using fallback data.");
-        return NextResponse.json(fallbackPosts.slice(0, 3));
+        return NextResponse.json(buildFallbackPosts().slice(0, 3));
     }
 
     // Check cache
@@ -55,6 +68,6 @@ export async function GET() {
     } catch (error) {
         console.error("Instagram API Route Error:", error);
         // Fallback to static data if API fails
-        return NextResponse.json(fallbackPosts.slice(0, 3));
+        return NextResponse.json(buildFallbackPosts().slice(0, 3));
     }
 }

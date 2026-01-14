@@ -198,7 +198,7 @@ const Home = () => {
       <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.18),rgba(244,63,94,0))] blur-3xl" />
 
       <div className="relative z-10">
-        <div className="relative overflow-hidden transition-colors duration-300">
+        <div className="relative overflow-x-hidden overflow-y-visible transition-colors duration-300">
           <div className="absolute inset-0 opacity-30">
             <div
               className="absolute inset-0"

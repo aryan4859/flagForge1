@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["writeup.flagforge.xyz", "flagforge.xyz", "github.com"],
+    domains: ["writeup.flagforge.xyz", "flagforge.xyz", "github.com", "www.instagram.com"],
     remotePatterns: [
       {
         protocol: "https",
@@ -64,7 +64,7 @@ const nextConfig = {
               "default-src 'self'; " +
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://pagead2.googlesyndication.com https://www.googletagmanager.com https://accounts.google.com https://va.vercel-scripts.com; " +
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-              "img-src 'self' https://lh3.googleusercontent.com https://prod-files-secure.s3.us-west-2.amazonaws.com data: https://pagead2.googlesyndication.com https://www.google.com https://*.cdninstagram.com https://*.fbcdn.net; " +
+              "img-src 'self' https://lh3.googleusercontent.com https://prod-files-secure.s3.us-west-2.amazonaws.com data: https://pagead2.googlesyndication.com https://www.google.com https://www.instagram.com https://*.cdninstagram.com https://*.fbcdn.net; " +
               "font-src 'self' https://fonts.gstatic.com data:; " +
               "connect-src 'self' https://pagead2.googlesyndication.com https://www.google-analytics.com https://stats.g.doubleclick.net https://*.vercel-analytics.com; " +
               "frame-src 'self' https://googleads.g.doubleclick.net https://accounts.google.com; " +
