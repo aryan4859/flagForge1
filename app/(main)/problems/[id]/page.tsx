@@ -307,18 +307,21 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     const timeSinceLastSubmission = now - lastSubmissionTime.current;
     const flagTrimmed = flag.trim();
 
-    if (submitting || submissionInProgress.current || isCorrect || isExpired) {
-      return { allowed: false};
+    if (isCorrect) {
+      return { allowed: false, reason: "You have already solved this problem" };
     }
-
+    if (isExpired) {
+      return { allowed: false, reason: "This challenge has expired" };
+    }
+    if (submitting || submissionInProgress.current) {
+      return { allowed: false, reason: "Submission in progress..." };
+    }
     if (!flagTrimmed) {
       return { allowed: false, reason: "Please enter a flag" };
     }
-
     if (lastSubmittedFlag.current === flagTrimmed) {
       return { allowed: false, reason: "This flag was already submitted" };
     }
-
     if (timeSinceLastSubmission < MIN_SUBMISSION_INTERVAL) {
       return { allowed: false, reason: "Please wait before submitting again" };
     }
@@ -333,7 +336,12 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     ]);
 
   const handleSubmit = async () => {
-    if (!canSubmit()) {
+    const submissionCheck = canSubmit();
+    if (!submissionCheck.allowed) {
+      if (submissionCheck.reason) {
+        setMessage(submissionCheck.reason);
+        setTimeout(() => setMessage(null), 3000);
+      }
       return;
     }
 
