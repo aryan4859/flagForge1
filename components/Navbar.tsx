@@ -276,7 +276,10 @@ const Navbar: React.FC = () => {
 
           <Sheet open={open} onOpenChange={handleSheetOpenChange}>
             <SheetTrigger asChild>
-              <button className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 active:scale-90 transition-all">
+              <button
+                aria-label="Open navigation menu"
+                className="p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10 active:scale-90 transition-all"
+              >
                 <CgMenuRightAlt className="text-3xl text-gray-900 dark:text-white" />
               </button>
             </SheetTrigger>
