@@ -31,7 +31,8 @@ import {
   User as UserIcon,
   ShieldCheck,
   LayoutDashboard,
-  ArrowRight
+  ArrowRight,
+  Archive
 } from "lucide-react";
 
 const NavItem = ({ href, tags, onClick, style }: NavbarItems) => (
@@ -274,6 +275,7 @@ const Navbar: React.FC = () => {
                             case "home": return <Home className="w-5 h-5" />;
                             case "problems": return <Terminal className="w-5 h-5" />;
                             case "leaderboard": return <Trophy className="w-5 h-5" />;
+                            case "archives": return <Archive className="w-5 h-5" />;
                             case "blogs": return <BookText className="w-5 h-5" />;
                             default: return <Terminal className="w-5 h-5" />;
                           }

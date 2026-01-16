@@ -17,6 +17,11 @@ export const NavbarData: NavbarItems[] = [
     style: undefined
   },
   {
+    href: "/archives",
+    tags: "Archives",
+    style: undefined
+  },
+  {
     href: "/blogs",
     tags: "Blogs",
     style: undefined

@@ -15,7 +15,8 @@ import {
   Activity,
   Clock,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  Archive
 } from 'lucide-react';
 import Loading from '@/components/loading';
 
@@ -29,6 +30,7 @@ interface DashboardStats {
   recentActivity: number;
   newUsersThisWeek: number;
   topCategories: Array<{ _id: string; count: number }>;
+  totalArchivedChallenges: number;
   lastUpdated: string;
 }
 
@@ -115,6 +117,7 @@ const AdminDashboard: React.FC = () => {
     recentActivity: 0,
     newUsersThisWeek: 0,
     topCategories: [],
+    totalArchivedChallenges: 0,
     lastUpdated: ''
   });
 
@@ -236,6 +239,14 @@ const AdminDashboard: React.FC = () => {
       onClick: () => router.push('/roles/developers/admins/badge-templates')
     },
     {
+      title: "CTF Archives",
+      description: "Manage archived challenges from past CTF competitions like PGS CTF 2026.",
+      icon: <Archive className="w-6 h-6 text-white" />,
+      color: "bg-gradient-to-br from-violet-500 to-purple-600",
+      path: "/archives",
+      onClick: () => router.push('/roles/developers/admins/archives')
+    },
+    {
       title: "Resources",
       description: "Add resources for user to learn more about cybersecurity.",
       icon: <LayoutTemplate className="w-6 h-6 text-white" />,
@@ -316,7 +327,7 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
           <StatsCard
             title="Total Challenges"
             value={stats.totalChallenges}
@@ -328,6 +339,12 @@ const AdminDashboard: React.FC = () => {
             value={stats.activeChallenges}
             icon={<Activity className="w-6 h-6 text-white" />}
             color="bg-green-500"
+          />
+          <StatsCard
+            title="Archived Challenges"
+            value={stats.totalArchivedChallenges}
+            icon={<Archive className="w-6 h-6 text-white" />}
+            color="bg-violet-500"
           />
           <StatsCard
             title="Badge Templates"
