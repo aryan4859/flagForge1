@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import OnboardingGuide from "@/components/OnboardingGuide";
@@ -20,8 +21,10 @@ import {
   Shield,
   Zap,
   Star,
+  Archive,
 } from "lucide-react";
-import InstagramFeed from "@/components/InstagramFeed";
+import ArchivesSection from "@/components/ArchivesSection";
+import ScoreboardSection from "@/components/ScoreboardSection";
 
 interface UserStats {
   totalScore: number;
@@ -52,10 +55,18 @@ interface SolvedRoom {
 
 const Home = () => {
   const { status: sessionStatus, data: session } = useSession();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [latestRoom, setLatestRoom] = useState<LatestRoom | null>(null);
   const [lastSolved, setLastSolved] = useState<SolvedRoom | null>(null);
+
+  // Redirect unauthenticated users to landing page
+  useEffect(() => {
+    if (sessionStatus === "unauthenticated") {
+      router.replace("/");
+    }
+  }, [sessionStatus, router]);
 
   useEffect(() => {
     if (sessionStatus === "authenticated") {
@@ -176,12 +187,14 @@ const Home = () => {
     return "text-red-600 dark:text-red-500";
   };
 
+  // Redirect unauthenticated users to landing page
   if (sessionStatus === "loading" || loading) {
     return <Loading />;
   }
 
+  // This will be handled by the useEffect redirect above
   if (sessionStatus === "unauthenticated") {
-    return <AuthError />;
+    return <Loading />;
   }
 
   // Show onboarding guide for new users with no completed challenges
@@ -255,7 +268,7 @@ const Home = () => {
                   </div>
                   <div className="flex justify-center lg:justify-start pt-10 text-center lg:text-left">
                     {/* Enhanced User Level Display */}
-                    {userStats && (
+                    {userStats && sessionStatus === "authenticated" && (
                       <div>
                         <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-white/70 dark:bg-white/[0.06] border border-white/60 dark:border-white/10 shadow-xl transition-colors duration-300">
                           <div className="relative">
@@ -289,10 +302,26 @@ const Home = () => {
                         </div>
                       </div>
                     )}
+                    
+                    {/* Call to action for unauthenticated users */}
+                    {sessionStatus === "unauthenticated" && (
+                      <div>
+                        <Link
+                          href="/authentication"
+                          className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-300 ease-in-out"
+                        >
+                          <div className="absolute inset-0 bg-red-600 rounded-2xl shadow-[0_10px_20px_-5px_rgba(220,38,38,0.3)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_15px_30px_-5px_rgba(220,38,38,0.4)] active:scale-95" />
+                          <span className="relative z-10 text-base tracking-tight">Join FlagForge Today</span>
+                        </Link>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 max-w-sm">
+                          Sign up to track your progress, earn badges, and compete on the leaderboard
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {userStats && (
+                {userStats && sessionStatus === "authenticated" && (
                   <div className="grid grid-cols-2 gap-6">
                     <div className="group relative bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-6 text-center hover:-translate-y-1 transition-all duration-300 hover:shadow-xl">
                       <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-red-500/10 text-red-600 mb-3">
@@ -549,6 +578,14 @@ const Home = () => {
                   </Link>
 
                   <Link
+                    href="/archives"
+                    className="bg-blue-500 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm shadow-lg shadow-blue-500/20"
+                  >
+                    <Archive className="h-4 w-4" />
+                    Archives
+                  </Link>
+
+                  <Link
                     href="/leaderboard"
                     className="bg-white/80 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
                   >
@@ -556,28 +593,51 @@ const Home = () => {
                     Leaderboard
                   </Link>
 
-                  <Link
-                    href="/profile"
-                    className="bg-white/80 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
-                  >
-                    <Users className="h-4 w-4" />
-                    Profile
-                  </Link>
+                  {sessionStatus === "authenticated" ? (
+                    <Link
+                      href="/profile"
+                      className="bg-white/80 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
+                    >
+                      <Users className="h-4 w-4" />
+                      Profile
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/authentication"
+                      className="bg-green-500 dark:bg-green-600 hover:bg-green-600 dark:hover:bg-green-700 text-white font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm shadow-lg shadow-green-500/20"
+                    >
+                      <Users className="h-4 w-4" />
+                      Join Now
+                    </Link>
+                  )}
 
                   <Link
-                    href="/"
-                    className="bg-white/80 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
+                    href="/event-scoreboards"
+                    className="bg-yellow-500 dark:bg-yellow-600 hover:bg-yellow-600 dark:hover:bg-yellow-700 text-white font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm shadow-lg shadow-yellow-500/20"
                   >
-                    <LayoutDashboard className="h-4 w-4" />
-                    Dashboard
+                    <Trophy className="h-4 w-4" />
+                    Scoreboards
                   </Link>
+
+                  {sessionStatus === "authenticated" && (
+                    <Link
+                      href="/"
+                      className="bg-white/80 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 font-medium px-4 py-2.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
+                    >
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Instagram Feed Section */}
-          <InstagramFeed />
+          {/* Archives Section */}
+          <ArchivesSection />
+
+          {/* Scoreboards Section */}
+          <ScoreboardSection />
         </div>
       </div>
     </div>

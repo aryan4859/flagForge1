@@ -1,9 +1,11 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema, model, Document } from "mongoose";
 
-export interface ArchivedChallenge {
+export interface IArchivedChallenge extends Document {
   title: string;
   description: string;
-  challengeLink: string;
+  challengeLink?: string;
+  challengeFile?: string;
+  challengeType: 'link' | 'file';
   eventName: string;
   eventDate: Date;
   category?: string;
@@ -14,7 +16,7 @@ export interface ArchivedChallenge {
   updatedAt?: Date;
 }
 
-const archivedChallengeSchema = new Schema<ArchivedChallenge>(
+const archivedChallengeSchema = new Schema<IArchivedChallenge>(
   {
     title: {
       type: String,
@@ -27,8 +29,17 @@ const archivedChallengeSchema = new Schema<ArchivedChallenge>(
     },
     challengeLink: {
       type: String,
-      required: true,
       trim: true,
+    },
+    challengeFile: {
+      type: String,
+      trim: true,
+    },
+    challengeType: {
+      type: String,
+      enum: ['link', 'file'],
+      required: true,
+      default: 'link',
     },
     eventName: {
       type: String,
@@ -61,11 +72,21 @@ const archivedChallengeSchema = new Schema<ArchivedChallenge>(
   { timestamps: true }
 );
 
+// Validation: Either challengeLink or challengeFile must be provided
+archivedChallengeSchema.pre('save', function(next) {
+  if (this.challengeType === 'link' && !this.challengeLink) {
+    next(new Error('Challenge link is required when type is link'));
+  } else if (this.challengeType === 'file' && !this.challengeFile) {
+    next(new Error('Challenge file is required when type is file'));
+  } else {
+    next();
+  }
+});
+
+// Create indexes
 archivedChallengeSchema.index({ eventName: 1, eventDate: -1 });
 archivedChallengeSchema.index({ category: 1 });
 
-const ArchivedChallengeModel =
-  mongoose.models.ArchivedChallenge || 
-  model("ArchivedChallenge", archivedChallengeSchema);
-
-export default ArchivedChallengeModel;
+// Export the model
+export default mongoose.models.ArchivedChallenge || 
+  model<IArchivedChallenge>("ArchivedChallenge", archivedChallengeSchema);

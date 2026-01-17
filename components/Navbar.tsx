@@ -35,24 +35,31 @@ import {
   Archive
 } from "lucide-react";
 
-const NavItem = ({ href, tags, onClick, style }: NavbarItems) => (
-  <li onClick={onClick}>
-    <Link
-      href={href}
-      className={cn(
-        "block w-full rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-600 dark:hover:text-red-400 text-gray-700 dark:text-gray-300 font-medium touch-manipulation active:scale-95",
-        style
-      )}
-    >
-      {tags}
-    </Link>
-  </li>
-);
+const NavItem = ({ href, tags, onClick, style }: NavbarItems) => {
+  const isExternal = href.startsWith('http');
+  
+  return (
+    <li onClick={onClick}>
+      <Link
+        href={href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className={cn(
+          "block w-full rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-red-600 dark:hover:text-red-400 text-gray-700 dark:text-gray-300 font-medium touch-manipulation active:scale-95",
+          style
+        )}
+      >
+        {tags}
+      </Link>
+    </li>
+  );
+};
 
 const Navbar: React.FC = () => {
   const [open, setOpen] = useState(false);
   const session = useSession();
   const [standing, setStanding] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const pendingCloseRef = React.useRef(false);
@@ -98,27 +105,40 @@ const Navbar: React.FC = () => {
   React.useEffect(() => {
     if (session.status !== "authenticated") {
       setStanding("");
+      setIsAdmin(false);
       return;
     }
 
     let active = true;
-    const loadStanding = async () => {
+    const loadUserData = async () => {
       try {
-        const response = await fetch("/api/profile");
-        if (!response.ok) return;
-        const data = await response.json();
-        const rankValue = typeof data?.rank === "number" ? data.rank : null;
-        const level = typeof data?.level === "string" ? data.level : "";
-        const match = level.match(/\[[^\]]+\]\[([^\]]+)\]/);
-        const label = match?.[1] || level || "";
-        const nextStanding = rankValue ? `Rank #${rankValue}` : label;
-        if (active) setStanding(nextStanding);
+        // Load user profile data
+        const profileResponse = await fetch("/api/profile");
+        if (profileResponse.ok) {
+          const data = await profileResponse.json();
+          const rankValue = typeof data?.rank === "number" ? data.rank : null;
+          const level = typeof data?.level === "string" ? data.level : "";
+          const match = level.match(/\[[^\]]+\]\[([^\]]+)\]/);
+          const label = match?.[1] || level || "";
+          const nextStanding = rankValue ? `Rank #${rankValue}` : label;
+          if (active) setStanding(nextStanding);
+        }
+
+        // Load user role data
+        const roleResponse = await fetch("/api/user/role");
+        if (roleResponse.ok) {
+          const roleData = await roleResponse.json();
+          if (active) setIsAdmin(roleData.isAdmin || false);
+        }
       } catch (error) {
-        if (active) setStanding("");
+        if (active) {
+          setStanding("");
+          setIsAdmin(false);
+        }
       }
     };
 
-    loadStanding();
+    loadUserData();
     return () => {
       active = false;
     };
@@ -148,26 +168,17 @@ const Navbar: React.FC = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8 lg:gap-12">
           <ul className="flex items-center gap-1 lg:gap-2">
-            {session.status === "authenticated" ? (
-              NavbarData.map(({ href, tags }: NavbarItems) => (
+            {/* Show navigation based on authentication status */}
+            {NavbarData
+              .filter(item => session.status === "authenticated" || item.tags !== "Home")
+              .map(({ href, tags }: NavbarItems) => (
                 <NavItem
                   key={href}
                   href={href}
                   tags={tags}
                   style="px-4 py-2 text-xs md:text-sm font-bold uppercase tracking-widest hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-all"
                 />
-              ))
-            ) : (
-              <li>
-                <Link
-                  href="https://blog.flagforge.xyz"
-                  target="_blank"
-                  className="px-5 py-2.5 text-sm font-bold uppercase tracking-widest text-gray-600 dark:text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  Blogs
-                </Link>
-              </li>
-            )}
+              ))}
           </ul>
 
           <div className="flex items-center gap-4 lg:gap-6 ml-4 pl-4 border-l border-gray-100 dark:border-white/10">
@@ -215,10 +226,18 @@ const Navbar: React.FC = () => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/" className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 transition-all cursor-pointer">
+                    <Link href="/home" className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 transition-all cursor-pointer">
                       Main Dashboard
                     </Link>
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/roles/developers/admins" className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-orange-600 dark:text-orange-400 rounded-xl hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:text-orange-500 transition-all cursor-pointer">
+                        <ShieldCheck className="w-4 h-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator className="bg-gray-100 dark:bg-white/5 my-1" />
                   <DropdownMenuItem
                     onClick={async () => await signOut()}
@@ -268,8 +287,10 @@ const Navbar: React.FC = () => {
 
                 <nav className="flex-1 p-6">
                   <ul className="space-y-4">
-                    {session.status === "authenticated" ? (
-                      NavbarData.map(({ href, tags }: NavbarItems) => {
+                    {/* Show navigation based on authentication status */}
+                    {NavbarData
+                      .filter(item => session.status === "authenticated" || item.tags !== "Home")
+                      .map(({ href, tags }: NavbarItems) => {
                         const getIcon = (tag: string) => {
                           switch (tag.toLowerCase()) {
                             case "home": return <Home className="w-5 h-5" />;
@@ -280,10 +301,13 @@ const Navbar: React.FC = () => {
                             default: return <Terminal className="w-5 h-5" />;
                           }
                         };
+                        const isExternal = href.startsWith('http');
                         return (
                           <li key={href}>
                             <Link
                               href={href}
+                              target={isExternal ? "_blank" : undefined}
+                              rel={isExternal ? "noopener noreferrer" : undefined}
                               onClick={handleMobileItemClick}
                               className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 transition-all border border-transparent hover:border-red-500/10"
                             >
@@ -294,36 +318,23 @@ const Navbar: React.FC = () => {
                             </Link>
                           </li>
                         );
-                      })
-                    ) : (
-                      <>
-                        <li>
-                          <Link
-                            href="https://blog.flagforge.xyz"
-                            target="_blank"
-                            onClick={handleMobileItemClick}
-                            className="flex items-center gap-4 px-6 py-4 text-lg font-bold text-gray-700 dark:text-gray-300 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-all border border-transparent hover:border-gray-100 dark:hover:border-white/10"
-                          >
-                            <span className="p-2 rounded-xl bg-gray-50 dark:bg-white/5">
-                              <BookText className="w-5 h-5" />
-                            </span>
-                            Blogs
-                          </Link>
-                        </li>
-                        <li className="pt-6">
-                          <Link
-                            href="/authentication"
-                            onClick={handleMobileItemClick}
-                            className="group relative flex items-center justify-center w-full py-5 overflow-hidden rounded-2xl transition-all active:scale-[0.98]"
-                          >
-                            <div className="absolute inset-0 bg-red-600 transition-transform group-hover:scale-105" />
-                            <div className="relative flex items-center gap-3 font-black text-lg text-white">
-                              <LogIn className="w-6 h-6" />
-                              <span>Sign in / Sign up</span>
-                            </div>
-                          </Link>
-                        </li>
-                      </>
+                      })}
+                    
+                    {/* Show sign in/up button for unauthenticated users */}
+                    {session.status === "unauthenticated" && (
+                      <li className="pt-6">
+                        <Link
+                          href="/authentication"
+                          onClick={handleMobileItemClick}
+                          className="group relative flex items-center justify-center w-full py-5 overflow-hidden rounded-2xl transition-all active:scale-[0.98]"
+                        >
+                          <div className="absolute inset-0 bg-red-600 transition-transform group-hover:scale-105" />
+                          <div className="relative flex items-center gap-3 font-black text-lg text-white">
+                            <LogIn className="w-6 h-6" />
+                            <span>Sign in / Sign up</span>
+                          </div>
+                        </Link>
+                      </li>
                     )}
                   </ul>
                 </nav>
@@ -361,6 +372,20 @@ const Navbar: React.FC = () => {
                         </div>
                         <ArrowRight className="w-4 h-4 text-gray-300 group-hover:translate-x-1 transition-all" />
                       </Link>
+
+                      {isAdmin && (
+                        <Link
+                          href="/roles/developers/admins"
+                          onClick={handleMobileItemClick}
+                          className="flex items-center justify-between w-full p-4 rounded-2xl bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800/30 hover:border-orange-500/20 transition-all group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <ShieldCheck className="w-5 h-5 text-orange-500 group-hover:text-orange-600 transition-colors" />
+                            <span className="text-sm font-bold text-orange-700 dark:text-orange-300">Admin Dashboard</span>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-all" />
+                        </Link>
+                      )}
 
                       <button
                         onClick={handleMobileSignOut}

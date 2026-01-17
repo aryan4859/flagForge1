@@ -16,7 +16,9 @@ interface ArchivedChallenge {
   _id: string;
   title: string;
   description: string;
-  challengeLink: string;
+  challengeLink?: string;
+  challengeFile?: string;
+  challengeType: 'link' | 'file';
   eventName: string;
   eventDate: string;
   category?: string;
@@ -43,7 +45,7 @@ const ArchivesPage: React.FC = () => {
 
   const fetchChallenges = async () => {
     try {
-      const response = await fetch('/api/admin/archives?limit=100', {
+      const response = await fetch('/api/archives?limit=100', {
         cache: 'no-cache'
       });
       
@@ -196,6 +198,13 @@ const ArchivesPage: React.FC = () => {
                 </p>
 
                 <div className="flex flex-wrap gap-2">
+                  <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
+                    challenge.challengeType === 'link' 
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                      : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
+                  }`}>
+                    {challenge.challengeType === 'link' ? '🔗 Link' : '📁 File'}
+                  </span>
                   {challenge.category && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                       <Tag className="w-3 h-3" />
@@ -232,12 +241,12 @@ const ArchivesPage: React.FC = () => {
                 </div>
 
                 <a
-                  href={challenge.challengeLink}
+                  href={challenge.challengeType === 'link' ? challenge.challengeLink : challenge.challengeFile}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-xl bg-purple-500 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-600 transition w-full justify-center"
                 >
-                  View Challenge
+                  {challenge.challengeType === 'link' ? 'View Challenge' : 'Download File'}
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>

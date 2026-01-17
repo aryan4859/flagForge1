@@ -8,6 +8,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import UserQuestionModel from "@/models/userQuestionSchema";
 import { sendDiscordNotification } from "@/utils/discordNotifier";
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+import { existsSync } from "fs";
+
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
@@ -15,7 +19,7 @@ export async function POST(req: NextRequest) {
   try {
     await connect();
 
-    //admin check
+    // Admin check
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json(
@@ -32,41 +36,147 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    //add question
-    const body: Questions = await req.json();
+    const contentType = req.headers.get("content-type");
+    let questionData: any = {};
+    let challengeFile: string | undefined;
+
+    if (contentType?.includes("multipart/form-data")) {
+      // Handle file upload
+      const formData = await req.formData();
+      
+      questionData = {
+        title: formData.get("title") as string,
+        description: formData.get("description") as string,
+        category: formData.get("category") as string,
+        points: parseInt((formData.get("points") as string) || "0"),
+        flag: formData.get("flag") as string,
+        link: formData.get("link") as string,
+        addilinks: formData.get("addilinks") as string,
+        challengeType: "file",
+        isTimeLimited: formData.get("isTimeLimited") === "true",
+        timeLimit: parseInt((formData.get("timeLimit") as string) || "0"),
+        timeLimitUnit: formData.get("timeLimitUnit") as string,
+        uploadedBy: session.user.email,
+      };
+
+      // Handle hints
+      const hintsData = formData.get("hints") as string;
+      if (hintsData) {
+        try {
+          questionData.hints = JSON.parse(hintsData);
+        } catch (e) {
+          questionData.hints = [];
+        }
+      }
+
+      // Handle expiry date
+      const expiryDate = formData.get("expiryDate") as string;
+      if (expiryDate) {
+        questionData.expiryDate = new Date(expiryDate);
+      }
+
+      const file = formData.get("challengeFile") as File;
+      
+      if (!file) {
+        return NextResponse.json(
+          { message: "No file uploaded" },
+          { status: HttpStatusCode.BadRequest }
+        );
+      }
+
+      // Validate file type
+      const allowedTypes = [
+        "application/zip",
+        "application/x-zip-compressed",
+        "application/pdf",
+        "text/plain",
+        "application/octet-stream",
+        "image/png",
+        "image/jpeg",
+        "image/jpg"
+      ];
+      
+      if (!allowedTypes.includes(file.type)) {
+        return NextResponse.json(
+          { message: "Invalid file type. Allowed: ZIP, PDF, TXT, PNG, JPG" },
+          { status: HttpStatusCode.BadRequest }
+        );
+      }
+
+      // Validate file size (50MB)
+      const maxSize = 50 * 1024 * 1024;
+      if (file.size > maxSize) {
+        return NextResponse.json(
+          { message: "File too large. Max size: 50MB" },
+          { status: HttpStatusCode.BadRequest }
+        );
+      }
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomStr = Math.random().toString(36).substring(2, 15);
+      const extension = path.extname(file.name).toLowerCase() || "";
+      const filename = `challenge-${timestamp}-${randomStr}${extension}`;
+
+      // Create upload directory
+      const uploadDir = path.join(process.cwd(), "public", "challenges", "files");
+      if (!existsSync(uploadDir)) {
+        await mkdir(uploadDir, { recursive: true });
+      }
+
+      // Save file
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const filePath = path.join(uploadDir, filename);
+      await writeFile(filePath, buffer);
+
+      challengeFile = `/challenges/files/${filename}`;
+      questionData.challengeFile = challengeFile;
+    } else {
+      // Handle JSON data (link-based challenge)
+      questionData = await req.json();
+      questionData.challengeType = questionData.challengeType || "link";
+      questionData.uploadedBy = session.user.email;
+    }
+
+    // Validate required fields
     if (
-      body.title &&
-      body.points &&
-      body.category &&
-      body.flag &&
-      body.description
+      !questionData.title ||
+      !questionData.points ||
+      !questionData.category ||
+      !questionData.flag ||
+      !questionData.description
     ) {
-      const product = await QuestionModel.create(body);
-      await product.save();
-      const challengeLink = `https://flagforge.xyz/problems/${product._id}`;
-
-      // Send Discord notification
-      await sendDiscordNotification(
-        "🧩 New Challenge Released!",
-        body.description,
-        "NEW_CHALLENGE",
-        body.points,
-        body.category,
-        challengeLink
-      );
-
       return NextResponse.json(
-        { success: true, message: "Your qustion has been created" },
-        { status: HttpStatusCode.Created }
+        { message: "Missing required fields: title, points, category, flag, description" },
+        { status: HttpStatusCode.BadRequest }
       );
     }
+
+    // Create question
+    const product = await QuestionModel.create(questionData);
+    await product.save();
+    
+    const challengeLink = `https://flagforge.xyz/problems/${product._id}`;
+
+    // Send Discord notification
+    await sendDiscordNotification(
+      "🧩 New Challenge Released!",
+      questionData.description,
+      "NEW_CHALLENGE",
+      questionData.points,
+      questionData.category,
+      challengeLink
+    );
+
     return NextResponse.json(
-      { message: "Something is missing!" },
-      { status: HttpStatusCode.BadRequest }
+      { success: true, message: "Your question has been created" },
+      { status: HttpStatusCode.Created }
     );
   } catch (error: any) {
+    console.error("Error creating challenge:", error);
     return NextResponse.json(
-      { message: error?.message },
+      { message: error?.message || "Failed to create challenge" },
       { status: HttpStatusCode.BadRequest }
     );
   }
@@ -87,9 +197,8 @@ export async function GET(request: NextRequest) {
   const startIndex = (page - 1) * limit;
   const session = await getServerSession(authOptions);
 
-  if (!session) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  // Allow public access to browse problems
+  // Authentication will be required only for solving challenges
 
   try {
     await connect();
@@ -115,15 +224,18 @@ export async function GET(request: NextRequest) {
 
     const questions = await query.exec();
 
-    const user = await userSchema.findOne({ email: session?.user?.email });
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "User not found" },
-        { status: HttpStatusCode.NotFound }
-      );
-    }
+    let user = null;
+    let userQuestion = [];
+    let totalScore = 0;
 
-    const userQuestion = await UserQuestionModel.find({ userId: user.id });
+    // Only fetch user data if session exists
+    if (session?.user?.email) {
+      user = await userSchema.findOne({ email: session.user.email });
+      if (user) {
+        userQuestion = await UserQuestionModel.find({ userId: user.id });
+        totalScore = user.totalScore || 0;
+      }
+    }
 
     // Get total count for pagination info (with category filter applied)
     const totalQuestions = await QuestionModel.countDocuments(baseQuery);
@@ -151,7 +263,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: processedQuestions,
-      totalScore: user.totalScore,
+      totalScore: totalScore,
       questionDone: userQuestion,
       pagination: {
         page,

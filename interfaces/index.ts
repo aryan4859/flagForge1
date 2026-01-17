@@ -46,6 +46,8 @@ export interface Questions {
   done: any;
   _id?: string;
   link?: string;
+  challengeFile?: string;
+  challengeType?: 'link' | 'file';
   hints?: Hint[];
   isTimeLimited?: boolean;
   timeLimit?: number;

@@ -6,7 +6,7 @@ import UserSchema from "@/models/userSchema";
 import QuestionModel from "@/models/qustionsSchema";
 import BadgeTemplate from "@/models/badgeTemplate";
 import UserQuestionModel from "@/models/userQuestionSchema";
-import ArchivedChallengeModel from "@/models/archivedChallengeSchema";
+import ArchivedChallenge from "@/models/archivedChallengeSchema";
 
 export const runtime = "nodejs";
 
@@ -75,7 +75,7 @@ export async function GET(req: NextRequest) {
       }),
 
       // Total archived challenges
-      ArchivedChallengeModel.countDocuments({}),
+      ArchivedChallenge.countDocuments({}),
     ]);
 
     // Calculate active challenges (non-expired)

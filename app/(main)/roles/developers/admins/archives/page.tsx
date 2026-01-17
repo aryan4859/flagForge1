@@ -11,7 +11,10 @@ import {
   Calendar,
   Tag,
   Trophy,
-  ArrowLeft
+  ArrowLeft,
+  Edit,
+  Save,
+  X
 } from 'lucide-react';
 import Loading from '@/components/loading';
 
@@ -19,7 +22,9 @@ interface ArchivedChallenge {
   _id: string;
   title: string;
   description: string;
-  challengeLink: string;
+  challengeLink?: string;
+  challengeFile?: string;
+  challengeType: 'link' | 'file';
   eventName: string;
   eventDate: string;
   category?: string;
@@ -34,9 +39,11 @@ const ArchivesManagement: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [challenges, setChallenges] = useState<ArchivedChallenge[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingChallenge, setEditingChallenge] = useState<ArchivedChallenge | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    challengeType: 'link' as 'link' | 'file',
     challengeLink: '',
     eventName: 'PGS CTF 2026 Archive',
     eventDate: '',
@@ -44,6 +51,7 @@ const ArchivesManagement: React.FC = () => {
     difficulty: 'Medium',
     solveCount: 0,
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const { data: session, status } = useSession();
@@ -98,39 +106,97 @@ const ArchivesManagement: React.FC = () => {
     }
   };
 
+  const handleEdit = (challenge: ArchivedChallenge) => {
+    setEditingChallenge(challenge);
+    setFormData({
+      title: challenge.title,
+      description: challenge.description,
+      challengeType: challenge.challengeType,
+      challengeLink: challenge.challengeLink || '',
+      eventName: challenge.eventName,
+      eventDate: challenge.eventDate.split('T')[0], // Format date for input
+      category: challenge.category || '',
+      difficulty: challenge.difficulty || 'Medium',
+      solveCount: challenge.solveCount || 0,
+    });
+    setSelectedFile(null);
+    setShowForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingChallenge(null);
+    setShowForm(false);
+    setFormData({
+      title: '',
+      description: '',
+      challengeType: 'link',
+      challengeLink: '',
+      eventName: 'PGS CTF 2026 Archive',
+      eventDate: '',
+      category: '',
+      difficulty: 'Medium',
+      solveCount: 0,
+    });
+    setSelectedFile(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
 
     try {
-      const response = await fetch('/api/admin/archives', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      let response;
+      const isEditing = editingChallenge !== null;
+      const url = isEditing ? `/api/admin/archives?id=${editingChallenge._id}` : '/api/admin/archives';
+      const method = isEditing ? 'PUT' : 'POST';
+
+      if (formData.challengeType === 'file') {
+        // Handle file upload
+        if (!isEditing && !selectedFile) {
+          alert('Please select a file to upload');
+          setSubmitting(false);
+          return;
+        }
+
+        const fileFormData = new FormData();
+        fileFormData.append('title', formData.title);
+        fileFormData.append('description', formData.description);
+        fileFormData.append('eventName', formData.eventName);
+        fileFormData.append('eventDate', formData.eventDate);
+        fileFormData.append('category', formData.category);
+        fileFormData.append('difficulty', formData.difficulty);
+        fileFormData.append('solveCount', formData.solveCount.toString());
+        fileFormData.append('challengeType', formData.challengeType);
+        
+        if (selectedFile) {
+          fileFormData.append('challengeFile', selectedFile);
+        }
+
+        response = await fetch(url, {
+          method: method,
+          body: fileFormData,
+        });
+      } else {
+        // Handle link-based challenge
+        response = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+      }
 
       const data = await response.json();
 
       if (response.ok) {
-        alert('Archived challenge created successfully!');
-        setShowForm(false);
-        setFormData({
-          title: '',
-          description: '',
-          challengeLink: '',
-          eventName: 'PGS CTF 2026 Archive',
-          eventDate: '',
-          category: '',
-          difficulty: 'Medium',
-          solveCount: 0,
-        });
+        alert(isEditing ? 'Archived challenge updated successfully!' : 'Archived challenge created successfully!');
+        handleCancelEdit();
         fetchChallenges();
       } else {
-        alert(data.message || 'Failed to create archived challenge');
+        alert(data.message || `Failed to ${isEditing ? 'update' : 'create'} archived challenge`);
       }
     } catch (error) {
-      console.error('Error creating archived challenge:', error);
-      alert('Failed to create archived challenge');
+      console.error(`Error ${editingChallenge ? 'updating' : 'creating'} archived challenge:`, error);
+      alert(`Failed to ${editingChallenge ? 'update' : 'create'} archived challenge`);
     } finally {
       setSubmitting(false);
     }
@@ -201,7 +267,22 @@ const ArchivesManagement: React.FC = () => {
               </div>
               
               <button
-                onClick={() => setShowForm(!showForm)}
+                onClick={() => {
+                  setEditingChallenge(null);
+                  setFormData({
+                    title: '',
+                    description: '',
+                    challengeType: 'link',
+                    challengeLink: '',
+                    eventName: 'PGS CTF 2026 Archive',
+                    eventDate: '',
+                    category: '',
+                    difficulty: 'Medium',
+                    solveCount: 0,
+                  });
+                  setSelectedFile(null);
+                  setShowForm(!showForm);
+                }}
                 className="inline-flex items-center gap-2 rounded-full bg-purple-500 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-purple-600 transition"
               >
                 <Plus className="w-5 h-5" />
@@ -215,7 +296,7 @@ const ArchivesManagement: React.FC = () => {
         {showForm && (
           <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-6 shadow-xl backdrop-blur dark:border-white/10 dark:bg-slate-900/70 sm:p-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-              Add New Archived Challenge
+              {editingChallenge ? 'Edit Archived Challenge' : 'Add New Archived Challenge'}
             </h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -236,17 +317,56 @@ const ArchivesManagement: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Challenge Link *
+                    Challenge Type *
                   </label>
-                  <input
-                    type="url"
-                    required
-                    value={formData.challengeLink}
-                    onChange={(e) => setFormData({ ...formData, challengeLink: e.target.value })}
+                  <select
+                    value={formData.challengeType}
+                    onChange={(e) => setFormData({ ...formData, challengeType: e.target.value as 'link' | 'file' })}
                     className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-100"
-                    placeholder="https://..."
-                  />
+                  >
+                    <option value="link">External Link</option>
+                    <option value="file">File Upload</option>
+                  </select>
                 </div>
+
+                {formData.challengeType === 'link' ? (
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Challenge Link *
+                    </label>
+                    <input
+                      type="url"
+                      required
+                      value={formData.challengeLink}
+                      onChange={(e) => setFormData({ ...formData, challengeLink: e.target.value })}
+                      className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-100"
+                      placeholder="https://..."
+                    />
+                  </div>
+                ) : (
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Challenge File {editingChallenge ? '(Upload new file to replace current)' : '*'}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        required={!editingChallenge}
+                        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/20 dark:file:text-purple-300"
+                        accept=".zip,.pdf,.txt,.png,.jpg,.jpeg"
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Supported formats: ZIP, PDF, TXT, PNG, JPG (Max: 50MB)
+                        {editingChallenge && editingChallenge.challengeFile && (
+                          <span className="block text-blue-600 dark:text-blue-400">
+                            Current file: {editingChallenge.challengeFile.split('/').pop()}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -336,11 +456,11 @@ const ArchivesManagement: React.FC = () => {
                   disabled={submitting}
                   className="flex-1 rounded-xl bg-purple-500 px-6 py-3 font-semibold text-white hover:bg-purple-600 disabled:opacity-50 transition"
                 >
-                  {submitting ? 'Creating...' : 'Create Archive'}
+                  {submitting ? (editingChallenge ? 'Updating...' : 'Creating...') : (editingChallenge ? 'Update Archive' : 'Create Archive')}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={handleCancelEdit}
                   className="flex-1 rounded-xl border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-slate-800 dark:text-gray-300 dark:hover:bg-slate-700 transition"
                 >
                   Cancel
@@ -364,12 +484,22 @@ const ArchivesManagement: React.FC = () => {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 line-clamp-2">
                     {challenge.title}
                   </h3>
-                  <button
-                    onClick={() => handleDelete(challenge._id)}
-                    className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(challenge)}
+                      className="p-2 rounded-lg text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+                      title="Edit challenge"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(challenge._id)}
+                      className="p-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                      title="Delete challenge"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
 
                 <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
@@ -377,6 +507,13 @@ const ArchivesManagement: React.FC = () => {
                 </p>
 
                 <div className="flex flex-wrap gap-2">
+                  <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
+                    challenge.challengeType === 'link' 
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                      : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
+                  }`}>
+                    {challenge.challengeType === 'link' ? '🔗 Link' : '📁 File'}
+                  </span>
                   {challenge.category && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                       <Tag className="w-3 h-3" />
@@ -409,12 +546,12 @@ const ArchivesManagement: React.FC = () => {
                 </div>
 
                 <a
-                  href={challenge.challengeLink}
+                  href={challenge.challengeType === 'link' ? challenge.challengeLink : challenge.challengeFile}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-xl bg-purple-500 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-600 transition"
                 >
-                  View Challenge
+                  {challenge.challengeType === 'link' ? 'View Challenge' : 'Download File'}
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>

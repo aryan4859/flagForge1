@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Linkedin, Instagram, Github } from "lucide-react";
+import { Linkedin, Github } from "lucide-react";
 import logo from "@/public/flagforge-logo.png";
 
 export default function Footer() {
@@ -12,13 +12,6 @@ export default function Footer() {
       icon: <Linkedin className="w-5 h-5 pointer-events-none" />,
       color: "hover:text-[#0077b5] dark:hover:text-[#38b6ff]", // Lighter blue for dark mode visibility
       bg: "hover:bg-[#0077b5]/10 dark:hover:bg-[#38b6ff]/15",
-    },
-    {
-      name: "Instagram",
-      url: "https://www.instagram.com/flag.forge/",
-      icon: <Instagram className="w-5 h-5 pointer-events-none" />,
-      color: "hover:text-[#e4405f] dark:hover:text-[#ff4d6d]", // Lighter pink for dark mode visibility
-      bg: "hover:bg-[#e4405f]/10 dark:hover:bg-[#ff4d6d]/15",
     },
     {
       name: "GitHub",

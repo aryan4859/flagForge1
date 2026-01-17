@@ -16,7 +16,8 @@ import {
   Clock,
   TrendingUp,
   AlertCircle,
-  Archive
+  Archive,
+  Trophy
 } from 'lucide-react';
 import Loading from '@/components/loading';
 
@@ -221,6 +222,14 @@ const AdminDashboard: React.FC = () => {
       color: "bg-gradient-to-br from-rose-500 to-pink-600",
       path: "/uploads",
       onClick: () => router.push('/roles/developers/admins/uploads')
+    },
+    {
+      title: "Event Scoreboards",
+      description: "Manage CTF event results, winners, and team performance data from competitions.",
+      icon: <Trophy className="w-6 h-6 text-white" />,
+      color: "bg-gradient-to-br from-yellow-500 to-orange-600",
+      path: "/event-scoreboards",
+      onClick: () => router.push('/roles/developers/admins/event-scoreboards')
     },
     {
       title: "Assign Badges",
