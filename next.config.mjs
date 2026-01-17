@@ -1,8 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["writeup.flagforge.xyz", "flagforge.xyz", "github.com"],
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "writeup.flagforge.xyz",
+      },
+      {
+        protocol: "https",
+        hostname: "flagforge.xyz",
+      },
+      {
+        protocol: "https",
+        hostname: "github.com",
+      },
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
