@@ -59,7 +59,12 @@ export async function POST(req: NextRequest) {
       try {
         console.log(`Processing scoreboard: ${scoreboard._id}`);
         
-        let updatedWinners = [];
+        let updatedWinners: {
+          rank: number;
+          teamName: string;
+          totalScore: number;
+          solvedChallenges: number;
+        }[] = [];
 
         if (scoreboard.winners && Array.isArray(scoreboard.winners) && scoreboard.winners.length > 0) {
           updatedWinners = scoreboard.winners.map((winner: any, index: number) => {
