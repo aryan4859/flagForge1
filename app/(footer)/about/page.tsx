@@ -97,9 +97,9 @@ export default function About() {
             <h1 className="text-5xl lg:text-7xl font-black tracking-tighter leading-[0.9] text-gray-900 dark:text-white">
               About <span className="text-red-400 dark:text-red-500">FlagForge</span>
             </h1>
-            <p className="text-md text-gray-500 dark:text-gray-400 italic font-medium tracking-wide uppercase">
+            <h2 className="text-md text-gray-500 dark:text-gray-400 italic font-medium tracking-wide uppercase">
               "Where curiosity meets cybersecurity."
-            </p>
+            </h2>
             <p className="text-lg lg:text-xl font-medium text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               FlagForge is a dynamic and engaging CTF platform dedicated to promoting{" "}
               <span className="text-red-500 dark:text-red-500 font-black">

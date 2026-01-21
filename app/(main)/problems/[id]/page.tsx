@@ -78,12 +78,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const [isDone, setIsDone] = useState<boolean>(false);
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [isIncorrect, setIsIncorrect] = useState<boolean>(false);
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   const [showHint, setShowHint] = useState<boolean>(false);
   const [availableHints, setAvailableHints] = useState<Hint[]>([]);
   const [hintLoading, setHintLoading] = useState<boolean>(false);
   const [usedHints, setUsedHints] = useState<number[]>([]);
+  const [hintCount, setHintCount] = useState<number>(0);
+  const [practiceMode, setPracticeMode] = useState<boolean>(false);
   const [chatHintStats, setChatHintStats] = useState({
     totalPointsDeducted: 0,
     totalHintsUsed: 0,
@@ -95,6 +98,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const submissionInProgress = useRef<boolean>(false);
   const abortController = useRef<AbortController | null>(null);
 
+  const isPracticeMode = isDone && practiceMode;
   const MIN_SUBMISSION_INTERVAL = 1000;
 
   // URL validation function
@@ -165,6 +169,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       setIsDone(data.isDone);
       setIsCorrect(data.isDone);
       setUsedHints(data.usedHints || []);
+      setHintCount(typeof data.hintCount === "number" ? data.hintCount : 0);
 
       // Ensure we have proper hints array
       const questionData = data.question || {};
@@ -212,6 +217,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       const data = await response.json();
       setAvailableHints(data.hints || []);
       setUsedHints(data.usedHints || []);
+      setHintCount(Array.isArray(data.hints) ? data.hints.length : 0);
     } catch (error) {
       console.error("Error fetching hints:", error);
       setMessage("Failed to load hints. Please try again.");
@@ -314,18 +320,21 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     const timeSinceLastSubmission = now - lastSubmissionTime.current;
     const flagTrimmed = flag.trim();
 
-    if (submitting || submissionInProgress.current || isCorrect || isExpired) {
-      return { allowed: false};
+    if (isCorrect && !isPracticeMode) {
+      return { allowed: false, reason: "You have already solved this problem" };
     }
-
+    if (isExpired) {
+      return { allowed: false, reason: "This challenge has expired" };
+    }
+    if (submitting || submissionInProgress.current) {
+      return { allowed: false, reason: "Submission in progress..." };
+    }
     if (!flagTrimmed) {
       return { allowed: false, reason: "Please enter a flag" };
     }
-
     if (lastSubmittedFlag.current === flagTrimmed) {
       return { allowed: false, reason: "This flag was already submitted" };
     }
-
     if (timeSinceLastSubmission < MIN_SUBMISSION_INTERVAL) {
       return { allowed: false, reason: "Please wait before submitting again" };
     }
@@ -335,9 +344,10 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     flag,
     submitting,
     isCorrect,
+    isPracticeMode,
     isExpired,
     MIN_SUBMISSION_INTERVAL
-    ]);
+  ]);
 
   const handleSubmit = async () => {
     // Check authentication before allowing flag submission
@@ -346,7 +356,12 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       return;
     }
 
-    if (!canSubmit()) {
+    const submissionCheck = canSubmit();
+    if (!submissionCheck.allowed) {
+      if (submissionCheck.reason) {
+        setMessage(submissionCheck.reason);
+        setTimeout(() => setMessage(null), 3000);
+      }
       return;
     }
 
@@ -366,7 +381,10 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       abortController.current = new AbortController();
       setMessage(null);
 
-      const response = await fetch(`/api/problems/${unwrappedParams.id}`, {
+      const requestUrl = isPracticeMode
+        ? `/api/problems/${unwrappedParams.id}?practice=true`
+        : `/api/problems/${unwrappedParams.id}`;
+      const response = await fetch(requestUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -382,15 +400,26 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       const result = await response.json();
 
       if (response.ok) {
+        const isRight =
+          typeof result.correct === "boolean"
+            ? result.correct
+            : result.message?.includes("Right");
         setMessage(result.message);
-        if (result.message.includes("Right")) {
-          setIsCorrect(true);
-          setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 3000);
-          setFlag("");
-          setTimeout(() => setIsDone(true), 5000);
-          setTimeout(() => router.push("/problems"), 8000);
+        if (isRight) {
+          setIsIncorrect(false);
+          if (!isPracticeMode) {
+            setIsCorrect(true);
+            setShowConfetti(true);
+            setTimeout(() => setShowConfetti(false), 3000);
+            setFlag("");
+            setTimeout(() => setIsDone(true), 5000);
+            setTimeout(() => router.push("/problems"), 8000);
+          } else {
+            setFlag("");
+            lastSubmittedFlag.current = "";
+          }
         } else {
+          setIsIncorrect(true);
           setTimeout(
             () => (lastSubmittedFlag.current = ""),
             MIN_SUBMISSION_INTERVAL
@@ -398,6 +427,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
         }
       } else {
         setMessage(result.message || "An error occurred");
+        setIsIncorrect(true);
         setTimeout(
           () => (lastSubmittedFlag.current = ""),
           MIN_SUBMISSION_INTERVAL
@@ -425,6 +455,29 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     }
   };
 
+  const handleFlagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFlag(e.target.value);
+    if (isIncorrect) {
+      setIsIncorrect(false);
+    }
+  };
+
+  const enterPracticeMode = () => {
+    setPracticeMode(true);
+    setFlag("");
+    setIsIncorrect(false);
+    lastSubmittedFlag.current = "";
+    lastSubmissionTime.current = 0;
+  };
+
+  const exitPracticeMode = () => {
+    setPracticeMode(false);
+    setFlag("");
+    setIsIncorrect(false);
+    lastSubmittedFlag.current = "";
+    lastSubmissionTime.current = 0;
+  };
+
   useEffect(() => {
     return () => {
       if (abortController.current) abortController.current.abort();
@@ -438,7 +491,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
   const messageTone = useMemo(() => {
     if (!message) return "";
 
-    if (message.includes("Right")) {
+    if (message.includes("Right") || message.includes("Correct")) {
       return "border-green-200 bg-green-50 text-green-800 dark:border-green-800/60 dark:bg-green-900/20 dark:text-green-200";
     }
 
@@ -453,8 +506,11 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     return "border-red-200 bg-red-50 text-red-800 dark:border-red-800/60 dark:bg-red-900/20 dark:text-red-200";
   }, [message]);
 
+  const isSubmissionLocked =
+    submitting || isExpired || (!isPracticeMode && isCorrect);
+
   if (loading || sessionStatus === "loading") return <Loading />;
-  
+
   // Allow viewing the problem without authentication
   // Authentication will be required only when submitting flags
 
@@ -549,24 +605,105 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
           />
         </div>
       )}
-      {isDone ? (
+      {isDone && !isPracticeMode ? (
         <div className="max-w-screen-xl mx-auto px-4 sm:px-8 py-12 relative z-10">
-          <div className="flex flex-col gap-8 justify-center items-center text-center">
-            <div className="w-full max-w-xl rounded-2xl border border-green-200/70 dark:border-green-800/50 bg-white/80 dark:bg-gray-900/70 backdrop-blur-xl p-6 sm:p-8 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.7)]">
-              <Image
-                src={doubt}
-                alt="Doubting skill"
-                className="w-72 mx-auto drop-shadow-xl"
-              />
-              <p className="w-full mx-auto text-center text-lg text-gray-800 dark:text-gray-300 transition-colors duration-300 mt-6">
-                Doubting your skills? Let's return to{" "}
-                <Link
-                  href="/problems"
-                  className="text-red-500 dark:text-red-500 hover:underline transition-colors duration-300"
-                >
-                  problems
-                </Link>
-              </p>
+          <div className="relative overflow-hidden rounded-[2.75rem] border border-emerald-200/70 dark:border-emerald-800/50 bg-gradient-to-br from-white/95 via-emerald-50/60 to-sky-50/60 dark:from-gray-950/90 dark:via-emerald-950/30 dark:to-gray-950/80 p-8 sm:p-12 shadow-[0_35px_90px_-55px_rgba(15,23,42,0.8)]">
+            <div className="pointer-events-none absolute -top-24 right-[-10%] h-64 w-64 rounded-full bg-emerald-300/30 blur-3xl dark:bg-emerald-500/10" />
+            <div className="pointer-events-none absolute -bottom-24 left-[-10%] h-64 w-64 rounded-full bg-sky-200/40 blur-3xl dark:bg-sky-500/10" />
+            <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)] lg:items-start">
+              <div className="flex flex-col gap-6 lg:pr-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
+                    <Trophy className="h-6 w-6" aria-hidden="true" />
+                  </div>
+                  <span className="rounded-full border border-emerald-200/80 dark:border-emerald-800/60 bg-emerald-50/80 dark:bg-emerald-900/30 px-4 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-700 dark:text-emerald-200">
+                    Challenge Completed
+                  </span>
+                </div>
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+                    {problems.title}
+                  </h1>
+                  <p className="mt-3 text-base sm:text-lg text-gray-700 dark:text-gray-300 max-w-xl">
+                    You already solved this challenge. Pick a new one and keep
+                    the momentum going.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="rounded-2xl border border-emerald-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                      Points Earned
+                    </p>
+                    <p className="mt-2 text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                      {problems.points}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-emerald-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                      Category
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
+                      {problems.category}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-emerald-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                      Hints Used
+                    </p>
+                    <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
+                      {usedHints.length}
+                    </p>
+                  </div>
+                </div>
+                {problems.expiryDate && (
+                  <div className="rounded-2xl border border-yellow-200/70 dark:border-yellow-800/60 bg-yellow-50/80 dark:bg-yellow-900/20 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-[0.2em] text-yellow-700 dark:text-yellow-200">
+                      Time Limited
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-yellow-800 dark:text-yellow-200">
+                      Expired on: {formatExpiryDate(problems.expiryDate)}
+                    </p>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={enterPracticeMode}
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-200/80 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-5 py-2 text-sm font-semibold text-emerald-700 dark:text-emerald-200 hover:bg-white/90 dark:hover:bg-gray-900 transition-colors"
+                  >
+                    Redo challenge
+                  </button>
+                  <Link
+                    href="/problems"
+                    className="inline-flex items-center gap-2 rounded-full bg-emerald-600 text-white px-5 py-2 text-sm font-semibold shadow-sm hover:bg-emerald-700 transition-colors"
+                  >
+                    Back to problems
+                  </Link>
+                  <Link
+                    href="/leaderboard"
+                    className="inline-flex items-center gap-2 rounded-full border border-emerald-200/80 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-5 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-white/90 dark:hover:bg-gray-900 transition-colors"
+                  >
+                    View leaderboard
+                  </Link>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Redo opens practice mode. Your score stays locked.
+                </p>
+              </div>
+              <div className="relative lg:mt-1">
+                <div className="absolute -inset-6 rounded-[2.5rem] bg-emerald-200/30 blur-3xl dark:bg-emerald-500/10" />
+                <div className="relative rounded-[2rem] border border-emerald-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/70 p-6 shadow-[0_25px_60px_-40px_rgba(15,23,42,0.7)]">
+                  <Image
+                    src={doubt}
+                    alt="Challenge completed"
+                    className="w-full max-w-sm mx-auto drop-shadow-xl"
+                  />
+                  <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
+                    Ready for another challenge? Explore the problem list and
+                    push your score higher.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -609,6 +746,11 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                         Solved
                       </span>
                     )}
+                    {isPracticeMode && (
+                      <span className="rounded-full border border-emerald-200/70 dark:border-emerald-800/60 bg-emerald-50/80 dark:bg-emerald-900/30 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-200">
+                        Practice mode
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3">
@@ -626,6 +768,28 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
               </div>
             </div>
           </div>
+
+          {isPracticeMode && (
+            <div className="mt-6 rounded-2xl border border-emerald-200/70 dark:border-emerald-800/60 bg-emerald-50/80 dark:bg-emerald-900/20 p-4 sm:p-5 shadow-sm backdrop-blur-xl">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+                    Practice mode is on
+                  </p>
+                  <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                    Submissions are checked, but your score will not change.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={exitPracticeMode}
+                  className="inline-flex items-center gap-2 rounded-full border border-emerald-200/80 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-200 hover:bg-white/90 dark:hover:bg-gray-900 transition-colors"
+                >
+                  Exit practice
+                </button>
+              </div>
+            </div>
+          )}
 
           {(problems.expiryDate || chatHintStats.totalHintsUsed > 0) && (
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -750,13 +914,13 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                       className="h-5 w-5 text-rose-600 dark:text-rose-300"
                       aria-hidden="true"
                     />
-                    <span>Available Hints ({availableHints.length})</span>
+                    <span>Available Hints</span>
                   </span>
                   <span className="flex items-center gap-3">
                     <span
                       className={`text-sm sm:text-md px-4 py-2 shadow-sm text-center bg-red-500/90 dark:bg-red-500 rounded-full text-white font-bold transition-colors duration-300 ${hintLoading ? "animate-pulse" : ""}`}
                     >
-                      {hintLoading ? "Loading..." : problems.hints?.length || 0}
+                      {hintLoading ? "Loading..." : hintCount}
                     </span>
                     <ChevronDown
                       className={`h-4 w-4 text-rose-600 dark:text-rose-300 transition-transform duration-300 ${showHint ? "rotate-180" : ""}`}
@@ -805,12 +969,14 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                                     </p>
                                   ) : (
                                     <p className="text-gray-600 dark:text-gray-400 italic">
-                                      Click "Use Hint" to reveal this hint
+                                      {isPracticeMode
+                                        ? "Hints are locked in practice mode."
+                                        : 'Click "Use Hint" to reveal this hint'}
                                     </p>
                                   )}
                                 </div>
                                 <div>
-                                  {!isUsed && (
+                                  {!isUsed && !isPracticeMode && (
                                     <button
                                       onClick={() => requestHint(hintIdx)}
                                       disabled={hintLoading}
@@ -818,6 +984,11 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                                     >
                                       {hintLoading ? "..." : "Use Hint"}
                                     </button>
+                                  )}
+                                  {!isUsed && isPracticeMode && (
+                                    <span className="text-xs font-medium text-rose-600 dark:text-rose-300">
+                                      Locked
+                                    </span>
                                   )}
                                   {isUsed && (
                                     <span className="text-green-600 dark:text-green-400 text-sm font-medium">
@@ -853,36 +1024,40 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">Submit Flag</p>
                 <input
                   type="text"
-                  className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${submitting || isCorrect || isExpired
+                  className={`py-2.5 px-4 block w-full border rounded-full text-base sm:text-lg bg-white/90 dark:bg-gray-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-red-400 dark:focus:ring-red-400 transition-colors duration-300 shadow-sm ${isSubmissionLocked
                     ? "border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900/60"
-                    : "border-gray-300 dark:border-gray-700"
+                    : isIncorrect
+                      ? "border-red-500 dark:border-red-600"
+                      : "border-gray-300 dark:border-gray-700"
                     }`}
                   placeholder="Flag here!"
                   value={flag}
-                  onChange={(e) => setFlag(e.target.value)}
+                  onChange={handleFlagChange}
                   onKeyPress={handleKeyPress}
-                  disabled={submitting || isCorrect || isExpired}
+                  disabled={isSubmissionLocked}
                   maxLength={100}
                 />
                 <button
-                  className={`w-full sm:w-[180px] border rounded-full px-4 py-2 text-white shadow-sm transition-colors duration-300 ${submitting || isCorrect || isExpired
+                  className={`w-full sm:w-[180px] border rounded-full px-4 py-2 text-white shadow-sm transition-colors duration-300 ${isSubmissionLocked
                     ? "bg-gray-400 border-gray-400 cursor-not-allowed"
                     : sessionStatus === "unauthenticated"
                       ? "bg-blue-500/90 dark:bg-blue-500 border-blue-500/70 dark:border-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700"
                       : "bg-red-500/90 dark:bg-red-500 border-red-500/70 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
                     } ${submitting ? "animate-pulse" : ""}`}
                   onClick={handleSubmit}
-                  disabled={submitting || isCorrect || isExpired}
+                  disabled={isSubmissionLocked}
                 >
                   {submitting
                     ? "Submitting..."
-                    : isCorrect
-                      ? "Solved!"
-                      : isExpired
-                        ? "Expired"
+                    : isExpired
+                      ? "Expired"
+                      : isCorrect && !isPracticeMode
+                        ? "Solved!"
                         : sessionStatus === "unauthenticated"
                           ? "Login to Submit"
-                          : "Submit"}
+                          : isPracticeMode
+                            ? "Submit (Practice)"
+                            : "Submit"}
                 </button>
 
                 {/* Time remaining display */}
