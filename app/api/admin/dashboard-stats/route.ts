@@ -6,6 +6,7 @@ import UserSchema from "@/models/userSchema";
 import QuestionModel from "@/models/qustionsSchema";
 import BadgeTemplate from "@/models/badgeTemplate";
 import UserQuestionModel from "@/models/userQuestionSchema";
+import ArchivedChallenge from "@/models/archivedChallengeSchema";
 
 export const runtime = "nodejs";
 
@@ -54,6 +55,7 @@ export async function GET(req: NextRequest) {
       totalBadgeTemplates,
       activeBadgeTemplates,
       recentCompletions,
+      totalArchivedChallenges,
     ] = await Promise.all([
       // Total challenges
       QuestionModel.countDocuments({}),
@@ -71,6 +73,9 @@ export async function GET(req: NextRequest) {
       UserQuestionModel.countDocuments({
         createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
       }),
+
+      // Total archived challenges
+      ArchivedChallenge.countDocuments({}),
     ]);
 
     // Calculate active challenges (non-expired)
@@ -107,6 +112,7 @@ export async function GET(req: NextRequest) {
       recentActivity: recentCompletions,
       newUsersThisWeek: recentUsers,
       topCategories: topCategories,
+      totalArchivedChallenges: totalArchivedChallenges,
       lastUpdated: new Date().toISOString(),
     };
 

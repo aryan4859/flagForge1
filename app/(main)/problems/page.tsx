@@ -5,6 +5,8 @@ import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { IoFilter, IoChevronDown, IoSearch } from "react-icons/io5";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { Archive } from "lucide-react";
 import { Questions } from "@/interfaces";
 
 // Extended interface to include expiry information
@@ -638,13 +640,13 @@ const Page: React.FC = () => {
     return <Loading />;
   }
 
+  // Remove authentication requirement - allow public browsing
   if (sessionStatus === "loading") {
     return <Loading />;
   }
 
-  if (sessionStatus === "unauthenticated") {
-    return <AuthError />;
-  }
+  // Note: Removed authentication check to allow public browsing
+  // Authentication will be required only when solving challenges
 
   const shouldShowPagination =
     !isSearchActive && (problems.length > 0 || currentPage > 1);
@@ -655,18 +657,33 @@ const Page: React.FC = () => {
         Challenges
       </h1>
 
+      {/* CTF Archives Link */}
+      <div className="w-full flex justify-center">
+        <Link
+          href="/archives"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        >
+          <Archive className="h-5 w-5" />
+          Browse CTF Archives
+          <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Past Challenges</span>
+        </Link>
+      </div>
+
       {errorMessage && (
         <div className="w-full rounded-2xl border border-red-200/80 bg-red-50/80 px-4 py-3 text-center text-sm font-semibold text-red-700 shadow-sm dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
           {errorMessage}
         </div>
       )}
 
-      <StatsSection
-        score={score}
-        questionDone={questionDone}
-        showFilterDropdown={showFilterDropdown}
-        onToggleFilter={() => setShowFilterDropdown(!showFilterDropdown)}
-      />
+      {/* Stats Section - only show for authenticated users */}
+      {sessionStatus === "authenticated" && (
+        <StatsSection
+          score={score}
+          questionDone={questionDone}
+          showFilterDropdown={showFilterDropdown}
+          onToggleFilter={() => setShowFilterDropdown(!showFilterDropdown)}
+        />
+      )}
 
       {/* Filter Section */}
       <div className="w-full">
@@ -779,6 +796,13 @@ const Page: React.FC = () => {
             <span className="rounded-full border border-gray-200/70 dark:border-white/10 bg-white/80 dark:bg-gray-900/60 px-4 py-2">
               Page {currentPage} of {totalPages}
             </span>
+            <Link
+              href="/archives"
+              className="rounded-full border border-purple-200/70 dark:border-purple-400/30 bg-purple-50/80 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-100/80 dark:hover:bg-purple-900/50 px-4 py-2 transition-colors duration-300 flex items-center gap-1"
+            >
+              <Archive className="h-3 w-3" />
+              View Archives
+            </Link>
           </div>
         </div>
 

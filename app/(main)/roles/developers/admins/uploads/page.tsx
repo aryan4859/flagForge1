@@ -14,6 +14,7 @@ interface FormData {
   points: string;
   category: string;
   link: string;
+  challengeType: 'link' | 'file';
   isTimeLimited: boolean;
   timeLimit: string;
   timeLimitUnit: 'hours' | 'days' | 'weeks';
@@ -253,7 +254,7 @@ const DetailRow = ({ label, value, isMono = false }: { label: string; value: str
 const UploadPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     title: "", flag: "", description: "", points: "", category: "All",
-    link: "", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days", uploadedBy: "", difficulty: ""
+    link: "", challengeType: "link", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days", uploadedBy: "", difficulty: ""
   });
   
   const [difficultyFactors, setDifficultyFactors] = useState<DifficultyFactors>({
@@ -265,6 +266,7 @@ const UploadPage: React.FC = () => {
   });
   
   const [hints, setHints] = useState<Hint[]>([{ id: 1, text: "", pointsDeduction: "" }]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -371,7 +373,7 @@ const UploadPage: React.FC = () => {
   const resetForm = () => {
     setFormData({
       title: "", flag: "", description: "", points: "", category: "All",
-      link: "", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days",
+      link: "", challengeType: "link", isTimeLimited: false, timeLimit: "", timeLimitUnit: "days",
       uploadedBy: formData.uploadedBy, difficulty: ""
     });
     setDifficultyFactors({
@@ -382,6 +384,7 @@ const UploadPage: React.FC = () => {
       hiddenAttackVectors: 2
     });
     setHints([{ id: 1, text: "", pointsDeduction: "" }]);
+    setSelectedFile(null);
   };
 
   const handleInitialSubmit = (e: React.FormEvent<HTMLButtonElement>): void => {
@@ -408,18 +411,54 @@ const UploadPage: React.FC = () => {
     try {
       const validHints = hints.filter(hint => hint.text.trim() !== "");
       
-      const submissionData: SubmissionData = {
-        ...formData,
-        hints: validHints,
-        expiryDate: calculateExpiryDate(),
-        createdAt: new Date().toISOString(),
-      };
+      let response;
 
-      const response = await fetch("/api/problems", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submissionData),
-      });
+      if (formData.challengeType === 'file') {
+        // Handle file upload
+        if (!selectedFile) {
+          setError('Please select a file to upload');
+          setIsSubmitting(false);
+          return;
+        }
+
+        const fileFormData = new FormData();
+        fileFormData.append('title', formData.title);
+        fileFormData.append('flag', formData.flag);
+        fileFormData.append('description', formData.description);
+        fileFormData.append('points', formData.points);
+        fileFormData.append('category', formData.category);
+        fileFormData.append('link', formData.link);
+        fileFormData.append('addilinks', formData.link); // For backward compatibility
+        fileFormData.append('isTimeLimited', formData.isTimeLimited.toString());
+        fileFormData.append('timeLimit', formData.timeLimit);
+        fileFormData.append('timeLimitUnit', formData.timeLimitUnit);
+        fileFormData.append('hints', JSON.stringify(validHints));
+        fileFormData.append('challengeFile', selectedFile);
+        
+        const expiryDate = calculateExpiryDate();
+        if (expiryDate) {
+          fileFormData.append('expiryDate', expiryDate.toISOString());
+        }
+
+        response = await fetch("/api/problems", {
+          method: "POST",
+          body: fileFormData,
+        });
+      } else {
+        // Handle JSON data (link-based challenge)
+        const submissionData: SubmissionData = {
+          ...formData,
+          hints: validHints,
+          expiryDate: calculateExpiryDate(),
+          createdAt: new Date().toISOString(),
+        };
+
+        response = await fetch("/api/problems", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(submissionData),
+        });
+      }
 
       if (response.ok) {
         setSuccess("CTF challenge uploaded successfully!");
@@ -626,15 +665,47 @@ const UploadPage: React.FC = () => {
                     </select>
                   </div>
                   
-                  <InputField 
-                    id="link" 
-                    type="url" 
-                    placeholder="https://example.com/resource" 
-                    formData={formData} 
-                    handleChange={handleChange}
-                  >
-                    Resource Link
-                  </InputField>
+                  {/* Challenge Type Selector */}
+                  <div className="mb-6">
+                    <label className={styles.label}>Challenge Type *</label>
+                    <select
+                      id="challengeType"
+                      value={formData.challengeType}
+                      onChange={handleChange}
+                      className={styles.input}
+                    >
+                      <option value="link">External Link</option>
+                      <option value="file">File Upload</option>
+                    </select>
+                  </div>
+
+                  {formData.challengeType === 'link' ? (
+                    <InputField 
+                      id="link" 
+                      type="url" 
+                      placeholder="https://example.com/resource" 
+                      formData={formData} 
+                      handleChange={handleChange}
+                    >
+                      Resource Link
+                    </InputField>
+                  ) : (
+                    <div className="mb-6">
+                      <label className={styles.label}>Challenge File *</label>
+                      <div className="relative">
+                        <input
+                          type="file"
+                          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                          className="w-full bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-600 rounded-lg py-3 px-4 focus:outline-none focus:border-rose-500 dark:focus:border-rose-400 transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 dark:file:bg-rose-900/20 dark:file:text-rose-300"
+                          accept=".zip,.pdf,.txt,.png,.jpg,.jpeg"
+                          required
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Supported formats: ZIP, PDF, TXT, PNG, JPG (Max: 50MB)
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Time Limit Section */}

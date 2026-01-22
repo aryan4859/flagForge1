@@ -35,6 +35,8 @@ interface Questions {
   points: number | string;
   category: string;
   link: string;
+  challengeFile?: string;
+  challengeType?: 'link' | 'file';
   isTimeLimited: boolean;
   timeLimit: number | string;
   timeLimitUnit: "hours" | "days" | "weeks";
@@ -227,6 +229,12 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
 
   // Request a specific hint
   const requestHint = async (hintIndex: number) => {
+    // Check authentication before allowing hint request
+    if (sessionStatus === "unauthenticated") {
+      router.push("/authentication");
+      return;
+    }
+
     if (usedHints.includes(hintIndex)) return;
 
     try {
@@ -339,9 +347,15 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     isPracticeMode,
     isExpired,
     MIN_SUBMISSION_INTERVAL
-    ]);
+  ]);
 
   const handleSubmit = async () => {
+    // Check authentication before allowing flag submission
+    if (sessionStatus === "unauthenticated") {
+      router.push("/authentication");
+      return;
+    }
+
     const submissionCheck = canSubmit();
     if (!submissionCheck.allowed) {
       if (submissionCheck.reason) {
@@ -496,7 +510,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     submitting || isExpired || (!isPracticeMode && isCorrect);
 
   if (loading || sessionStatus === "loading") return <Loading />;
-  if (sessionStatus === "unauthenticated") return <AuthError />;
+
+  // Allow viewing the problem without authentication
+  // Authentication will be required only when submitting flags
 
   // Show expired challenge page
   if (isExpired) {
@@ -844,7 +860,18 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                   <p className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
                     Given Resources
                   </p>
-                  {problems.link ? (
+                  {problems.challengeType === 'file' && problems.challengeFile ? (
+                    <a
+                      href={problems.challengeFile}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-purple-500/90 text-white px-4 py-2 text-sm font-semibold shadow-sm hover:bg-purple-600 transition-colors"
+                      aria-label={`Download Challenge File: ${problems.challengeFile.split('/').pop()}`}
+                    >
+                      Download File
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  ) : problems.link ? (
                     isValidUrl(problems.link) ? (
                       <a
                         href={problems.link}
@@ -1013,7 +1040,9 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 <button
                   className={`w-full sm:w-[180px] border rounded-full px-4 py-2 text-white shadow-sm transition-colors duration-300 ${isSubmissionLocked
                     ? "bg-gray-400 border-gray-400 cursor-not-allowed"
-                    : "bg-red-500/90 dark:bg-red-500 border-red-500/70 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
+                    : sessionStatus === "unauthenticated"
+                      ? "bg-blue-500/90 dark:bg-blue-500 border-blue-500/70 dark:border-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700"
+                      : "bg-red-500/90 dark:bg-red-500 border-red-500/70 dark:border-red-600 hover:bg-red-700 dark:hover:bg-red-700"
                     } ${submitting ? "animate-pulse" : ""}`}
                   onClick={handleSubmit}
                   disabled={isSubmissionLocked}
@@ -1024,9 +1053,11 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                       ? "Expired"
                       : isCorrect && !isPracticeMode
                         ? "Solved!"
-                        : isPracticeMode
-                          ? "Submit (Practice)"
-                          : "Submit"}
+                        : sessionStatus === "unauthenticated"
+                          ? "Login to Submit"
+                          : isPracticeMode
+                            ? "Submit (Practice)"
+                            : "Submit"}
                 </button>
 
                 {/* Time remaining display */}

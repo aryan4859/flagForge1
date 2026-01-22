@@ -17,7 +17,12 @@ export const NavbarData: NavbarItems[] = [
     style: undefined
   },
   {
-    href: "https://blogs.flagforge.xyz",
+    href: "/archives",
+    tags: "Archives",
+    style: undefined
+  },
+  {
+    href: "https://blog.flagforge.xyz",
     tags: "Blogs",
     style: undefined
   },

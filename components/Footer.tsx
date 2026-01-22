@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Linkedin, Instagram, Github } from "lucide-react";
+import { Linkedin, Github } from "lucide-react";
 import logo from "@/public/flagforge-logo.png";
 
 export default function Footer() {
@@ -14,18 +14,33 @@ export default function Footer() {
       bg: "hover:bg-[#0077b5]/10 dark:hover:bg-[#38b6ff]/15",
     },
     {
-      name: "Instagram",
-      url: "https://www.instagram.com/flag.forge/",
-      icon: <Instagram className="w-5 h-5 pointer-events-none" />,
-      color: "hover:text-[#e4405f] dark:hover:text-[#ff4d6d]", // Lighter pink for dark mode visibility
-      bg: "hover:bg-[#e4405f]/10 dark:hover:bg-[#ff4d6d]/15",
-    },
-    {
       name: "GitHub",
       url: "https://github.com/FlagForgeCTF/",
       icon: <Github className="w-5 h-5" />,
       color: "hover:text-gray-950 dark:hover:text-white",
       bg: "hover:bg-gray-950/10 dark:hover:bg-white/10",
+    },
+    {
+      name: "Instagram",
+      url: "https://www.instagram.com/flag.forge/",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+        </svg>
+      ),
+      color: "hover:text-[#E4405F]",
+      bg: "hover:bg-[#E4405F]/10",
     },
   ];
 

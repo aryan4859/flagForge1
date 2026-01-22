@@ -11,6 +11,7 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/api/admin') ||
     pathname.startsWith('/roles/developers/admins') ||
+    pathname.startsWith('/admin') ||
     pathname.startsWith('/api/badges') ||
     pathname.startsWith('/api/badge-templates') ||
     pathname.startsWith('/resources/upload')

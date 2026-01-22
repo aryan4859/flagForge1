@@ -15,7 +15,9 @@ import {
   Activity,
   Clock,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  Archive,
+  Trophy
 } from 'lucide-react';
 import Loading from '@/components/loading';
 
@@ -29,6 +31,7 @@ interface DashboardStats {
   recentActivity: number;
   newUsersThisWeek: number;
   topCategories: Array<{ _id: string; count: number }>;
+  totalArchivedChallenges: number;
   lastUpdated: string;
 }
 
@@ -115,6 +118,7 @@ const AdminDashboard: React.FC = () => {
     recentActivity: 0,
     newUsersThisWeek: 0,
     topCategories: [],
+    totalArchivedChallenges: 0,
     lastUpdated: ''
   });
 
@@ -220,6 +224,14 @@ const AdminDashboard: React.FC = () => {
       onClick: () => router.push('/roles/developers/admins/uploads')
     },
     {
+      title: "Event Scoreboards",
+      description: "Manage CTF event results, winners, and team performance data from competitions.",
+      icon: <Trophy className="w-6 h-6 text-white" />,
+      color: "bg-gradient-to-br from-yellow-500 to-orange-600",
+      path: "/event-scoreboards",
+      onClick: () => router.push('/roles/developers/admins/event-scoreboards')
+    },
+    {
       title: "Assign Badges",
       description: "Assign achievement badges to users based on their performance and accomplishments.",
       icon: <Award className="w-6 h-6 text-white" />,
@@ -234,6 +246,14 @@ const AdminDashboard: React.FC = () => {
       color: "bg-gradient-to-br from-purple-500 to-indigo-600",
       path: "/badge-templates",
       onClick: () => router.push('/roles/developers/admins/badge-templates')
+    },
+    {
+      title: "CTF Archives",
+      description: "Manage archived challenges from past CTF competitions like PGS CTF 2026.",
+      icon: <Archive className="w-6 h-6 text-white" />,
+      color: "bg-gradient-to-br from-violet-500 to-purple-600",
+      path: "/archives",
+      onClick: () => router.push('/roles/developers/admins/archives')
     },
     {
       title: "Resources",
@@ -316,7 +336,7 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
           <StatsCard
             title="Total Challenges"
             value={stats.totalChallenges}
@@ -328,6 +348,12 @@ const AdminDashboard: React.FC = () => {
             value={stats.activeChallenges}
             icon={<Activity className="w-6 h-6 text-white" />}
             color="bg-green-500"
+          />
+          <StatsCard
+            title="Archived Challenges"
+            value={stats.totalArchivedChallenges}
+            icon={<Archive className="w-6 h-6 text-white" />}
+            color="bg-violet-500"
           />
           <StatsCard
             title="Badge Templates"

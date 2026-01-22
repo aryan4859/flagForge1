@@ -122,16 +122,21 @@ export async function GET(
     delete questionData.flag;
     delete questionData.hints; // Remove hints from main data
 
-    const user = await userSchema.findOne({ email: session?.user.email });
-    const userQuestion = await UserQuestionModel.findOne({
-      userId: user?.id,
-      questionId: id,
-    });
-
-    const isDone = !!userQuestion;
-
-    // Get used hints for this user and question
-    const usedHints = user ? await getUserHints(user._id, id) : [];
+    // Only fetch user-specific data if session exists
+    let isDone = false;
+    let usedHints: number[] = [];
+    
+    if (session?.user?.email) {
+      const user = await userSchema.findOne({ email: session.user.email });
+      if (user) {
+        const userQuestion = await UserQuestionModel.findOne({
+          userId: user.id,
+          questionId: id,
+        });
+        isDone = !!userQuestion;
+        usedHints = await getUserHints(user._id, id);
+      }
+    }
 
     return NextResponse.json({
       question: questionData,

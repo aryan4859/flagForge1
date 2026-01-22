@@ -13,7 +13,8 @@ import Cipher from "../../../public/badges/0x5.png";
 import Forger from "../../../public/badges/0x6.png";
 import Conqueror from "../../../public/badges/0x7.png";
 import Flagforge from "../../../public/flagforge.gif";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Trophy } from "lucide-react";
+import Link from "next/link";
 
 interface LeaderboardUser {
   name: string;
@@ -78,15 +79,14 @@ const LeaderboardPage = () => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    if (sessionStatus === "authenticated") {
-      fetchLeaderboard();
-      intervalId = setInterval(fetchLeaderboard, 10000);
-    }
+    // Fetch leaderboard for all users (authenticated and unauthenticated)
+    fetchLeaderboard();
+    intervalId = setInterval(fetchLeaderboard, 10000);
 
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [sessionStatus, fetchLeaderboard]);
+  }, [fetchLeaderboard]);
 
   const getLevel = useCallback((score: number): string => {
     if (score < 200) return "[0x1][NEWBIE]";
@@ -197,13 +197,12 @@ const LeaderboardPage = () => {
     setExpandedUser((prev) => (prev === rank ? null : rank));
   };
 
-  if (sessionStatus === "loading" || loading) {
+  // Show loading only when data is being fetched, not when session is loading
+  if (loading) {
     return <Loading />;
   }
 
-  if (sessionStatus === "unauthenticated") {
-    return <AuthError />;
-  }
+  // Note: Removed authentication check to allow public browsing
 
   if (error) {
     return (
@@ -233,6 +232,17 @@ const LeaderboardPage = () => {
           <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 transition-colors duration-300">
             Showing top 50 players only
           </p>
+          
+          {/* Event Scoreboards Link */}
+          <div className="mt-4 pt-4 border-t border-gray-200/50 dark:border-gray-700/50">
+            <Link
+              href="/event-scoreboards"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-300"
+            >
+              <Trophy className="h-4 w-4" />
+              View Past Event Scoreboards
+            </Link>
+          </div>
         </div>
 
         <div className="w-full">

@@ -1,8 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["writeup.flagforge.xyz", "flagforge.xyz", "github.com", "www.instagram.com"],
+    domains: ["writeup.flagforge.xyz", "flagforge.xyz", "github.com"],
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "writeup.flagforge.xyz",
+      },
+      {
+        protocol: "https",
+        hostname: "flagforge.xyz",
+      },
+      {
+        protocol: "https",
+        hostname: "github.com",
+      },
       {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
@@ -10,14 +22,6 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "prod-files-secure.s3.us-west-2.amazonaws.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.cdninstagram.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.fbcdn.net",
       },
     ],
     formats: ["image/avif", "image/webp"],

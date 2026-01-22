@@ -41,6 +41,14 @@ const questionSchema = new Schema<Questions>(
     link: {
       type: String,
     },
+    challengeFile: {
+      type: String,
+    },
+    challengeType: {
+      type: String,
+      enum: ['link', 'file'],
+      default: 'link',
+    },
     done: {
       type: Boolean
     },
