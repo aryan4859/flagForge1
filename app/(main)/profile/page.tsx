@@ -1239,7 +1239,7 @@ const ProfilePage = () => {
                                 ) : (
                                   <Copy className="w-3.5 h-3.5" />
                                 )}
-                                <span className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-950 px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-opacity group-hover:opacity-100">
+                                <span className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-gray-950 px-3 py-1.5 text-xs font-semibold text-white opacity-0 transition-all duration-200 ease-in-out group-hover:opacity-100 group-hover:-translate-y-10 group-focus-visible:opacity-100 group-focus-visible:-translate-y-10 scale-95 group-hover:scale-100 group-focus-visible:scale-100">
                                   {copiedText === item.label ? 'Copied!' : `Copy ${item.label}`}
                                 </span>
                               </button>
