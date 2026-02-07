@@ -39,9 +39,9 @@ jobs:
     - name: Build project
       run: npm run build
       env:
-        NEXT_PUBLIC_SITE_URL: https://flagforge.xyz
+        NEXT_PUBLIC_SITE_URL: https://flagforgectf.com
         MONGO_URL: ${{ secrets.MONGO_URL || 'mongodb://localhost:27017/flagforge' }}
         NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'placeholder-secret' }}
-        NEXTAUTH_URL: https://flagforge.xyz
+        NEXTAUTH_URL: https://flagforgectf.com
         NOTION_API_KEY: ${{ secrets.NOTION_API_KEY || 'placeholder-key' }}
         NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID || 'placeholder-id' }}

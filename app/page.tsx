@@ -22,8 +22,8 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "FlagForge",
-    "url": "https://flagforge.xyz",
-    "logo": "https://flagforge.xyz/flagforge.gif",
+    "url": "https://flagforgectf.com",
+    "logo": "https://flagforgectf.com/flagforge.gif",
     "sameAs": [
       "https://github.com/aryan4859"
     ]
@@ -33,10 +33,10 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "FlagForge",
-    "url": "https://flagforge.xyz",
+    "url": "https://flagforgectf.com",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://flagforge.xyz/search?q={search_term_string}",
+      "target": "https://flagforgectf.com/search?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };
@@ -62,7 +62,7 @@ export default function Home() {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://flagforge.xyz/"
+        "item": "https://flagforgectf.com/"
       }
     ]
   };

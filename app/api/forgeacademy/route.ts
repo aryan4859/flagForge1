@@ -105,7 +105,7 @@ Return only JSON.
     if (bestChallenge) {
       const challengeId = bestChallenge.id || bestChallenge._id?.toString();
       const challengeTitle = bestChallenge.title || "Untitled Challenge";
-      const challengeLink = `https://flagforge.xyz/challenges/${challengeId}`;
+      const challengeLink = `https://flagforgectf.com/challenges/${challengeId}`;
 
       // Inject challenge link into lesson
       lesson.challenge_meta = {

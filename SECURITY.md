@@ -35,10 +35,10 @@ FlagForge is a Capture The Flag (CTF) platform that manages **user authenticatio
 
 ## ⚠️ Responsible Testing Notice
 
-🚨 **Do not test on our production domain (`flagforge.xyz`)**.  
+🚨 **Do not test on our production domain (`flagforgectf.com`)**.  
 For all vulnerability testing, please use our **dedicated staging environment**:
 
-👉 **[staging.flagforge.xyz](https://staging.flagforge.xyz)**
+👉 **[staging.flagforgectf.com](https://staging.flagforgectf.com)**
 
 This ensures testing does not affect live users or disrupt ongoing competitions.
 
@@ -136,7 +136,7 @@ In the event of a confirmed incident:
 
 ## Security Contact
 
-📧 **Primary Contact**: security@flagforge.xyz
+📧 **Primary Contact**: security@flagforgectf.com
 🐙 **GitHub Issues**: For non-sensitive discussions  
 ⏱ **Response Time**: 24 hours for acknowledgment
 

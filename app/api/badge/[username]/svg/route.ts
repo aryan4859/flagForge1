@@ -75,7 +75,7 @@ function generateBadgeSVG(userData: any, userImage: string | null): string {
     <!-- Header -->
     <rect x="0" y="0" width="400" height="50" rx="12" fill="url(#badgeGradient)"/>
     <text x="20" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="bold" fill="white">
-    FlagForge.xyz
+    flagforgectf.com
     </text>
     
     <!-- User Info -->
@@ -100,7 +100,7 @@ function generateBadgeSVG(userData: any, userImage: string | null): string {
     
     <!-- Footer -->
     <text x="200" y="185" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#6B7280" text-anchor="middle">
-      Powered by FlagForge.xyz
+      Powered by flagforgectf.com
     </text>
   </svg>`;
 }

@@ -4,11 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "writeup.flagforge.xyz",
+        hostname: "writeup.flagforgectf.com",
       },
       {
         protocol: "https",
-        hostname: "flagforge.xyz",
+        hostname: "flagforgectf.com",
       },
       {
         protocol: "https",
@@ -55,7 +55,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://flagforge.xyz",
+            value: "https://flagforgectf.com",
           },
           {
             key: "X-Frame-Options",

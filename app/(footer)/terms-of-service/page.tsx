@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     title: "FlagForge Terms of Service",
     description:
       "Review the terms and conditions for using FlagForge CTF platform. Clear guidelines for fair and secure participation.",
-    url: "https://flagforge.xyz/terms-of-service",
+    url: "https://flagforgectf.com/terms-of-service",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",
@@ -246,10 +246,10 @@ export default function TermsOfService() {
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
                 For questions about these Terms of Service, please contact us at{" "}
                 <a
-                  href="mailto:info@flagforge.xyz"
+                  href="mailto:info@flagforgectf.com"
                   className="text-red-500 hover:text-red-600 transition-colors underline underline-offset-4"
                 >
-                  info@flagforge.xyz
+                  info@flagforgectf.com
                 </a>
               </p>
             </section>

@@ -32,13 +32,13 @@ export default function BlogsPage() {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://flagforge.xyz/"
+        "item": "https://flagforgectf.com/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Blogs",
-        "item": "https://flagforge.xyz/blogs"
+        "item": "https://flagforgectf.com/blogs"
       }
     ]
   };
@@ -135,11 +135,11 @@ export default function BlogsPage() {
           "@type": "Blog",
           name: "FlagForge Blog",
           description: "Discover insights, tutorials, and stories from our team at FlagForge.",
-          url: "https://flagforge.xyz/blogs",
+          url: "https://flagforgectf.com/blogs",
           blogPost: posts.map((post) => ({
             "@type": "BlogPosting",
             headline: post.title,
-            url: `https://flagforge.xyz/blogs/${post.slug || post.id}`,
+            url: `https://flagforgectf.com/blogs/${post.slug || post.id}`,
             datePublished: post.created,
             description: post.excerpt,
           })),

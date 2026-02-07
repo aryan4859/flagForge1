@@ -162,7 +162,7 @@ const fetchPublicUserEntries = async () => {
 
 
 module.exports = {
-  siteUrl: 'https://flagforge.xyz',
+  siteUrl: 'https://flagforgectf.com',
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   changefreq: 'monthly',

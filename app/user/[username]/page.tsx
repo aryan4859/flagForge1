@@ -297,7 +297,7 @@ const PublicUserPage = () => {
 
   if (!profileData) return null;
 
-  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://flagforge.xyz';
+  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://flagforgectf.com';
   const profileUrl = `${currentDomain}/user/${encodeURIComponent(username)}`;
   const badgeSvgUrl = `${currentDomain}/api/badge/${encodeURIComponent(username)}/svg`;
 

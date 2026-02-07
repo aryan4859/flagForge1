@@ -445,7 +445,7 @@ const AdminEventScoreboardsPage: React.FC = () => {
                         value={formData.scoreboardUrl}
                         onChange={(e) => setFormData(prev => ({ ...prev, scoreboardUrl: e.target.value }))}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 dark:bg-gray-700 dark:text-white transition-colors"
-                        placeholder="https://event.flagforge.xyz/games/2/scoreboard"
+                        placeholder="https://event.flagforgectf.com/games/2/scoreboard"
                       />
                     </div>
 

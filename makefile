@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://flagforge.xyz/sitemap.xml
+Sitemap: https://flagforgectf.com/sitemap.xml

@@ -1187,7 +1187,7 @@ const ProfilePage = () => {
 
               <div className="space-y-4">
                 {(() => {
-                  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://flagforge.xyz';
+                  const currentDomain = typeof window !== 'undefined' ? window.location.origin : 'https://flagforgectf.com';
                   const slug = (profileData?.name || "").replace(/\s+/g, "-");
                   const profileUrl = `${currentDomain}/user/${encodeURIComponent(slug)}`;
                   const badgeSvgUrl = `${currentDomain}/api/badge/${encodeURIComponent(slug)}/svg`;

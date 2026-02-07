@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     title: "FlagForge Licensing - GPL-3.0 Open Source",
     description:
       "FlagForge is open source under GPL-3.0. Free to use, modify, and distribute with full source code access on GitHub.",
-    url: "https://flagforge.xyz/licensing",
+    url: "https://flagforgectf.com/licensing",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",

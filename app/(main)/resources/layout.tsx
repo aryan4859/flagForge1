@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: "Learning Resources - FlagForge",
     description:
       "Explore FlagForge learning resources and CTF training materials organized by category to build cybersecurity skills.",
-    url: "https://flagforge.xyz/resources",
+    url: "https://flagforgectf.com/resources",
     type: "website",
     siteName: "FlagForge",
   },
