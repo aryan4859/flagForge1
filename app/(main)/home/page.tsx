@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import ArchivesSection from "@/components/ArchivesSection";
 import ScoreboardSection from "@/components/ScoreboardSection";
+import InstagramFeed from "@/components/InstagramFeed";
 
 interface UserStats {
   totalScore: number;
@@ -211,7 +212,7 @@ const Home = () => {
       <div className="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_center,rgba(244,63,94,0.18),rgba(244,63,94,0))] blur-3xl" />
 
       <div className="relative z-10">
-        <div className="relative overflow-hidden transition-colors duration-300">
+        <div className="relative overflow-x-hidden overflow-y-visible transition-colors duration-300">
           <div className="absolute inset-0 opacity-30">
             <div
               className="absolute inset-0"
@@ -453,10 +454,13 @@ const Home = () => {
                 </h2>
               </div>
               {latestRoom ? (
-                <div className="bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-5 hover:-translate-y-1 transition-all duration-300 cursor-pointer shadow-lg">
+                <Link
+                  href={`/problems/${latestRoom._id}`}
+                  className="group block bg-white/70 dark:bg-white/[0.04] border border-white/60 dark:border-white/10 rounded-2xl p-5 hover:-translate-y-1 transition-all duration-300 shadow-lg"
+                >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-red-500 dark:hover:text-red-500 transition-colors">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
                         {latestRoom.title}
                       </h3>
                       <p className={` text-sm text-gray-600 dark:text-gray-400 mt-1 transition-colors duration-300`}>
@@ -477,7 +481,7 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center">
                     <span
                       className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(
                         latestRoom.category
@@ -485,12 +489,8 @@ const Home = () => {
                     >
                       {latestRoom.category}
                     </span>
-                    <div className="flex items-center gap-2 text-sm text-red-500 dark:text-red-500 hover:text-red-600 dark:hover:text-red-500 transition-colors duration-300">
-                      <PlayCircle className="h-4 w-4" />
-                      <Link href="/problems"> Start Challenge </Link>
-                    </div>
                   </div>
-                </div>
+                </Link>
               ) : (
                 <div className="text-center py-6 text-gray-500 dark:text-gray-400 transition-colors duration-300">
                   <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -610,6 +610,9 @@ const Home = () => {
 
           {/* Scoreboards Section */}
           <ScoreboardSection />
+
+          {/* Instagram Feed */}
+          <InstagramFeed />
         </div>
       </div>
     </div>

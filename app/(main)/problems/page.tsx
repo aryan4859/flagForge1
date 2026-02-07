@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import QustionCards from "@/components/QustionCards";
+import QustionCards from "@/components/QuestionCards";
 import Loading from "@/components/loading";
 import AuthError from "@/components/authError";
 import { IoFilter, IoChevronDown, IoSearch } from "react-icons/io5";
@@ -453,30 +453,37 @@ const PaginationControls: React.FC<{
   hasNextPage: boolean;
   onPrevious: () => void;
   onNext: () => void;
-}> = ({ currentPage, hasNextPage, onPrevious, onNext }) => (
-  <div className="flex justify-center sm:justify-end gap-3 w-full">
-    <button
-      onClick={onPrevious}
-      disabled={currentPage === 1}
-      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${currentPage === 1
-          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-          : "bg-red-500/90 hover:bg-red-600"
-        }`}
-    >
-      Previous
-    </button>
-    <button
-      onClick={onNext}
-      disabled={!hasNextPage}
-      className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${!hasNextPage
-          ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
-          : "bg-red-500/90 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600"
-        }`}
-    >
-      Next
-    </button>
-  </div>
-);
+}> = ({ currentPage, hasNextPage, onPrevious, onNext }) => {
+  const isFirstPage = currentPage === 1;
+  const isLastPage = !hasNextPage;
+
+  return (
+    <div className="flex justify-center sm:justify-end gap-3 w-full">
+      <button
+        onClick={isFirstPage ? (e) => e.preventDefault() : onPrevious}
+        aria-disabled={isFirstPage}
+        title={isFirstPage ? "You are on the first page" : "Go to previous page"}
+        className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${isFirstPage
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-red-500/90 hover:bg-red-600"
+          }`}
+      >
+        Previous
+      </button>
+      <button
+        onClick={isLastPage ? (e) => e.preventDefault() : onNext}
+        aria-disabled={isLastPage}
+        title={isLastPage ? "You are on the last page" : "Go to next page"}
+        className={`font-semibold text-sm sm:text-base rounded-full px-5 py-2 text-white shadow-sm transition-colors duration-300 ${isLastPage
+            ? "bg-gray-300 text-gray-500 dark:bg-gray-700 dark:text-gray-300 cursor-not-allowed"
+            : "bg-red-500/90 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600"
+          }`}
+      >
+        Next
+      </button>
+    </div>
+  );
+};
 
 const Page: React.FC = () => {
   const { status: sessionStatus } = useSession();
@@ -641,7 +648,8 @@ const Page: React.FC = () => {
   // Note: Removed authentication check to allow public browsing
   // Authentication will be required only when solving challenges
 
-  const shouldShowPagination = problems.length > 0 || currentPage > 1;
+  const shouldShowPagination =
+    !isSearchActive && (problems.length > 0 || currentPage > 1);
 
   return (
     <div className="relative flex flex-col justify-center items-center gap-8 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 min-h-screen bg-gradient-to-b from-white via-red-50/40 to-white dark:from-gray-950 dark:via-gray-900/40 dark:to-gray-950 animate-in fade-in duration-500">

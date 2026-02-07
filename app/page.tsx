@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Hero from "@/components/Hero";
-import Loading from "@/components/loading";
 import JsonLd from "@/components/JsonLd";
 import { landingFaqItems } from "@/lib/faq";
 
@@ -67,18 +66,13 @@ export default function Home() {
     ]
   };
 
-  if (status === "loading") {
-    return <Loading />;
-  }
-
-  if (status === "unauthenticated") {
+  if (status !== "authenticated") {
     return (
       <>
         <JsonLd data={organizationData} />
         <JsonLd data={websiteData} />
         <JsonLd data={faqData} />
         <JsonLd data={breadcrumbData} />
-        <h4 className="sr-only">FlagForge CTF Platform Overview</h4>
         <main>
           <Hero />
         </main>

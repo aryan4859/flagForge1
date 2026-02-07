@@ -329,8 +329,8 @@ export default function BlogPostClient({
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[
-          rehypeSanitize, // Sanitizes HTML to prevent XSS
           rehypeHighlight, // Syntax highlighting for code blocks
+          rehypeSanitize, // Sanitizes HTML to prevent XSS
         ]}
         components={{
           // Custom component styling
