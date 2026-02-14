@@ -16,7 +16,7 @@ export const generateMetadata = ({
     title: "FlagForge User Profile",
     description:
       "View FlagForge user profiles with CTF rank, badges, and cybersecurity achievements.",
-    url: `https://flagforge.xyz/user/${params.username}`,
+    url: `https://flagforgectf.com/user/${params.username}`,
     type: "profile",
     siteName: "FlagForge",
   },

@@ -255,7 +255,7 @@ export default async function BlogPostPage({
   const post = await fetchBlogPost(id);
   const postSlug = post?.slug || id;
   const seoImage =
-    post?.cover || post?.thumbnail || post?.image || "https://flagforge.xyz/flagforge-logo.png";
+    post?.cover || post?.thumbnail || post?.image || "https://flagforgectf.com/flagforge-logo.png";
   const wordCount = post?.content
     ? post.content.split(/\s+/).filter(Boolean).length
     : undefined;
@@ -286,18 +286,18 @@ export default async function BlogPostPage({
                 name: "FlagForge",
                 logo: {
                   "@type": "ImageObject",
-                  url: "https://flagforge.xyz/flagforge-logo.png",
+                  url: "https://flagforgectf.com/flagforge-logo.png",
                 },
               },
               mainEntityOfPage: {
                 "@type": "WebPage",
-                "@id": `https://flagforge.xyz/blogs/${postSlug}`,
+                "@id": `https://flagforgectf.com/blogs/${postSlug}`,
               },
               keywords: post.tags?.join(", ") || "",
               isPartOf: {
                 "@type": "Blog",
                 name: "FlagForge Blog",
-                url: "https://flagforge.xyz/blogs",
+                url: "https://flagforgectf.com/blogs",
               },
             }}
           />
@@ -310,19 +310,19 @@ export default async function BlogPostPage({
                   "@type": "ListItem",
                   position: 1,
                   name: "Home",
-                  item: "https://flagforge.xyz/",
+                  item: "https://flagforgectf.com/",
                 },
                 {
                   "@type": "ListItem",
                   position: 2,
                   name: "Blogs",
-                  item: "https://flagforge.xyz/blogs",
+                  item: "https://flagforgectf.com/blogs",
                 },
                 {
                   "@type": "ListItem",
                   position: 3,
                   name: post.title,
-                  item: `https://flagforge.xyz/blogs/${postSlug}`,
+                  item: `https://flagforgectf.com/blogs/${postSlug}`,
                 },
               ],
             }}

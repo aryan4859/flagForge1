@@ -22,7 +22,7 @@ export const NavbarData: NavbarItems[] = [
     style: undefined
   },
   {
-    href: "https://blog.flagforge.xyz",
+    href: "https://blog.flagforgectf.com",
     tags: "Blogs",
     style: undefined
   },

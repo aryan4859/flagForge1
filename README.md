@@ -1,6 +1,6 @@
 <h1 align="center" id="title">Flagforge</h1>
 
-<p align="center"><img src="https://socialify.git.ci/FlagForgeCTF/flagForge/image?custom_language=TypeScript&amp;description=1&amp;font=Source+Code+Pro&amp;forks=1&amp;issues=1&amp;language=1&amp;logo=https%3A%2F%2Fflagforge.xyz%2F_next%2Fimage%3Furl%3D%252F_next%252Fstatic%252Fmedia%252Fflagforge-logo.bf890a45.png%26w%3D256%26q%3D75&amp;name=1&amp;owner=1&amp;pattern=Circuit+Board&amp;pulls=1&amp;stargazers=1&amp;theme=Auto" alt="project-image"></p>
+<p align="center"><img src="https://socialify.git.ci/FlagForgeCTF/flagForge/image?custom_language=TypeScript&amp;description=1&amp;font=Source+Code+Pro&amp;forks=1&amp;issues=1&amp;language=1&amp;logo=https%3A%2F%2Fflagforgectf.com%2F_next%2Fimage%3Furl%3D%252F_next%252Fstatic%252Fmedia%252Fflagforge-logo.bf890a45.png%26w%3D256%26q%3D75&amp;name=1&amp;owner=1&amp;pattern=Circuit+Board&amp;pulls=1&amp;stargazers=1&amp;theme=Auto" alt="project-image"></p>
 
 <p align="center">  
 <img src="https://img.shields.io/website?url=https%3A%2F%2Fflagforge.aryan4.com.np&amp;up_message=online&amp;up_color=green&amp;down_message=online&amp;down_color=red&amp;style=flat&amp;logo=appveyor&amp;logoColor=violet&amp;logoSize=auto&amp;cacheSeconds=3600" alt="shields">
@@ -99,7 +99,7 @@ Flag Forge is licensed under the GPL-3.0 License. See the `LICENSE` file for mor
 
 For questions or support, contact the maintainer:
 
-- **Email**: lagzen.thakuri@flagforge.xyz, contact@aryan4.com.np
+- **Email**: lagzen.thakuri@flagforgectf.com, contact@aryan4.com.np
 - **GitHub**: [aryan4859](https://github.com/aryan4859)
 
 ## Stats

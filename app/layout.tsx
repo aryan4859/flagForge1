@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   description:
     "Join FlagForge, the premier CTF platform to hone your cybersecurity skills with engaging challenges. Compete, learn, and grow your hacking expertise.",
-  metadataBase: new URL("https://flagforge.xyz"),
+  metadataBase: new URL("https://flagforgectf.com"),
   applicationName: "FlagForge CTF",
   referrer: "origin-when-cross-origin",
   keywords: [
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     title: "FlagForge - The Ultimate CTF Platform",
     description:
       "FlagForge is the go-to platform for Capture The Flag (CTF) competitions. Test your hacking skills with thrilling challenges in cybersecurity.",
-    url: "https://flagforge.xyz",
+    url: "https://flagforgectf.com",
     siteName: "FlagForge",
     images: [
       {
@@ -100,27 +100,27 @@ const structuredData = {
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://flagforge.xyz/#website",
-      url: "https://flagforge.xyz",
+      "@id": "https://flagforgectf.com/#website",
+      url: "https://flagforgectf.com",
       name: "FlagForge",
       alternateName: "FlagForge CTF Platform",
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://flagforge.xyz/search?q={search_term_string}",
+        target: "https://flagforgectf.com/search?q={search_term_string}",
         "query-input": "required name=search_term_string",
       },
       publisher: {
-        "@id": "https://flagforge.xyz/#organization",
+        "@id": "https://flagforgectf.com/#organization",
       },
     },
     {
       "@type": "Organization",
-      "@id": "https://flagforge.xyz/#organization",
+      "@id": "https://flagforgectf.com/#organization",
       name: "FlagForge",
-      url: "https://flagforge.xyz",
+      url: "https://flagforgectf.com",
       logo: {
         "@type": "ImageObject",
-        url: "https://flagforge.xyz/flagforge-logo.png",
+        url: "https://flagforgectf.com/flagforge-logo.png",
       },
     },
   ],

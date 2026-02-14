@@ -17,16 +17,16 @@ FlagForge is a premier Capture The Flag (CTF) platform designed to host, manage,
 
 ## Important Links
 
-- [Home](https://flagforge.xyz/): Landing page and overview.
-- [Challenges](https://flagforge.xyz/problems): List of available CTF challenges.
-- [Leaderboard](https://flagforge.xyz/leaderboard): Global rankings.
-- [Blogs](https://flagforge.xyz/blogs): Cybersecurity tutorials and news.
-- [Resources](https://flagforge.xyz/resources): Educational materials and tools.
-- [About](https://flagforge.xyz/about): Information about FlagForge.
-- [Contact](https://flagforge.xyz/contact): Support and inquiries.
+- [Home](https://flagforgectf.com/): Landing page and overview.
+- [Challenges](https://flagforgectf.com/problems): List of available CTF challenges.
+- [Leaderboard](https://flagforgectf.com/leaderboard): Global rankings.
+- [Blogs](https://flagforgectf.com/blogs): Cybersecurity tutorials and news.
+- [Resources](https://flagforgectf.com/resources): Educational materials and tools.
+- [About](https://flagforgectf.com/about): Information about FlagForge.
+- [Contact](https://flagforgectf.com/contact): Support and inquiries.
 
 ## Documentation & Legal
 
-- [Terms of Service](https://flagforge.xyz/terms-of-service)
-- [Privacy Policy](https://flagforge.xyz/privacy-policy)
-- [Licensing](https://flagforge.xyz/licensing)
+- [Terms of Service](https://flagforgectf.com/terms-of-service)
+- [Privacy Policy](https://flagforgectf.com/privacy-policy)
+- [Licensing](https://flagforgectf.com/licensing)

@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     description: "Where curiosity meets cybersecurity. Learn, compete, and grow with our global community.",
     type: "website",
     siteName: "FlagForge",
-    url: "https://flagforge.xyz/about",
+    url: "https://flagforgectf.com/about",
   },
   twitter: {
     card: "summary_large_image",
@@ -63,13 +63,13 @@ export default function About() {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://flagforge.xyz/"
+        "item": "https://flagforgectf.com/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "About",
-        "item": "https://flagforge.xyz/about"
+        "item": "https://flagforgectf.com/about"
       }
     ]
   };

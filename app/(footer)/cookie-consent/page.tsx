@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: "FlagForge Cookie Policy",
     description:
       "Understand how FlagForge uses cookies to improve your experience and protect your privacy.",
-    url: "https://flagforge.xyz/cookie-consent",
+    url: "https://flagforgectf.com/cookie-consent",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",
@@ -234,10 +234,10 @@ export default function CookiePolicy() {
           <p className="text-gray-600 dark:text-gray-300">
             If you have questions about our use of cookies, please contact us at{" "}
             <a 
-              href="mailto:info@flagforge.xyz"
+              href="mailto:info@flagforgectf.com"
               className="text-red-400 dark:text-red-500 font-medium hover:underline"
             >
-              info@flagforge.xyz
+              info@flagforgectf.com
             </a>
           </p>
         </div>

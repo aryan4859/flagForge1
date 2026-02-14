@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: "Contact FlagForge - Get in Touch",
     description:
       "Contact the FlagForge team for inquiries, support, or collaboration opportunities.",
-    url: "https://flagforge.xyz/contact",
+    url: "https://flagforgectf.com/contact",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",
@@ -79,7 +79,7 @@ export default function Contact() {
                 <h2 className="text-xs font-black uppercase tracking-[0.3em] text-red-500/80">Get in Touch</h2>
                 <div className="grid gap-8">
                   {[
-                    { icon: Mail, label: "Email", value: "info@flagforge.xyz", href: "mailto:info@flagforge.xyz" },
+                    { icon: Mail, label: "Email", value: "info@flagforgectf.com", href: "mailto:info@flagforgectf.com" },
                     { icon: Phone, label: "Phone", value: "+977 9828137085", href: "tel:+9779828137085" },
                     { icon: MapPin, label: "Address", value: "Lalitpur, 44600" }
                   ].map((item, idx) => (

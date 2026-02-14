@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: "FlagForge Privacy Policy",
     description:
       "Understand how FlagForge handles your data with transparency and security. Your privacy is our priority.",
-    url: "https://flagforge.xyz/privacy-policy",
+    url: "https://flagforgectf.com/privacy-policy",
     type: "website",
     siteName: "FlagForge",
     locale: "en_US",
@@ -200,10 +200,10 @@ export default function PrivacyPolicy() {
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
                 We may update this policy periodically. For questions, contact us at{" "}
                 <a
-                  href="mailto:info@flagforge.xyz"
+                  href="mailto:info@flagforgectf.com"
                   className="text-red-500 hover:text-red-600 transition-colors underline underline-offset-4"
                 >
-                  info@flagforge.xyz
+                  info@flagforgectf.com
                 </a>
               </p>
             </section>

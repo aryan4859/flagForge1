@@ -1,7 +1,7 @@
-Contact: mailto:contact@flagforge.xyz 
+Contact: mailto:contact@flagforgectf.com 
 Contact: https://github.com/flagforge/flagForge1/issues  
 Expires: 2025-12-31T23:59:59.000Z  
-Encryption: https://keys.openpgp.org/search?q=contact@flagforge.xyz 
+Encryption: https://keys.openpgp.org/search?q=contact@flagforgectf.com 
 Preferred-Languages: en  
 Canonical: https://flagforge.aryan4.com.np/security.txt  
 Policy: https://github.com/FlagForgeCTF/flagForge/blob/mainv2/SECURITY.md  

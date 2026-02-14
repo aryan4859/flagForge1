@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: "FlagForge Blog",
     description:
       "Read FlagForge blog posts on CTF challenges, cybersecurity tutorials, and competition guides.",
-    url: "https://flagforge.xyz/blogs",
+    url: "https://flagforgectf.com/blogs",
     type: "website",
     siteName: "FlagForge",
   },
