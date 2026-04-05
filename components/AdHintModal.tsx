@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface AdHintModalProps {
     isOpen: boolean;
@@ -94,27 +95,51 @@ export default function AdHintModal({
                                 </p>
 
                                 {/* Ad Placeholder */}
-                                <div className="bg-gray-200 dark:bg-gray-700 rounded-lg p-8 mb-4 text-center">
+                                <a 
+                                    href="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4 text-center relative h-64 block group"
+                                >
                                     {!adWatched ? (
-                                        <div className="space-y-3">
-                                            <div className="text-gray-600 dark:text-gray-400 font-semibold">
-                                                Advertisement will appear here
-                                            </div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-500">
-                                                (Google AdSense ad unit)
-                                            </div>
-                                            <div className="mt-4">
-                                                <div className="inline-block bg-blue-500 text-white px-4 py-2 rounded-full font-bold">
-                                                    {countdown > 0 ? `Please wait ${countdown}s...` : "Ad completed!"}
+                                        <>
+                                            <Image
+                                                src={hintIndex % 2 === 0 
+                                                    ? "/ads/20260405_1148_Cybersecurity Graduate Program Ad_remix_01kne3qyvxeb5a7vtcbd25831n.png" 
+                                                    : "/ads/bsit.png"
+                                                }
+                                                alt="Advertisement"
+                                                fill
+                                                className="object-cover blur-[2px] opacity-80 group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[1px] p-6 text-white">
+                                                <div className="text-lg font-bold mb-2">
+                                                    {hintIndex % 2 === 0 
+                                                        ? "Cybersecurity Graduate Program" 
+                                                        : "BSIT Program"
+                                                    }
+                                                </div>
+                                                <div className="text-sm font-medium mb-4 opacity-90">
+                                                    {hintIndex % 2 === 0 
+                                                        ? "Advance your career with our specialized program." 
+                                                        : "Start your IT journey with our top-rated program."
+                                                    }
+                                                </div>
+                                                <div className="mt-auto">
+                                                    <div className="inline-block bg-red-500 text-white px-6 py-2 rounded-full font-bold shadow-lg animate-pulse">
+                                                        {countdown > 0 ? `Watch to unlock hint in ${countdown}s...` : "Ad completed!"}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </>
                                     ) : (
-                                        <div className="text-green-600 dark:text-green-400 font-bold text-lg">
-                                            ✓ Advertisement completed!
+                                        <div className="flex h-full items-center justify-center bg-green-50 dark:bg-green-900/40">
+                                            <div className="text-green-600 dark:text-green-400 font-bold text-lg flex items-center gap-2">
+                                                <span className="text-2xl">✓</span> Advertisement completed!
+                                            </div>
                                         </div>
                                     )}
-                                </div>
+                                </a>
 
                                 <button
                                     onClick={onWatchAd}

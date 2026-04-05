@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { landingFaqItems } from "@/lib/faq";
+import AdvertisementCard from "./AdvertisementCard";
 
 // Import images statically
 import nirmalImage from "@/public/NirmalDahal.jpeg";
@@ -389,6 +390,24 @@ const Hero: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Advertisement Section */}
+        <section className="max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <AdvertisementCard
+              imagePath="/ads/20260405_1148_Cybersecurity Graduate Program Ad_remix_01kne3qyvxeb5a7vtcbd25831n.png"
+              title="Cybersecurity Graduate Program"
+              description="Advance your career with our specialized cybersecurity graduate program. Master advanced techniques and get certified."
+              link="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity"
+            />
+            <AdvertisementCard
+              imagePath="/ads/bsit.png"
+              title="Bachelor of Science in Information Technology"
+              description="Start your journey in IT with our top-rated BSIT program. Gain foundational knowledge and build a strong career."
+              link="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity"
+            />
           </div>
         </section>
 

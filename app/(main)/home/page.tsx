@@ -26,6 +26,7 @@ import {
 import ArchivesSection from "@/components/ArchivesSection";
 import ScoreboardSection from "@/components/ScoreboardSection";
 import InstagramFeed from "@/components/InstagramFeed";
+import AdvertisementCard from "@/components/AdvertisementCard";
 
 interface UserStats {
   totalScore: number;
@@ -610,6 +611,26 @@ const Home = () => {
 
           {/* Scoreboards Section */}
           <ScoreboardSection />
+
+          {/* Advertisement Section */}
+          <div className="my-12">
+            <div className="flex flex-col md:flex-row gap-6">
+              <AdvertisementCard
+                imagePath="/ads/20260405_1148_Cybersecurity Graduate Program Ad_remix_01kne3qyvxeb5a7vtcbd25831n.png"
+                title="Cybersecurity Graduate Program"
+                description="Advance your career with our specialized cybersecurity graduate program. Master advanced techniques and get certified."
+                link="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity"
+                className="flex-1"
+              />
+              <AdvertisementCard
+                imagePath="/ads/bsit.png"
+                title="Bachelor of Science in Information Technology"
+                description="Start your journey in IT with our top-rated BSIT program. Gain foundational knowledge and build a strong career."
+                link="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity"
+                className="flex-1"
+              />
+            </div>
+          </div>
 
           {/* Instagram Feed */}
           <InstagramFeed />
