@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Archive } from "lucide-react";
 import { Questions } from "@/interfaces";
-import AdvertisementCard from "@/components/AdvertisementCard";
+
 
 // Extended interface to include expiry information
 interface QuestionWithExpiry extends Questions {
@@ -864,23 +864,7 @@ const Page: React.FC = () => {
         </div>
       </div>
 
-      {/* Advertisement Section */}
-      <div className="w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AdvertisementCard
-            imagePath="/ads/20260405_1148_Cybersecurity Graduate Program Ad_remix_01kne3qyvxeb5a7vtcbd25831n.png"
-            title="Cybersecurity Graduate Program"
-            description="Advance your career with our specialized cybersecurity graduate program. Master advanced techniques and get certified."
-            link="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity"
-          />
-          <AdvertisementCard
-            imagePath="/ads/bsit.png"
-            title="Bachelor of Science in Information Technology"
-            description="Start your journey in IT with our top-rated BSIT program. Gain foundational knowledge and build a strong career."
-            link="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity"
-          />
-        </div>
-      </div>
+
     </div>
   );
 };

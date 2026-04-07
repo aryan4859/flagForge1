@@ -22,6 +22,11 @@ export const NavbarData: NavbarItems[] = [
     style: undefined
   },
   {
+    href: "/learn-grc",
+    tags: "Learn GRC",
+    style: undefined
+  },
+  {
     href: "https://blog.flagforgectf.com",
     tags: "Blogs",
     style: undefined

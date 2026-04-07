@@ -327,6 +327,7 @@ const Navbar: React.FC = () => {
                             case "problems": return <Terminal className="w-5 h-5" />;
                             case "leaderboard": return <Trophy className="w-5 h-5" />;
                             case "archives": return <Archive className="w-5 h-5" />;
+                            case "learn grc": return <BookText className="w-5 h-5" />;
                             case "blogs": return <BookText className="w-5 h-5" />;
                             default: return <Terminal className="w-5 h-5" />;
                           }

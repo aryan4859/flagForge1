@@ -1,6 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React from "react";
 
 interface AdHintModalProps {
     isOpen: boolean;
@@ -8,7 +7,7 @@ interface AdHintModalProps {
     hintIndex: number;
     pointsDeduction: number;
     onUsePoints: () => void;
-    onWatchAd: () => void;
+    onWatchAd: () => void; // kept in interface for backwards compatibility
 }
 
 export default function AdHintModal({
@@ -17,35 +16,12 @@ export default function AdHintModal({
     hintIndex,
     pointsDeduction,
     onUsePoints,
-    onWatchAd,
 }: AdHintModalProps) {
-    const [adWatched, setAdWatched] = useState(false);
-    const [countdown, setCountdown] = useState(5);
-
-    useEffect(() => {
-        if (isOpen) {
-            setAdWatched(false);
-            setCountdown(5);
-        }
-    }, [isOpen]);
-
-    // Simulate ad watching countdown
-    useEffect(() => {
-        if (isOpen && countdown > 0) {
-            const timer = setTimeout(() => {
-                setCountdown(countdown - 1);
-            }, 1000);
-            return () => clearTimeout(timer);
-        } else if (countdown === 0) {
-            setAdWatched(true);
-        }
-    }, [isOpen, countdown]);
-
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-colors duration-300">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full transition-colors duration-300">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-red-500 to-rose-600 dark:from-red-600 dark:to-rose-700 p-6 rounded-t-xl">
                     <div className="flex justify-between items-center">
@@ -78,97 +54,17 @@ export default function AdHintModal({
                 <div className="p-6 space-y-6">
                     <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-400 dark:border-yellow-600 rounded-lg p-4">
                         <p className="text-gray-700 dark:text-gray-300 text-center">
-                            Choose how you'd like to reveal this hint:
+                            Reveal this hint by spending points from your score.
                         </p>
                     </div>
 
-                    {/* Option 1: Watch Ad */}
-                    <div className="border-2 border-green-400 dark:border-green-600 rounded-xl p-6 bg-green-50 dark:bg-green-900/20 transition-colors duration-300">
-                        <div className="flex items-start gap-4">
-                            <div className="text-4xl">📺</div>
-                            <div className="flex-1">
-                                <h3 className="text-xl font-bold text-green-700 dark:text-green-400 mb-2">
-                                    Option 1: Watch Advertisement
-                                </h3>
-                                <p className="text-gray-700 dark:text-gray-300 mb-4">
-                                    Watch a short advertisement to get this hint for free. No points will be deducted from your score.
-                                </p>
-
-                                {/* Ad Placeholder */}
-                                <a 
-                                    href="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity" 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden mb-4 text-center relative h-64 block group"
-                                >
-                                    {!adWatched ? (
-                                        <>
-                                            <Image
-                                                src={hintIndex % 2 === 0 
-                                                    ? "/ads/20260405_1148_Cybersecurity Graduate Program Ad_remix_01kne3qyvxeb5a7vtcbd25831n.png" 
-                                                    : "/ads/bsit.png"
-                                                }
-                                                alt="Advertisement"
-                                                fill
-                                                className="object-cover blur-[2px] opacity-80 group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[1px] p-6 text-white">
-                                                <div className="text-lg font-bold mb-2">
-                                                    {hintIndex % 2 === 0 
-                                                        ? "Cybersecurity Graduate Program" 
-                                                        : "BSIT Program"
-                                                    }
-                                                </div>
-                                                <div className="text-sm font-medium mb-4 opacity-90">
-                                                    {hintIndex % 2 === 0 
-                                                        ? "Advance your career with our specialized program." 
-                                                        : "Start your IT journey with our top-rated program."
-                                                    }
-                                                </div>
-                                                <div className="mt-auto">
-                                                    <div className="inline-block bg-red-500 text-white px-6 py-2 rounded-full font-bold shadow-lg animate-pulse">
-                                                        {countdown > 0 ? `Watch to unlock hint in ${countdown}s...` : "Ad completed!"}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="flex h-full items-center justify-center bg-green-50 dark:bg-green-900/40">
-                                            <div className="text-green-600 dark:text-green-400 font-bold text-lg flex items-center gap-2">
-                                                <span className="text-2xl">✓</span> Advertisement completed!
-                                            </div>
-                                        </div>
-                                    )}
-                                </a>
-
-                                <button
-                                    onClick={onWatchAd}
-                                    disabled={!adWatched}
-                                    className={`w-full py-3 px-6 rounded-lg font-bold text-white transition-all ${adWatched
-                                            ? "bg-green-600 hover:bg-green-700 cursor-pointer shadow-lg hover:shadow-xl"
-                                            : "bg-gray-400 cursor-not-allowed"
-                                        }`}
-                                >
-                                    {adWatched ? "Get Hint (Free)" : "Watch Ad First"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="flex items-center gap-4">
-                        <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
-                        <span className="text-gray-500 dark:text-gray-400 font-semibold">OR</span>
-                        <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
-                    </div>
-
-                    {/* Option 2: Use Points */}
+                    {/* Use Points Option */}
                     <div className="border-2 border-orange-400 dark:border-orange-600 rounded-xl p-6 bg-orange-50 dark:bg-orange-900/20 transition-colors duration-300">
                         <div className="flex items-start gap-4">
                             <div className="text-4xl">⚡</div>
                             <div className="flex-1">
                                 <h3 className="text-xl font-bold text-orange-700 dark:text-orange-400 mb-2">
-                                    Option 2: Use Points
+                                    Use Points
                                 </h3>
                                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                                     Get the hint instantly by deducting points from your score. Skip the wait and continue solving immediately.
@@ -189,7 +85,7 @@ export default function AdHintModal({
                                     onClick={onUsePoints}
                                     className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded-lg font-bold transition-all shadow-lg hover:shadow-xl"
                                 >
-                                    Deduct Points & Get Hint
+                                    Deduct Points &amp; Get Hint
                                 </button>
                             </div>
                         </div>
@@ -211,7 +107,7 @@ export default function AdHintModal({
                                 />
                             </svg>
                             <p className="text-sm text-blue-800 dark:text-blue-300">
-                                <strong>Note:</strong> Both options will reveal the same hint. Choose the method that works best for you. Watching ads helps support the platform and keeps it free for everyone!
+                                <strong>Note:</strong> Using a hint will deduct points from your current score. Use them wisely!
                             </p>
                         </div>
                     </div>

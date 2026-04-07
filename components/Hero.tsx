@@ -4,14 +4,13 @@ import Link from "next/link";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { landingFaqItems } from "@/lib/faq";
-import AdvertisementCard from "./AdvertisementCard";
 
 // Import images statically
 import nirmalImage from "@/public/NirmalDahal.jpeg";
 import sobitImage from "@/public/SobitThakuri.jpeg";
 import bibekImage from "@/public/bibekghimire.jpeg"; 
 
-import { Activity, Rocket, Target, Users, Layers, Clock } from "lucide-react";
+import { Activity, Rocket, Target, Users, Layers, Clock, GraduationCap, BarChart2, Trophy, Lightbulb, Moon, Landmark, Smartphone } from "lucide-react";
 
 const Hero: React.FC = () => {
   const { status } = useSession();
@@ -85,32 +84,37 @@ const Hero: React.FC = () => {
 
   const features = [
     {
-      icon: "🎓",
+      icon: <GraduationCap className="w-6 h-6" />,
       title: "Learn by Doing",
       description: "Hands-on challenges that teach real-world cybersecurity skills through practical application.",
     },
     {
-      icon: "📊",
+      icon: <BarChart2 className="w-6 h-6" />,
       title: "Track Your Progress",
       description: "Monitor your improvement with detailed statistics, solve rates, and performance analytics.",
     },
     {
-      icon: "🏆",
+      icon: <Trophy className="w-6 h-6" />,
       title: "Compete & Rank",
       description: "Climb the leaderboard, earn points, and compete with cybersecurity enthusiasts worldwide.",
     },
     {
-      icon: "💡",
+      icon: <Lightbulb className="w-6 h-6" />,
       title: "Smart Hint System",
-      description: "Get unstuck with our intelligent hint system. Choose between watching ads or using points for hints.",
+      description: "Get unstuck with our intelligent hint system. Use points to unlock hints and keep solving.",
     },
     {
-      icon: "🌙",
+      icon: <Moon className="w-6 h-6" />,
       title: "Dark Mode Support",
       description: "Comfortable coding experience with full dark mode support for extended practice sessions.",
     },
     {
-      icon: "📱",
+      icon: <Landmark className="w-6 h-6" />,
+      title: "GRC Learning Hub",
+      description: "Master Governance, Risk & Compliance from fundamentals to board-level frameworks — free, structured, and always available.",
+    },
+    {
+      icon: <Smartphone className="w-6 h-6" />,
       title: "Fully Responsive",
       description: "Practice anywhere, anytime. Our platform works seamlessly on desktop, tablet, and mobile devices.",
     },
@@ -393,23 +397,7 @@ const Hero: React.FC = () => {
           </div>
         </section>
 
-        {/* Advertisement Section */}
-        <section className="max-w-7xl mx-auto w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <AdvertisementCard
-              imagePath="/ads/20260405_1148_Cybersecurity Graduate Program Ad_remix_01kne3qyvxeb5a7vtcbd25831n.png"
-              title="Cybersecurity Graduate Program"
-              description="Advance your career with our specialized cybersecurity graduate program. Master advanced techniques and get certified."
-              link="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity"
-            />
-            <AdvertisementCard
-              imagePath="/ads/bsit.png"
-              title="Bachelor of Science in Information Technology"
-              description="Start your journey in IT with our top-rated BSIT program. Gain foundational knowledge and build a strong career."
-              link="https://presidential.edu.np/course/bachelor-of-science-in-cybersecurity"
-            />
-          </div>
-        </section>
+
 
         {/* Testimonial Carousel */}
         <section className="w-full max-w-7xl mx-auto" aria-labelledby="testimonials-title">
