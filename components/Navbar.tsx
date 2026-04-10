@@ -266,7 +266,7 @@ const Navbar: React.FC = () => {
                 className="group relative inline-flex items-center justify-center px-8 py-3.5 font-bold text-white transition-all duration-300 ease-in-out"
               >
                 <div className="absolute inset-0 bg-red-600 rounded-2xl shadow-[0_10px_20px_-5px_rgba(220,38,38,0.3)] transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_15px_30px_-5px_rgba(220,38,38,0.4)] active:scale-95" />
-                <span className="relative z-10 text-sm md:text-base tracking-tight">Sign in / Sign up</span>
+                <span className="relative z-10 text-sm md:text-base tracking-tight">Sign in</span>
               </Link>
             )}
           </div>
@@ -362,7 +362,7 @@ const Navbar: React.FC = () => {
                           <div className="absolute inset-0 bg-red-600 transition-transform group-hover:scale-105" />
                           <div className="relative flex items-center gap-3 font-black text-lg text-white">
                             <LogIn className="w-6 h-6" />
-                            <span>Sign in / Sign up</span>
+                            <span>Sign in</span>
                           </div>
                         </Link>
                       </li>
