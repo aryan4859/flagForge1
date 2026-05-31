@@ -310,3 +310,71 @@ export async function POST(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await connect();
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+
+    const user = await userSchema.findOne({ email: session?.user?.email });
+    if (!user || user.role !== "Admin") {
+      return createErrorResponse("Unauthorized", HttpStatusCode.Unauthorized);
+    }
+
+    const { question, error } = await findQuestionById(id);
+    if (error) return error;
+
+    await QuestionModel.findByIdAndDelete(id);
+    
+    // Also delete associated UserQuestions and UserHints
+    await UserQuestionModel.deleteMany({ questionId: id });
+    await mongoose.models.UserHint?.deleteMany({ questionId: id });
+
+    return NextResponse.json(
+      { message: "Challenge deleted successfully" },
+      { status: HttpStatusCode.Ok }
+    );
+  } catch (error) {
+    console.error("Error deleting challenge:", error);
+    return createErrorResponse("Internal server error", HttpStatusCode.InternalServerError);
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await connect();
+    const { id } = await params;
+    const session = await getServerSession(authOptions);
+
+    const user = await userSchema.findOne({ email: session?.user?.email });
+    if (!user || user.role !== "Admin") {
+      return createErrorResponse("Unauthorized", HttpStatusCode.Unauthorized);
+    }
+
+    const updateData = await request.json();
+
+    const { question, error } = await findQuestionById(id);
+    if (error) return error;
+
+    const updatedQuestion = await QuestionModel.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    return NextResponse.json(
+      { message: "Challenge updated successfully", question: updatedQuestion },
+      { status: HttpStatusCode.Ok }
+    );
+  } catch (error) {
+    console.error("Error updating challenge:", error);
+    return createErrorResponse("Internal server error", HttpStatusCode.InternalServerError);
+  }
+}

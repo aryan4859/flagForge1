@@ -54,10 +54,14 @@ export async function POST(req: NextRequest) {
         addilinks: formData.get("addilinks") as string,
         challengeType: "file",
         isTimeLimited: formData.get("isTimeLimited") === "true",
-        timeLimit: parseInt((formData.get("timeLimit") as string) || "0"),
         timeLimitUnit: formData.get("timeLimitUnit") as string,
         uploadedBy: session.user.email,
       };
+
+      const timeLimitVal = parseInt((formData.get("timeLimit") as string) || "0");
+      if (timeLimitVal >= 1) {
+        questionData.timeLimit = timeLimitVal;
+      }
 
       // Handle hints
       const hintsData = formData.get("hints") as string;
@@ -119,7 +123,8 @@ export async function POST(req: NextRequest) {
       const filename = `challenge-${timestamp}-${randomStr}${extension}`;
 
       // Create upload directory
-      const uploadDir = path.join(process.cwd(), "public", "challenges", "files");
+      const baseDir = process.env.NODE_ENV === "production" ? "/tmp" : path.join(process.cwd(), "public");
+      const uploadDir = path.join(baseDir, "challenges", "files");
       if (!existsSync(uploadDir)) {
         await mkdir(uploadDir, { recursive: true });
       }

@@ -148,7 +148,7 @@ export default function RootLayout({
             <div className="mx-auto grid min-h-[100dvh] grid-rows-[auto_1fr_auto]">
               <Navbar />
               <main className="flex-1">{children}</main>
-              {typeof window !== "undefined" && <Analytics />}
+              <Analytics />
               <CookieConsent />
               <Footer />
             </div>

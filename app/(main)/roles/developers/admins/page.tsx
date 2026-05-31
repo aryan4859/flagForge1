@@ -224,6 +224,14 @@ const AdminDashboard: React.FC = () => {
       onClick: () => router.push('/roles/developers/admins/uploads')
     },
     {
+      title: "Manage Challenges",
+      description: "Edit, update, and delete existing CTF challenges from the platform.",
+      icon: <Settings className="w-6 h-6 text-white" />,
+      color: "bg-gradient-to-br from-cyan-500 to-blue-600",
+      path: "/manage-challenges",
+      onClick: () => router.push('/roles/developers/admins/manage-challenges')
+    },
+    {
       title: "Event Scoreboards",
       description: "Manage CTF event results, winners, and team performance data from competitions.",
       icon: <Trophy className="w-6 h-6 text-white" />,
