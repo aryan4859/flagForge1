@@ -138,6 +138,8 @@ export async function GET(
       }
     }
 
+    const solveCount = await UserQuestionModel.countDocuments({ questionId: id });
+
     return NextResponse.json({
       question: questionData,
       hintCount,
@@ -146,6 +148,7 @@ export async function GET(
       timeRemaining,
       expiryDate: question.expiryDate,
       usedHints: usedHints,
+      solveCount,
     }, {
       headers: {
         "Cache-Control": "no-store, max-age=0",

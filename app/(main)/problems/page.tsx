@@ -32,6 +32,7 @@ interface Problem {
   expired?: boolean;
   timeRemaining?: number;
   expiryDate?: string;
+  solveCount?: number;
 }
 
 interface PaginationData {
@@ -737,6 +738,7 @@ const Page: React.FC = () => {
                 expired,
                 timeRemaining,
                 expiryDate,
+                solveCount,
               }: QuestionWithExpiry) => (
                 <div
                   key={_id}
@@ -752,6 +754,7 @@ const Page: React.FC = () => {
                     )}
                     done={questionDone}
                     _id={_id}
+                    solveCount={solveCount}
                   />
 
                   <ExpiryOverlay

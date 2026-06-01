@@ -91,6 +91,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
     totalPointsDeducted: 0,
     totalHintsUsed: 0,
   });
+  const [solveCount, setSolveCount] = useState<number>(0);
 
   // Duplicate prevention refs
   const lastSubmissionTime = useRef<number>(0);
@@ -170,6 +171,7 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
       setIsCorrect(data.isDone);
       setUsedHints(data.usedHints || []);
       setHintCount(typeof data.hintCount === "number" ? data.hintCount : 0);
+      setSolveCount(data.solveCount || 0);
 
       // Ensure we have proper hints array
       const questionData = data.question || {};
@@ -724,6 +726,10 @@ const Page = ({ params }: { params: Promise<PageParams> }) => {
                 <div className="flex items-center gap-3 rounded-full border border-red-200/60 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 px-4 py-2 shadow-sm">
                   <span className="text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">Points</span>
                   <span className="text-lg font-bold text-red-500">{problems.points}</span>
+                </div>
+                <div className="flex items-center gap-3 rounded-full border border-red-200/60 dark:border-white/10 bg-white/70 dark:bg-gray-900/60 px-4 py-2 shadow-sm">
+                  <span className="text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">Solves</span>
+                  <span className="text-lg font-bold text-gray-800 dark:text-gray-200">{solveCount}</span>
                 </div>
               </div>
 

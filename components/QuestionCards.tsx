@@ -1,7 +1,7 @@
 import React from "react";
 import { Questions } from "@/interfaces";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, Users } from "lucide-react";
 
 const QuestionCards = ({
   title,
@@ -10,6 +10,7 @@ const QuestionCards = ({
   points,
   done,
   _id,
+  solveCount,
 }: Questions) => {
   const isDone = done.some(
     (item: { questionId: string | undefined }) => item.questionId === _id
@@ -33,9 +34,17 @@ const QuestionCards = ({
           {title}
         </h1>
         <div className="flex flex-col gap-2 justify-between">
-          <h1 className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-300 transition-colors duration-300">
-            Points : <span className="text-red-500 font-bold">{points}</span>
-          </h1>
+          <div className="flex items-center justify-between w-full">
+            <h1 className="text-sm sm:text-base font-medium text-gray-600 dark:text-gray-300 transition-colors duration-300">
+              Points : <span className="text-red-500 font-bold">{points}</span>
+            </h1>
+            {solveCount !== undefined && (
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800/80 px-2.5 py-1 rounded-full border border-gray-200/80 dark:border-gray-600/50 shadow-sm transition-colors duration-300">
+                <Users size={14} className="text-red-500" />
+                <span>{solveCount} {solveCount === 1 ? "Solve" : "Solves"}</span>
+              </div>
+            )}
+          </div>
           <div className="text-sm sm:text-base font-bold">
             <span className="text-white dark:text-gray-100 text-xs tracking-tight font-bold px-3 py-1 bg-red-500 dark:bg-red-600 rounded-full transition-colors duration-300">
               {category}

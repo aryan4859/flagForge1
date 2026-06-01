@@ -58,6 +58,7 @@ export interface Questions {
   updatedAt?: string | Date;
   isExpired?: boolean;
   timeRemaining?: number;
+  solveCount?: number;
 }
 
 export interface UserQuestion {

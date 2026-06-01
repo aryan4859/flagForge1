@@ -245,6 +245,18 @@ export async function GET(request: NextRequest) {
     // Get total count for pagination info (with category filter applied)
     const totalQuestions = await QuestionModel.countDocuments(baseQuery);
 
+    // Get solve counts for all these questions
+    const questionIds = questions.map((q) => q._id);
+    const solveCounts = await UserQuestionModel.aggregate([
+      { $match: { questionId: { $in: questionIds } } },
+      { $group: { _id: "$questionId", count: { $sum: 1 } } }
+    ]);
+    
+    const solveCountMap = solveCounts.reduce((acc, curr) => {
+      acc[curr._id.toString()] = curr.count;
+      return acc;
+    }, {} as Record<string, number>);
+
     // Process questions to add expiry information
     const now = new Date();
     const processedQuestions = questions.map((question) => {
@@ -262,6 +274,8 @@ export async function GET(request: NextRequest) {
         questionObj.expired = false;
         questionObj.timeRemaining = null;
       }
+
+      questionObj.solveCount = solveCountMap[questionObj._id.toString()] || 0;
 
       return questionObj;
     });
