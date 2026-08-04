@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.email) {
       return NextResponse.json(
         { reply: "You must be logged in to use the chat assistant." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -85,23 +85,20 @@ export async function POST(req: NextRequest) {
     if (!question) {
       return NextResponse.json(
         { reply: "Challenge not found." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // Find the user
     const user = await userSchema.findOne({ email: session.user.email });
     if (!user) {
-      return NextResponse.json(
-        { reply: "User not found." },
-        { status: 404 }
-      );
+      return NextResponse.json({ reply: "User not found." }, { status: 404 });
     }
 
     // Check if user has already solved this question
     const existingSolution = await UserQuestionModel.findOne({
       userId: user._id,
-      questionId: challengeId,
+      questionId: { $eq: challengeId },
     });
 
     if (existingSolution) {
@@ -185,7 +182,7 @@ Respond in a helpful, encouraging tone.
             { role: "user", content: message },
           ],
         }),
-      }
+      },
     );
 
     const data = await llmResponse.json();
@@ -229,7 +226,7 @@ Respond in a helpful, encouraging tone.
     console.error("Chat error:", error);
     return NextResponse.json(
       { reply: "Error processing your request." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -16,7 +16,7 @@ async function isAdmin(email: string): Promise<boolean> {
   try {
     await connect();
     const adminUser = await UserSchema.findOne({
-      email: email,
+      email: { $eq: email },
       role: "Admin",
     }).lean();
     return !!adminUser;
