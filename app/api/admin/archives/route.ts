@@ -16,7 +16,7 @@ async function isAdmin(email: string): Promise<boolean> {
   try {
     await connect();
     const adminUser = await UserSchema.findOne({
-      email: email,
+      email: String(email),
       role: "Admin",
     }).lean();
     return !!adminUser;
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     if (!session || !session.user?.email) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     if (!(await isAdmin(session.user.email))) {
       return NextResponse.json(
         { success: false, message: "Admin privileges required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -55,24 +55,25 @@ export async function POST(req: NextRequest) {
     if (contentType?.includes("multipart/form-data")) {
       // Handle file upload
       const formData = await req.formData();
-      
+
       challengeData = {
         title: formData.get("title") as string,
         description: formData.get("description") as string,
-        eventName: (formData.get("eventName") as string) || "PGS CTF 2026 Archive",
+        eventName:
+          (formData.get("eventName") as string) || "PGS CTF 2026 Archive",
         eventDate: formData.get("eventDate") as string,
         category: formData.get("category") as string,
         difficulty: formData.get("difficulty") as string,
         solveCount: parseInt((formData.get("solveCount") as string) || "0"),
-        challengeType: "file"
+        challengeType: "file",
       };
 
       const file = formData.get("challengeFile") as File;
-      
+
       if (!file) {
         return NextResponse.json(
           { success: false, message: "No file uploaded" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -85,13 +86,16 @@ export async function POST(req: NextRequest) {
         "application/octet-stream",
         "image/png",
         "image/jpeg",
-        "image/jpg"
+        "image/jpg",
       ];
-      
+
       if (!allowedTypes.includes(file.type)) {
         return NextResponse.json(
-          { success: false, message: "Invalid file type. Allowed: ZIP, PDF, TXT, PNG, JPG" },
-          { status: 400 }
+          {
+            success: false,
+            message: "Invalid file type. Allowed: ZIP, PDF, TXT, PNG, JPG",
+          },
+          { status: 400 },
         );
       }
 
@@ -100,7 +104,7 @@ export async function POST(req: NextRequest) {
       if (file.size > maxSize) {
         return NextResponse.json(
           { success: false, message: "File too large. Max size: 50MB" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -111,7 +115,12 @@ export async function POST(req: NextRequest) {
       const filename = `challenge-${timestamp}-${randomStr}${extension}`;
 
       // Create upload directory if it doesn't exist
-      const uploadDir = path.join(process.cwd(), "public", "challenges", "files");
+      const uploadDir = path.join(
+        process.cwd(),
+        "public",
+        "challenges",
+        "files",
+      );
       if (!existsSync(uploadDir)) {
         await mkdir(uploadDir, { recursive: true });
       }
@@ -130,25 +139,41 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate required fields
-    if (!challengeData.title || !challengeData.description || !challengeData.eventDate) {
+    if (
+      !challengeData.title ||
+      !challengeData.description ||
+      !challengeData.eventDate
+    ) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields: title, description, eventDate" },
-        { status: 400 }
+        {
+          success: false,
+          message: "Missing required fields: title, description, eventDate",
+        },
+        { status: 400 },
       );
     }
 
     // Validate challenge link or file based on type
-    if (challengeData.challengeType === "link" && !challengeData.challengeLink) {
+    if (
+      challengeData.challengeType === "link" &&
+      !challengeData.challengeLink
+    ) {
       return NextResponse.json(
-        { success: false, message: "Challenge link is required for link-type challenges" },
-        { status: 400 }
+        {
+          success: false,
+          message: "Challenge link is required for link-type challenges",
+        },
+        { status: 400 },
       );
     }
 
     if (challengeData.challengeType === "file" && !challengeFile) {
       return NextResponse.json(
-        { success: false, message: "Challenge file is required for file-type challenges" },
-        { status: 400 }
+        {
+          success: false,
+          message: "Challenge file is required for file-type challenges",
+        },
+        { status: 400 },
       );
     }
 
@@ -168,18 +193,21 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         message: "Archived challenge created successfully",
-        data: archivedChallenge 
+        data: archivedChallenge,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: any) {
     console.error("Error creating archived challenge:", error);
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to create archived challenge" },
-      { status: 500 }
+      {
+        success: false,
+        message: error?.message || "Failed to create archived challenge",
+      },
+      { status: 500 },
     );
   }
 }
@@ -231,8 +259,11 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("Error fetching archived challenges:", error);
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to fetch archived challenges" },
-      { status: 500 }
+      {
+        success: false,
+        message: error?.message || "Failed to fetch archived challenges",
+      },
+      { status: 500 },
     );
   }
 }
@@ -247,7 +278,7 @@ export async function PUT(req: NextRequest) {
     if (!session || !session.user?.email) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -255,7 +286,7 @@ export async function PUT(req: NextRequest) {
     if (!(await isAdmin(session.user.email))) {
       return NextResponse.json(
         { success: false, message: "Admin privileges required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -265,7 +296,7 @@ export async function PUT(req: NextRequest) {
     if (!id) {
       return NextResponse.json(
         { success: false, message: "Challenge ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -274,7 +305,7 @@ export async function PUT(req: NextRequest) {
     if (!existingChallenge) {
       return NextResponse.json(
         { success: false, message: "Archived challenge not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -285,20 +316,23 @@ export async function PUT(req: NextRequest) {
     if (contentType?.includes("multipart/form-data")) {
       // Handle file upload update
       const formData = await req.formData();
-      
+
       updateData = {
         title: formData.get("title") as string,
         description: formData.get("description") as string,
-        eventName: (formData.get("eventName") as string) || "PGS CTF 2026 Archive",
+        eventName:
+          (formData.get("eventName") as string) || "PGS CTF 2026 Archive",
         eventDate: formData.get("eventDate") as string,
         category: formData.get("category") as string,
         difficulty: formData.get("difficulty") as string,
         solveCount: parseInt((formData.get("solveCount") as string) || "0"),
-        challengeType: formData.get("challengeType") as string || existingChallenge.challengeType,
+        challengeType:
+          (formData.get("challengeType") as string) ||
+          existingChallenge.challengeType,
       };
 
       const file = formData.get("challengeFile") as File;
-      
+
       // If a new file is uploaded
       if (file && file.size > 0) {
         // Validate file type
@@ -310,13 +344,16 @@ export async function PUT(req: NextRequest) {
           "application/octet-stream",
           "image/png",
           "image/jpeg",
-          "image/jpg"
+          "image/jpg",
         ];
-        
+
         if (!allowedTypes.includes(file.type)) {
           return NextResponse.json(
-            { success: false, message: "Invalid file type. Allowed: ZIP, PDF, TXT, PNG, JPG" },
-            { status: 400 }
+            {
+              success: false,
+              message: "Invalid file type. Allowed: ZIP, PDF, TXT, PNG, JPG",
+            },
+            { status: 400 },
           );
         }
 
@@ -325,7 +362,7 @@ export async function PUT(req: NextRequest) {
         if (file.size > maxSize) {
           return NextResponse.json(
             { success: false, message: "File too large. Max size: 50MB" },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -336,7 +373,12 @@ export async function PUT(req: NextRequest) {
         const filename = `challenge-${timestamp}-${randomStr}${extension}`;
 
         // Create upload directory if it doesn't exist
-        const uploadDir = path.join(process.cwd(), "public", "challenges", "files");
+        const uploadDir = path.join(
+          process.cwd(),
+          "public",
+          "challenges",
+          "files",
+        );
         if (!existsSync(uploadDir)) {
           await mkdir(uploadDir, { recursive: true });
         }
@@ -352,7 +394,11 @@ export async function PUT(req: NextRequest) {
         // Delete old file if it exists
         if (existingChallenge.challengeFile) {
           try {
-            const oldFilePath = path.join(process.cwd(), "public", existingChallenge.challengeFile);
+            const oldFilePath = path.join(
+              process.cwd(),
+              "public",
+              existingChallenge.challengeFile,
+            );
             if (existsSync(oldFilePath)) {
               const { unlink } = await import("fs/promises");
               await unlink(oldFilePath);
@@ -370,8 +416,11 @@ export async function PUT(req: NextRequest) {
     // Validate required fields
     if (!updateData.title || !updateData.description || !updateData.eventDate) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields: title, description, eventDate" },
-        { status: 400 }
+        {
+          success: false,
+          message: "Missing required fields: title, description, eventDate",
+        },
+        { status: 400 },
       );
     }
 
@@ -389,23 +438,29 @@ export async function PUT(req: NextRequest) {
     // Handle challenge type changes
     if (updateData.challengeType) {
       updateObject.challengeType = updateData.challengeType;
-      
-      if (updateData.challengeType === 'link') {
+
+      if (updateData.challengeType === "link") {
         if (!updateData.challengeLink) {
           return NextResponse.json(
-            { success: false, message: "Challenge link is required for link-type challenges" },
-            { status: 400 }
+            {
+              success: false,
+              message: "Challenge link is required for link-type challenges",
+            },
+            { status: 400 },
           );
         }
         updateObject.challengeLink = updateData.challengeLink;
         updateObject.challengeFile = undefined;
-      } else if (updateData.challengeType === 'file') {
+      } else if (updateData.challengeType === "file") {
         if (newChallengeFile) {
           updateObject.challengeFile = newChallengeFile;
         } else if (!existingChallenge.challengeFile) {
           return NextResponse.json(
-            { success: false, message: "Challenge file is required for file-type challenges" },
-            { status: 400 }
+            {
+              success: false,
+              message: "Challenge file is required for file-type challenges",
+            },
+            { status: 400 },
           );
         }
         updateObject.challengeLink = undefined;
@@ -421,25 +476,28 @@ export async function PUT(req: NextRequest) {
     }
 
     // Update the challenge
-    const updatedChallenge = await ArchivedChallenge.findByIdAndUpdate(
-      id,
+    const updatedChallenge = await ArchivedChallenge.findOneAndUpdate(
+      { _id: { $eq: id } },
       updateObject,
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     return NextResponse.json(
-      { 
-        success: true, 
+      {
+        success: true,
         message: "Archived challenge updated successfully",
-        data: updatedChallenge 
+        data: updatedChallenge,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Error updating archived challenge:", error);
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to update archived challenge" },
-      { status: 500 }
+      {
+        success: false,
+        message: error?.message || "Failed to update archived challenge",
+      },
+      { status: 500 },
     );
   }
 }
@@ -454,7 +512,7 @@ export async function DELETE(req: NextRequest) {
     if (!session || !session.user?.email) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -462,7 +520,7 @@ export async function DELETE(req: NextRequest) {
     if (!(await isAdmin(session.user.email))) {
       return NextResponse.json(
         { success: false, message: "Admin privileges required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -472,7 +530,7 @@ export async function DELETE(req: NextRequest) {
     if (!id) {
       return NextResponse.json(
         { success: false, message: "Challenge ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -482,14 +540,18 @@ export async function DELETE(req: NextRequest) {
     if (!deletedChallenge) {
       return NextResponse.json(
         { success: false, message: "Archived challenge not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // If it was a file-based challenge, try to delete the file
     if (deletedChallenge.challengeFile) {
       try {
-        const filePath = path.join(process.cwd(), "public", deletedChallenge.challengeFile);
+        const filePath = path.join(
+          process.cwd(),
+          "public",
+          deletedChallenge.challengeFile,
+        );
         if (existsSync(filePath)) {
           const { unlink } = await import("fs/promises");
           await unlink(filePath);
@@ -507,8 +569,11 @@ export async function DELETE(req: NextRequest) {
   } catch (error: any) {
     console.error("Error deleting archived challenge:", error);
     return NextResponse.json(
-      { success: false, message: error?.message || "Failed to delete archived challenge" },
-      { status: 500 }
+      {
+        success: false,
+        message: error?.message || "Failed to delete archived challenge",
+      },
+      { status: 500 },
     );
   }
 }

@@ -21,7 +21,7 @@ export const runtime = "nodejs";
 
 // GET - Fetch all badge images
 export async function GET(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<NextResponse<BadgeImageListResponse | BadgeImageErrorResponse>> {
   try {
     await connect();
@@ -62,7 +62,7 @@ export async function GET(
 
 // POST - Upload and save badge image metadata
 export async function POST(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<NextResponse<BadgeImageUploadResponse | BadgeImageErrorResponse>> {
   try {
     const formData = await request.formData();
@@ -110,7 +110,7 @@ export async function POST(
       process.cwd(),
       "public",
       "badges",
-      "custom"
+      "custom",
     );
     if (!existsSync(uploadDir)) {
       await mkdir(uploadDir, { recursive: true });
@@ -171,7 +171,7 @@ export async function POST(
 
 // DELETE - Remove badge image and its file
 export async function DELETE(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<NextResponse<BadgeImageDeleteResponse | BadgeImageErrorResponse>> {
   try {
     const { searchParams } = new URL(request.url);
@@ -211,7 +211,7 @@ export async function DELETE(
     }
 
     // Delete from database
-    await BadgeImageModel.findByIdAndDelete(imageId);
+    await BadgeImageModel.findOneAndDelete({ _id: { $eq: imageId } });
 
     console.log(`Badge image deleted: ${imageId}`);
 

@@ -13,7 +13,7 @@ async function isAdmin(email: string): Promise<boolean> {
   try {
     await connect();
     const adminUser = await UserSchema.findOne({
-      email: email,
+      email: { $eq: email },
       role: "Admin",
     }).lean();
     return !!adminUser;
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     if (!session || !session.user?.email) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     if (!(await isAdmin(session.user.email))) {
       return NextResponse.json(
         { success: false, message: "Admin privileges required" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     for (const scoreboard of allScoreboards) {
       try {
         console.log(`Processing scoreboard: ${scoreboard._id}`);
-        
+
         let updatedWinners: {
           rank: number;
           teamName: string;
@@ -66,17 +66,24 @@ export async function POST(req: NextRequest) {
           solvedChallenges: number;
         }[] = [];
 
-        if (scoreboard.winners && Array.isArray(scoreboard.winners) && scoreboard.winners.length > 0) {
-          updatedWinners = scoreboard.winners.map((winner: any, index: number) => {
-            console.log(`Processing winner ${index}:`, winner);
-            
-            return {
-              rank: winner.rank || index + 1,
-              teamName: winner.teamName || winner.playerName || `Team ${index + 1}`,
-              totalScore: winner.totalScore || winner.score || 0,
-              solvedChallenges: winner.solvedChallenges || 0
-            };
-          });
+        if (
+          scoreboard.winners &&
+          Array.isArray(scoreboard.winners) &&
+          scoreboard.winners.length > 0
+        ) {
+          updatedWinners = scoreboard.winners.map(
+            (winner: any, index: number) => {
+              console.log(`Processing winner ${index}:`, winner);
+
+              return {
+                rank: winner.rank || index + 1,
+                teamName:
+                  winner.teamName || winner.playerName || `Team ${index + 1}`,
+                totalScore: winner.totalScore || winner.score || 0,
+                solvedChallenges: winner.solvedChallenges || 0,
+              };
+            },
+          );
         }
 
         console.log(`Updated winners for ${scoreboard._id}:`, updatedWinners);
@@ -97,8 +104,8 @@ export async function POST(req: NextRequest) {
             uploadedBy: scoreboard.uploadedBy,
             isActive: scoreboard.isActive !== false, // Default to true if undefined
             createdAt: scoreboard.createdAt,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         );
 
         console.log(`Update result for ${scoreboard._id}:`, result);
@@ -110,29 +117,32 @@ export async function POST(req: NextRequest) {
       } catch (error) {
         console.error(`Error migrating scoreboard ${scoreboard._id}:`, error);
         errorCount++;
-        errors.push(`${scoreboard._id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        errors.push(
+          `${scoreboard._id}: ${error instanceof Error ? error.message : "Unknown error"}`,
+        );
       }
     }
 
-    console.log(`Migration completed. Migrated: ${migratedCount}, Errors: ${errorCount}`);
+    console.log(
+      `Migration completed. Migrated: ${migratedCount}, Errors: ${errorCount}`,
+    );
 
     return NextResponse.json({
       success: errorCount === 0,
-      message: `Migration completed. Successfully processed ${migratedCount} scoreboards${errorCount > 0 ? ` with ${errorCount} errors` : ''}`,
+      message: `Migration completed. Successfully processed ${migratedCount} scoreboards${errorCount > 0 ? ` with ${errorCount} errors` : ""}`,
       migratedCount,
       errorCount,
-      errors: errorCount > 0 ? errors : undefined
+      errors: errorCount > 0 ? errors : undefined,
     });
-
   } catch (error) {
     console.error("Error during migration:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        message: "Failed to migrate scoreboards", 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        success: false,
+        message: "Failed to migrate scoreboards",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
