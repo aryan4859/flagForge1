@@ -108,14 +108,14 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Generate unique filename
+      // Generate unique filename with sanitized extension
       const timestamp = Date.now();
       const randomStr = Math.random().toString(36).substring(2, 15);
-      const extension = path.extname(file.name).toLowerCase() || "";
+      const extension = (path.extname(file.name).toLowerCase() || "").replace(/[^a-z0-9.]/g, "");
       const filename = `challenge-${timestamp}-${randomStr}${extension}`;
 
       // Create upload directory if it doesn't exist
-      const uploadDir = path.join(
+      const uploadDir = path.resolve(
         process.cwd(),
         "public",
         "challenges",
@@ -125,10 +125,16 @@ export async function POST(req: NextRequest) {
         await mkdir(uploadDir, { recursive: true });
       }
 
-      // Save file
+      // Save file with path traversal validation
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const filePath = path.join(uploadDir, filename);
+      const filePath = path.resolve(uploadDir, filename);
+      if (!filePath.startsWith(uploadDir + path.sep) && filePath !== uploadDir) {
+        return NextResponse.json(
+          { success: false, message: "Invalid file name" },
+          { status: 400 },
+        );
+      }
       await writeFile(filePath, buffer);
 
       challengeFile = `/challenges/files/${filename}`;
@@ -366,14 +372,14 @@ export async function PUT(req: NextRequest) {
           );
         }
 
-        // Generate unique filename
+        // Generate unique filename with sanitized extension
         const timestamp = Date.now();
         const randomStr = Math.random().toString(36).substring(2, 15);
-        const extension = path.extname(file.name).toLowerCase() || "";
+        const extension = (path.extname(file.name).toLowerCase() || "").replace(/[^a-z0-9.]/g, "");
         const filename = `challenge-${timestamp}-${randomStr}${extension}`;
 
         // Create upload directory if it doesn't exist
-        const uploadDir = path.join(
+        const uploadDir = path.resolve(
           process.cwd(),
           "public",
           "challenges",
@@ -383,10 +389,16 @@ export async function PUT(req: NextRequest) {
           await mkdir(uploadDir, { recursive: true });
         }
 
-        // Save new file
+        // Save new file with path traversal validation
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        const filePath = path.join(uploadDir, filename);
+        const filePath = path.resolve(uploadDir, filename);
+        if (!filePath.startsWith(uploadDir + path.sep) && filePath !== uploadDir) {
+          return NextResponse.json(
+            { success: false, message: "Invalid file name" },
+            { status: 400 },
+          );
+        }
         await writeFile(filePath, buffer);
 
         newChallengeFile = `/challenges/files/${filename}`;
@@ -394,12 +406,12 @@ export async function PUT(req: NextRequest) {
         // Delete old file if it exists
         if (existingChallenge.challengeFile) {
           try {
-            const oldFilePath = path.join(
-              process.cwd(),
-              "public",
+            const publicDir = path.resolve(process.cwd(), "public");
+            const oldFilePath = path.resolve(
+              publicDir,
               existingChallenge.challengeFile,
             );
-            if (existsSync(oldFilePath)) {
+            if (oldFilePath.startsWith(publicDir + path.sep) && existsSync(oldFilePath)) {
               const { unlink } = await import("fs/promises");
               await unlink(oldFilePath);
             }
@@ -547,12 +559,12 @@ export async function DELETE(req: NextRequest) {
     // If it was a file-based challenge, try to delete the file
     if (deletedChallenge.challengeFile) {
       try {
-        const filePath = path.join(
-          process.cwd(),
-          "public",
+        const publicDir = path.resolve(process.cwd(), "public");
+        const filePath = path.resolve(
+          publicDir,
           deletedChallenge.challengeFile,
         );
-        if (existsSync(filePath)) {
+        if (filePath.startsWith(publicDir + path.sep) && existsSync(filePath)) {
           const { unlink } = await import("fs/promises");
           await unlink(filePath);
         }
